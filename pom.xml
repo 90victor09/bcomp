@@ -11,6 +11,7 @@
 		<module>components</module>
 		<module>bcomp-ui</module>
 		<module>bcomp-portlet</module>
+		<module>bcomp-js</module>
 	</modules>
 	<properties>
 		<liferay.version>6.2.1</liferay.version>
