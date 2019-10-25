@@ -12,6 +12,7 @@
 		<module>bcomp-assembler</module>
 		<module>bcomp-ui</module>
 		<module>bcomp-portlet</module>
+		<module>bcomp-js</module>
 	</modules>
 	<properties>
 		<maven.compiler.target>1.8</maven.compiler.target>
