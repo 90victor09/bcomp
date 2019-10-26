@@ -31,17 +31,18 @@
 	<input id="console-input" type="text">
 
 	<script type="text/javascript">
-		var console = document.getElementById("console");
-		console.value = "";
+		var consoleEl = document.getElementById("console");
+		consoleEl.value = "";
 		document.getElementById("console-input").value = "";
 		var bcomp = {};
 		bcomp.onloaded = function() {
 			// bcomp.start();
+			//TODO cli queue
 			document.getElementById("console-input").onkeyup = function (e) { // or down?
 				if (e.keyCode === 13) {
 					bcomp.enterLine(this.value);
 					this.value = "";
-					console.scrollTo(0, console.scrollHeight);
+					consoleEl.scrollTo(0, consoleEl.scrollHeight);
 				}
 			}
 		}

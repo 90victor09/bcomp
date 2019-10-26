@@ -6,42 +6,50 @@ import org.teavm.jso.dom.html.HTMLElement;
 import ru.ifmo.cs.bcomp.ui.CLI;
 
 public class BCompCLI extends CLI {
-	private boolean asmNeedMoreCode = false;
-	private String asmCode = "";
+	private final Object lineLock = new Object();
+	private String lineInput;
+	private Thread loop = new Thread(this::cli);
+
 	public BCompCLI() throws Exception {
 		super();
 		println("Эмулятор Базовой ЭВМ.\n" +
 				"БЭВМ готова к работе.\n" +
 				"Используйте ? или help для получения справки");
+		loop.start();
+	}
+
+	@Override
+	public void cli(){
+		String line;
+		while(true){
+			try{
+				line = fetchLine();
+			}catch(Exception e){
+				break;
+			}
+			processLine(line);
+		}
+	}
+
+	@Override
+	protected String fetchLine() throws Exception {
+		synchronized(lineLock){
+			lineLock.wait();
+			return lineInput;
+		}
 	}
 
 	public void enterLine(String line){
 		println("> " + line);
-		if(asmNeedMoreCode){
-			if(line.equalsIgnoreCase("END")) {
-				asmNeedMoreCode = false;
-
-				printOnStop = false;
-//						asm.compileProgram(code);
-//						asm.loadProgram(cpu);
-//						println("Программа начинается с адреса " + Utils.toHex(asm.getBeginAddr(), 11));
-				printOnStop = true;
-
-				return;
-			}
-
-			asmCode = asmCode.concat(line.concat("\n"));
-			return;
+		lineInput = line;
+		synchronized(lineLock){
+			lineLock.notify();
 		}
-		processLine(line);
 	}
 
 
-	protected void processAsm(){
-		asmNeedMoreCode = true;
-	}
 
-	HTMLElement console = (HTMLElement) HTMLDocument.current().getElementById("console");
+	private HTMLElement console = HTMLDocument.current().getElementById("console");
 	protected void println(String str){
 		console.appendChild(console.getOwnerDocument().createTextNode(str + "\n"));
 	}

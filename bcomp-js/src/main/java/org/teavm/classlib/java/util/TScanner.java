@@ -8,7 +8,7 @@ public class TScanner {
 		//
 	}
 	public String nextLine(){
-		return "";
+		throw new RuntimeException("unimplemented");
 	}
 
 }

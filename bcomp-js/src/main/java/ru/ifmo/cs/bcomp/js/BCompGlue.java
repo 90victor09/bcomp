@@ -4,8 +4,7 @@ import ru.ifmo.cs.bcomp.js.glue.*;
 import org.teavm.jso.JSBody;
 
 public class BCompGlue {
-
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		new BCompGlue();
 	}
 
@@ -30,19 +29,13 @@ public class BCompGlue {
 		}
 	},"glue");
 
-	private BCompGlue(){
-		try {
-			cli = new BCompCLI();
-		}catch(Exception e){
-			throw new RuntimeException("BCompError", e);
-		}
+	private BCompGlue() throws Exception {
+		cli = new BCompCLI();
 
-//		bindBCompStart("start", cli::start);
-		synchronized(glueLock){
-			glueLock.notify();
-		}
-//		cli.start();
-		bindBCompEnterLine("enterLine", (str) -> {
+//		synchronized(glueLock){
+//			glueLock.notify();
+//		}
+		bindBCompEnterLine((str) -> {
 			synchronized (glueLock) {
 				action = 1;
 				actionArg = str;
@@ -51,6 +44,7 @@ public class BCompGlue {
 			}
 		});
 		glueThread.start();
+//		exportJS();
 		onLoaded();
 	}
 
@@ -59,10 +53,20 @@ public class BCompGlue {
 
 //	@JSBody(params={ "key","glue" }, script="bcomp[key] = glue")
 //	private static native void bindBCompStart(String key, BCompStart glue);
+//	static private final String exportjs =
+//		"if(!BCompCLI) return; "+
+//		"function BCompCLI(onprint){" +
+//			"this.cli = new javaMethods.get('ru.ifmo.cs.bcomp.js.BCompCLI()')();" +
+//		"}" +
+//		"BCompCLI.prototype.enterLine = function(){" +
+//			"javaMethods.get('ru.ifmo.cs.bcomp.js.BCompCLI.enterLine(Ljava.lang.String)V').invoke(this.cli, arguments)" +
+//		"}";
+//	@JSBody(script=exportjs)
+//	private static native void exportJS(); //TODO pretty export
 
-	@JSBody(params={ "key","glue" }, script="bcomp[key] = glue")
-	private static native void bindBCompEnterLine(String key, BCompEnterLine glue);
+	@JSBody(params={"glue"}, script = "bcomp['enterLine'] = glue")
+	private static native void bindBCompEnterLine(BCompEnterLine glue);
 
-	@JSBody(script="if(bcomp.onloaded) bcomp.onloaded()")
+	@JSBody(script="if(bcomp && bcomp.onloaded) bcomp.onloaded()")
 	private static native void onLoaded();
 }
