@@ -35,27 +35,31 @@ public enum RunningCycle {
 	 */
 	INT,
 	/**
-	 * Set address
-	 * Ввод адреса
+	 * Start
+	 * Пуск
 	 */
-	SETIP,
+	START,
 	/**
 	 * Write
 	 * Запись
+	 */
+	READ,
+	/**
+	 * Set address
+	 * Ввод адреса
 	 */
 	WRITE,
 	/**
 	 * Read
 	 * Чтение
 	 */
-	READ,
+	SETIP,
 	/**
-	 * Start
-	 * Пуск
+	 * HALT
 	 */
-	START,
+	HALT,
 	/**
-	 * Reserved for future expantion
+	 * Reserved for future extension
 	 */
 	RESERVED,
 }
