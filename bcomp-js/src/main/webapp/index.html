@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-	<title>BComp test</title>
+	<title>BCompCLI test</title>
+
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-	<!--    <script type="text/javascript" charset="utf-8" src="teavm/runtime.js"></script>-->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
 	<script type="text/javascript" charset="utf-8" src="teavm/classes.js"></script>
 	<style>
 		body {
@@ -11,37 +13,32 @@
 		}
 		#console {
 			width: 100%;
-			height: 93%;
-			overflow-y: scroll;
-			position: absolute;
-			margin:0;
-			padding: 0.4rem;
+			margin: 0;
+			padding: 0.4rem 0.4rem 2.4rem;
 			box-sizing: border-box;
 		}
 		#console-input {
-			position: absolute;
+			position: fixed;
 			bottom: 0;
 			width: 100%;
-			height: 7%;
+			height: 2rem;
+			box-sizing: border-box;
 		}
 	</style>
 </head>
-<body onload="main()" style="margin:0">
+<body onload="main()">
 	<pre id="console"></pre>
-	<input id="console-input" type="text">
+	<input id="console-input" type="text" autofocus>
 
 	<script type="text/javascript">
-		var console = document.getElementById("console");
-		console.value = "";
+		document.getElementById("console").value = "";
 		document.getElementById("console-input").value = "";
 		var bcomp = {};
 		bcomp.onloaded = function() {
-			// bcomp.start();
 			document.getElementById("console-input").onkeyup = function (e) { // or down?
 				if (e.keyCode === 13) {
 					bcomp.enterLine(this.value);
 					this.value = "";
-					console.scrollTo(0, console.scrollHeight);
 				}
 			}
 		}

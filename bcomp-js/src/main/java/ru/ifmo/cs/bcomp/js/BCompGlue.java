@@ -1,5 +1,6 @@
 package ru.ifmo.cs.bcomp.js;
 
+import org.teavm.jso.dom.html.HTMLDocument;
 import ru.ifmo.cs.bcomp.js.glue.*;
 import org.teavm.jso.JSBody;
 
@@ -32,7 +33,7 @@ public class BCompGlue {
 
 	private BCompGlue(){
 		try {
-			cli = new BCompCLI();
+			cli = new BCompCLI(HTMLDocument.current().getElementById("console"));
 		}catch(Exception e){
 			throw new RuntimeException("BCompError", e);
 		}
