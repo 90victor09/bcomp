@@ -6,7 +6,7 @@ package ru.ifmo.cs.bcomp.ui;
 
 import ru.ifmo.cs.bcomp.BasicComp;
 import ru.ifmo.cs.bcomp.CPU;
-import ru.ifmo.cs.bcomp.MCDecoder;
+import static ru.ifmo.cs.bcomp.MCDecoder.getFormattedMC;
 import ru.ifmo.cs.bcomp.MicroCode;
 import static ru.ifmo.cs.bcomp.RunningCycle.*;
 
@@ -28,11 +28,6 @@ public class MicroCodeDecoder {
 		int infetch = mc.findLabel(INFETCH.name());
 		int reserved = mc.findLabel(RESERVED.name());
 
-		for (int addr = infetch; addr < reserved; addr++) {
-			String[] decoded = MCDecoder.decodeMC(cpu, addr);
-
-			System.out.println((decoded[0] == null ? "\t\t" : decoded[0] + (decoded[0].length() > 7 ? "\t" : "\t\t")) +
-				decoded[1] + "\t" + decoded[2]);
-		}
+		for (int addr = infetch; addr < reserved; System.out.println(getFormattedMC(cpu, addr++)));
 	}
 }

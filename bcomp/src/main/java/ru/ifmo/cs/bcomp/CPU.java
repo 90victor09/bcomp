@@ -49,7 +49,6 @@ public class CPU {
 	private final Bus vv;
 	private final Bus expected;
 	private final Bus newmp;
-	private final PartWriter stateProgram;
 	private volatile boolean clock = true;
 
 	private final ReentrantLock tick = new ReentrantLock();
@@ -76,7 +75,7 @@ public class CPU {
 						cpuStartListener.run();
 
 					if (clock)
-						stateProgram.setValue(1);
+						valves.get(SET_PROGRAM).setValue(1);
 
 					do {
 						if (tickStartListener != null)
@@ -91,7 +90,7 @@ public class CPU {
 
 						if (tickFinishListener != null)
 							tickFinishListener.run();
-					} while (ps.getValue(State.PROG.ordinal()) == 1);
+					} while (ps.getValue(PROG.ordinal()) == 1);
 
 					if (cpuStopListener != null)
 						cpuStopListener.run();
@@ -196,13 +195,14 @@ public class CPU {
 		valves.put(SORA, c);
 
 		// SUM
+		PartWriter writetoH = new PartWriter(swout, 8, 8);
 		clock1.addDestination(new Not(SORA.ordinal(),
 			new DataAdd(lcom, rcom, carry, DATA_WIDTH, 0, aluout),
 			new Valve(ps, 1, 0, 0, new PartWriter(aluout, 1, DATA_WIDTH + 2))));
 
 		clock1.addDestination(newValve(aluout, 8, 0, LTOL, swout));
 		clock1.addDestination(newValve(aluout, 8, 0, LTOH,
-			new PartWriter(swout, 8, 8)));
+			writetoH));
 		clock1.addDestination(newValve(aluout, 8, 8, HTOL, swout));
 		clock1.addDestination(newValve(aluout, 10, 8, HTOH,
 			new PartWriter(swout, 10, 8)));
@@ -224,20 +224,21 @@ public class CPU {
 		Control shrf;
 		Control setv;
 		PartWriter writeto15 = new PartWriter(swout, 1, DATA_WIDTH - 1);
+		PartWriter writeto17 = new PartWriter(swout, 1, DATA_WIDTH + 1);
 		PartWriter ei = new PartWriter(ps, 1, EI.ordinal());
-		valves.put(SEXT, c = new SignExtender(aluout, 8, SEXT.ordinal() - 16, swout));
+		PartWriter stateProgram = new PartWriter(ps, 1, PROG.ordinal());
+		valves.put(SEXT, c = new Extender(aluout, 8, 7, SEXT.ordinal() - 16, writetoH));
 		clock1.addDestination(new Not(TYPE.ordinal(),
 			new Valve(mr, VR_WIDTH, 16, 0,
 				c,
+				new Valve(aluout, 1, 14, SHLT.ordinal() - 16, writeto17),
 				newValveH(aluout, DATA_WIDTH, 0, SHLT, new PartWriter(swout, DATA_WIDTH, 1)),
 				newValveH(aluout, 1, DATA_WIDTH + 2, SHL0, swout),
 				newValveH(aluout, DATA_WIDTH - 1, 1, SHRT, swout),
+				new Valve(aluout, 1, 0, SHRT.ordinal() - 16, new PartWriter(swout, 1, DATA_WIDTH)),
 				new ValveTwo(SHRT.ordinal() - 16, SHRF.ordinal() - 16,
-					shrf = new Valve(aluout, 1, DATA_WIDTH - 1, 0, writeto15),
-					new Not(0,
-						new Valve(aluout, 1, 0, 0, new PartWriter(swout, 1, DATA_WIDTH)),
-						new Valve(aluout, 1, DATA_WIDTH + 2, 0, writeto15)
-					)
+					shrf = new Valve(aluout, 1, DATA_WIDTH + 2, 0, writeto15, writeto17),
+					new Not(0, new Valve(aluout, 1, DATA_WIDTH - 1, 0, writeto15, writeto17))
 				),
 				newValveH(swout, 1, DATA_WIDTH, SETC, new PartWriter(ps, 1, C.ordinal())),
 				setv = new Xor(swout, 2, DATA_WIDTH, SETV.ordinal() - 16, new PartWriter(ps, 1, V.ordinal())),
@@ -257,11 +258,12 @@ public class CPU {
 				newValveH(Consts.consts[1], 1, 0, CLRF),
 				newValveH(Consts.consts[0], 1, 0, DINT, ei),
 				newValveH(Consts.consts[1], 1, 0, EINT, ei),
-				newValveH(Consts.consts[0], 1, 0, ControlSignal.HALT, stateProgram = new PartWriter(ps, 1, PROG.ordinal()))
+				newValveH(Consts.consts[0], 1, 0, HALT, stateProgram)
 			)
 		));
 		valves.put(SHRF, shrf);
 		valves.put(SETV, setv);
+		valves.put(SET_PROGRAM, new Valve(Consts.consts[1], 1, 0, 0, stateProgram));
 
 		clock1.addDestination(new DataDestination() {
 			public void setValue(long value) {
@@ -275,7 +277,7 @@ public class CPU {
 		for (RunningCycle cycle : RunningCycle.values())
 			labels.put(cycle, findLabel(cycle.name()));
 
-		mp.setValue(findLabel("HLT"));
+		mp.setValue(labels.get(STOP) + 1);
 	}
 
 	private Control newValve(DataSource input, long width, long startbit, ControlSignal cs, DataDestination ... dsts) {
@@ -424,7 +426,7 @@ public class CPU {
 		try {
 			this.clock = clock;
 			if (!clock)
-				stateProgram.setValue(0);
+				valves.get(HALT).setValue(1L << (HALT.ordinal() - 16));
 		} finally {
 			tick.unlock();
 		}
@@ -443,12 +445,12 @@ public class CPU {
 	 * Jump to specified address
 	 * <p>lock should be acquired before calling
 	 */
-	private void jump(int addr) {
+	private void jump(long addr) {
 		if (addr > 0)
 			mp.setValue(addr);
 	}
 
-	private boolean startFrom(int addr) {
+	private boolean startFrom(long addr) {
 		if (lock.tryLock()) {
 			try {
 				jump(addr);
@@ -481,7 +483,7 @@ public class CPU {
 		return startFrom(0);
 	}
 
-	private boolean executeFrom(int label) {
+	private boolean executeFrom(long label) {
 		if (lock.tryLock()) {
 			try {
 				jump(label);
@@ -538,11 +540,11 @@ public class CPU {
 		return false;
 	}
 
-	public boolean executeMCWrite() {
+	public boolean executeMCWrite(long value) {
 		if (lock.tryLock()) {
 			try {
-				microcode.setValue(ir.getValue());
-				ir.setValue(0);
+				microcode.setValue(value);
+				mp.setValue(0);
 			} finally {
 				lock.unlock();
 			}
@@ -555,7 +557,7 @@ public class CPU {
 		if (lock.tryLock()) {
 			try {
 				valves.get(CLOCK0).setValue(1);
-				ir.setValue(0);
+				mp.setValue(0);
 			} finally {
 				lock.unlock();
 			}
@@ -570,7 +572,7 @@ public class CPU {
 		int i;
 
 		for (i = cycles.length - 1; i > 0; i--)
-			if (addr > labels.get(cycles[i]))
+			if (addr >= labels.get(cycles[i]))
 				return cycles[i];
 
 		return cycles[i];

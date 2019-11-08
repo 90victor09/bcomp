@@ -26,14 +26,13 @@ public class RunningCycleView extends BCompComponent {
 		"Operand fetch",
 		"Execution",
 		"Interrupt",
-		"Remote operation",
+		"Operator panel",
 		"Program"
 	};
 	private EnumMap<RunningCycle, Integer> cycles= new EnumMap<RunningCycle, Integer>(RunningCycle.class);
 
 	private final JLabel[] labels = new JLabel[cycleslabels.length];
-	private RunningCycle lastcycle = RunningCycle.HALT;
-	private long lastprogram = 0;
+	private RunningCycle lastcycle = RunningCycle.STOP;
 
 	public RunningCycleView(CPU cpu, int x, int y) {
 		super("Control Unit", cycleslabels.length);
@@ -59,20 +58,19 @@ public class RunningCycleView extends BCompComponent {
 
 	public void update() {
 		RunningCycle newcycle = cpu.getRunningCycle();
-		long newprogram = cpu.getProgramState(State.PROG);
 
 		if (newcycle != lastcycle) {
-			if (lastcycle != RunningCycle.HALT)
+			if (lastcycle != RunningCycle.STOP)
 				labels[cycles.get(lastcycle)].setForeground(COLOR_TEXT);
-			if (newcycle != RunningCycle.HALT)
+			if (newcycle != RunningCycle.STOP)
 			labels[cycles.get(newcycle)].setForeground(COLOR_ACTIVE);
 			lastcycle = newcycle;
 		}
 
-		if (newprogram != lastprogram) {
-			labels[labels.length - 1].setForeground(newprogram == 0 ? COLOR_TEXT : COLOR_ACTIVE);
-			lastprogram = newprogram;
-		}
+	}
+
+	public void updateProg(boolean prog){
+	labels[labels.length-1].setForeground(prog?COLOR_ACTIVE:COLOR_TEXT);
 	}
 
 	@Override

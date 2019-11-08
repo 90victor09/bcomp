@@ -67,8 +67,8 @@ public class MicroCode {
     }
 
     private final omc[] MP = {
-        // Пустая ячейка
-        new omc(            cs()),
+        // Halt basic computer when unnecessary call to reserved command or addressing type
+        new omc(            cs(HALT)),
 
         // Выборка команды
         new omc("INFETCH",  cs(RDIP, HTOH, LTOL, WRAR, WRBR)),                          // IP -> AR, BR
@@ -86,9 +86,9 @@ public class MicroCode {
         new CMC("CHKABS",   cs(RDCR, HTOL), 3, 0,                           "OPFETCH"), // if CR(11) = 0 then GOTO OPFETCH
 
         // Выборка адреса
-        new omc("ADFETCH",  cs(RDCR, SEXT, WRBR)),                                      // LTOL(CR) -> BR
+        new omc("ADFETCH",  cs(RDCR, SEXT, LTOL, WRBR)),                                // SEXT(CR) -> BR
         new CMC(            cs(RDCR, HTOL), 2, 1,                           "T11XX"),   // if CR(10) = 1 then GOTO T11XX
-        new omc("T10XX",    cs(RDBR, RDIP, HTOH, LTOL, WRAR)),                          // CR -> AR
+        new omc("T10XX",    cs(RDBR, RDIP, HTOH, LTOL, WRAR)),                          // BR + CR  -> AR
         new omc(            cs(LOAD)),                                                  // MEM(AR) -> DR
         new CMC(            cs(RDCR, HTOL), 1, 1,                           "T101X"),   // if CR(9) = 1 then GOTO T101X
         new CMC("T100X",    cs(RDCR, HTOL), 0, 1,                           "RESERVED"),// if CR(8) = 1 then GOTO RESERVED
@@ -108,7 +108,7 @@ public class MicroCode {
         new CMC("T111X",    cs(RDCR, HTOL), 0, 0,                           "T1110"),   // if CR(8) = 0 then GOTO RESERVED
         new omc("T1111",    cs(RDBR, HTOH, LTOL, WRDR)),                                // BR -> DR
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "EXEC"),    // GOTO EXEC
-        new omc("T1110",    cs(RDBR, RDSP, HTOH, LTOL, WRDR)),                          // BR + SP -> DR
+        new omc("T1110",    cs(RDBR, RDIP, HTOH, LTOL, WRDR)),                          // BR + IP -> DR
 
         // Выборка операнда
         new CMC("OPFETCH",  cs(RDCR, HTOL), 7, 0,                           "RDVALUE"), // if CR(15) = 0 then GOTO RDVALUE
@@ -121,10 +121,10 @@ public class MicroCode {
         new CMC("CMD0XXX",  cs(RDCR, HTOL), 6, 1,                           "CMD01XX"), // if CR(14) = 1 then GOTO CMD01XX
         // 13th bit already checked !!! CHECK LABEL NAME !!!
         new CMC("CMD000X",  cs(RDCR, HTOL), 4, 1,                           "OR"),      // if CR(12) = 1 then GOTO OR
-        new omc("AND",      cs(RDAC, RDDR, SORA, HTOH, LTOL, STNZ, WRAC)),              // AC & DR -> AC, N, Z
+        new omc("AND",      cs(RDAC, RDDR, SORA, HTOH, LTOL, STNZ, SETV, WRAC)),        // AC & DR -> AC, N, Z, V
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
         new omc("OR",       cs(RDAC, RDDR, COML, COMR, SORA, HTOH, LTOL, WRBR)),        // ~AC & ~DR -> BR
-        new omc(            cs(RDBR, COML, HTOH, LTOL, STNZ, WRAC)),                    // ~BR -> AC, N, Z
+        new omc(            cs(RDBR, COML, HTOH, LTOL, STNZ, SETV, WRAC)),              // ~BR -> AC, N, Z, V
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
         new CMC("CMD01XX",  cs(RDCR, HTOL), 5, 1,                           "CMD011X"), // if CR(13) = 1 then GOTO CMD011X
         new CMC("CMD010X",  cs(RDCR, HTOL), 4, 1,                           "ADC"),     // if CR(12) = 1 then GOTO ADC
@@ -148,12 +148,12 @@ public class MicroCode {
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
         new CMC("CMD101X",  cs(RDCR, HTOL), 4, 1,                           "SWAM"),    // if CR(12) = 1 then GOTO SWAM
         // !!! CHECK FLAGS !!!
-        new omc("LD",       cs(RDDR, HTOH, LTOL, WRAC)),                                // DR -> AC
+        new omc("LD",       cs(RDDR, HTOH, LTOL, STNZ, SETV, WRAC)),                    // DR -> AC, N, Z, V
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
-        new omc("SWAM",     cs(RDDR, HTOL, LTOL, WRBR)),                                // DR -> BR
+        new omc("SWAM",     cs(RDDR, HTOH, LTOL, WRBR)),                                // DR -> BR
         new omc(            cs(RDAC, HTOH, LTOL, WRDR)),                                // AC -> DR
         // !!! CHECK FLAGS !!!
-        new omc(            cs(RDBR, HTOH, LTOL, WRAC, STOR)),                          // DR -> MEM(AR), BR -> AC
+        new omc(            cs(RDBR, HTOH, LTOL, STNZ, SETV, WRAC, STOR)),              // DR -> MEM(AR), BR -> AC, N, Z, V
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
         // Warning - 1111 was already checked (addressless command)
         new CMC("CMD11XX",  cs(RDCR, HTOL), 5, 1,                           "ST"),      // if CR(13) = 1 then GOTO ST
@@ -175,34 +175,38 @@ public class MicroCode {
         new CMC("BR00XX",   cs(RDCR, HTOL), 1, 1,                           "BR001X"),  // if CR(9) = 1 then GOTO BR001X
         new CMC("BR000X",   cs(RDCR, HTOL), 0, 1,                           "BNE"),     // if CR(8) = 1 then GOTO BNE
         new CMC("BEQ",      cs(RDPS, LTOL), Z.ordinal(), 0,                 "INT"),     // if Z = 0 then GOTO INT
-        // !!! Значение какого регистра используем? DR или CR?
-        new omc("BR",       cs(RDCR, SEXT, WRBR)),                                      // SEXT(CR) -> BR
+        new omc("BR",       cs(RDCR, SEXT, LTOL, WRBR)),                                // SEXT(CR) -> BR
         new omc(            cs(RDBR, RDIP, HTOH, LTOL, WRIP)),                          // BR + IP -> IP
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
         new CMC("BNE",      cs(RDPS, LTOL), Z.ordinal(), 0,                 "BR"),      // if Z = 0 then GOTO BR
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
         new CMC("BR001X",   cs(RDCR, HTOL), 0, 1,                           "BPL"),     // if CR(8) then GOTO BPL
-        new CMC("BMI",      cs(RDPS, LTOL), N.ordinal(), 0,                 "BR"),      // if N = 0 then GOTO BR
+        new CMC("BMI",      cs(RDPS, LTOL), N.ordinal(), 1,                 "BR"),      // if N = 1 then GOTO BR
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
-        new CMC("BPL",      cs(RDPS, LTOL), N.ordinal(), 1,                 "BR"),      // if N = 1 then GOTO BR
+        new CMC("BPL",      cs(RDPS, LTOL), N.ordinal(), 0,                 "BR"),      // if N = 0 then GOTO BR
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
         new CMC("BR01XX",   cs(RDCR, HTOL), 1, 1,                           "BR011X"),  // if CR(9) = 1 then GOTO BR011X
         new CMC("BR010X",   cs(RDCR, HTOL), 0, 1,                           "BCC"),     // if CR(8) = 1 then GOTO BCC
-        new CMC("BCS",      cs(RDPS, LTOL), C.ordinal(), 0,                 "BR"),      // if C = 0 then GOTO BR
+        new CMC("BCS",      cs(RDPS, LTOL), C.ordinal(), 1,                 "BR"),      // if C = 1 then GOTO BR
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
-        new CMC("BCC",      cs(RDPS, LTOL), C.ordinal(), 1,                 "BR"),      // if C = 1 then GOTO BR
+        new CMC("BCC",      cs(RDPS, LTOL), C.ordinal(), 0,                 "BR"),      // if C = 0 then GOTO BR
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
         new CMC("BR011X",   cs(RDCR, HTOL), 0, 1,                           "BVC"),     // if CR(8) = 1 then GOTO BCC
-        new CMC("BVS",      cs(RDPS, LTOL), V.ordinal(), 0,                 "BR"),      // if V = 0 then GOTO BR
+        new CMC("BVS",      cs(RDPS, LTOL), V.ordinal(), 1,                 "BR"),      // if V = 1 then GOTO BR
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
-        new CMC("BVC",      cs(RDPS, LTOL), V.ordinal(), 1,                 "BR"),      // if V = 1 then GOTO BR
+        new CMC("BVC",      cs(RDPS, LTOL), V.ordinal(), 0,                 "BR"),      // if V = 0 then GOTO BR
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
         new CMC("BR1XXX",   cs(RDCR, HTOL), 2, 1,                           "RESERVED"),// if CR(10) = 1 then GOTO RESERVED
-        new CMC("BR10XX",   cs(RDCR, HTOL), 1, 1,                           "RESERVED"),// if CR(9) = 1 then GOTO RESERVED
-        new CMC("BR100X",   cs(RDCR, HTOL), 0, 1,                           "BFC"),     // if CR(8) = 1 then GOTO BFC
-        new CMC("BFS",      cs(RDPS, LTOL), F.ordinal(), 0,                 "BR"),      // if F = 0 then GOTO BR
+        new CMC("BR10XX",   cs(RDCR, HTOL), 1, 1,                           "BR101X"),  // if CR(9) = 1 then GOTO RESERVED
+        new CMC("BR100X",   cs(RDCR, HTOL), 0, 1,                           "BGE"),     // if CR(8) = 1 then GOTO BGE
+        new CMC("BLT",      cs(RDPS, LTOL), N.ordinal(), 0,                 "BVS"),     // if N = 0 then GOTO BVS
+        new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "BVC"),     // GOTO BVC
+        new CMC("BGE",      cs(RDPS, LTOL), N.ordinal(), 0,                 "BVC"),     // if N = 0 then GOTO BVC
+        new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "BVS"),     // GOTO BVS
+        new CMC("BR101X",   cs(RDCR, HTOL), 0, 1,                           "BFC"),     // if CR(8) = 1 then GOTO BFC
+        new CMC("BFS",      cs(RDPS, LTOL), F.ordinal(), 1,                 "BR"),      // if F = 1 then GOTO BR
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
-        new CMC("BFC",      cs(RDPS, LTOL), F.ordinal(), 1,                 "BR"),      // if F = 1 then GOTO BR
+        new CMC("BFC",      cs(RDPS, LTOL), F.ordinal(), 0,                 "BR"),      // if F = 0 then GOTO BR
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
 
         // Безадресные команды
@@ -210,12 +214,12 @@ public class MicroCode {
         new CMC("AL0XXX",   cs(RDCR, HTOL), 2, 1,                           "AL01XX"),  // if CR(10) = 1 then GOTO AL01XX
         new CMC("AL00XX",   cs(RDCR, HTOL), 1, 1,                           "AL001X"),  // if CR(9) = 1 then GOTO AL001X
         new CMC("AL000X",   cs(RDCR, HTOL), 0, 0,                           "INT"),     // if CR(8) = 0 then GOTO INT (NOP)
-        new CMC("HLT",      cs(RDPS, LTOL), PS0.ordinal(), 0,               "HALT"),    // GOTO HALT
+        new CMC("HLT",      cs(RDPS, LTOL), PS0.ordinal(), 0,               "STOP"),    // GOTO STOP
         new CMC("AL001X",   cs(RDCR, HTOL), 0, 1,                           "AL0011"),  // if CR(8) = 1 then GOTO AL0011
         new CMC("AL0010",   cs(RDCR, LTOL), 7, 1,                           "CMA"),     // if CR(7) = 1 then GOTO CMA
         new omc("CLA",      cs(STNZ, SETV, WRAC)),                                      // 0 -> AC, N, V, Z
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
-        new omc("CMA",      cs(RDAC, COML, HTOH, LTOL, STNZ, SETV, SETC, WRAC)),        // ~AC + 0 -> BR, N, Z, V, C
+        new omc("CMA",      cs(RDAC, COML, HTOH, LTOL, STNZ, SETV, WRAC)),              // ~AC + 0 -> BR, N, Z, V
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
         new CMC("AL0011",   cs(RDCR, LTOL), 7, 1,                           "CMC"),     // if (CR7) = 1 then GOTO CMC
         new omc("CLC",      cs(SETC)),                                                  // 0 -> C
@@ -226,38 +230,36 @@ public class MicroCode {
         new CMC("AL01XX",   cs(RDCR, HTOL), 1, 1,                           "AL011X"),  // if CR(9) = 1 then GOTO AL011X
         new CMC("AL010X",   cs(RDCR, HTOL), 0, 1,                           "AL0101"),  // if CR(8) = 1 then GOTO AL0101
         new CMC("AL0100",   cs(RDCR, LTOL), 7, 1,                           "ROR"),     // if CR(7) = 1 then GOTO ROR
-        new omc("ROL",      cs(RDAC, SHLT, SHL0, STNZ, SETC, WRAC)),                    // ROL(AC) -> AC, C, N, Z
+        new omc("ROL",      cs(RDAC, SHLT, SHL0, STNZ, SETV, SETC, WRAC)),              // ROL(AC) -> AC, N, Z, V, C
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
-        new omc("ROR",      cs(RDAC, SHRT, STNZ, SETC, WRAC)),                    // ROR(AC) -> AC, C, N, Z
+        new omc("ROR",      cs(RDAC, SHRT, SHRF, STNZ, SETV, SETC, WRAC)),              // ROR(AC) -> AC, N, Z, V, C
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
         new CMC("AL0101",   cs(RDCR, LTOL), 7, 1,                           "ASR"),     // if CR(7) = 1 then GOTO ASR
         new omc("ASL",      cs(RDAC, HTOH, LTOL, WRDR)),                                // AC -> DR
         new omc(            cs(RDAC, RDDR, HTOH, LTOL, STNZ, SETV, SETC, WRAC)),        // AC + DR -> AC, N, Z, V, C
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
-        new omc("ASR",      cs(RDAC, SHRT, SHRF, STNZ, SETV, SETC, WRAC)),                    // ASR(AC) -> AC, N, Z, V, C
+        new omc("ASR",      cs(RDAC, SHRT, STNZ, SETV, SETC, WRAC)),                    // ASR(AC) -> AC, N, Z, V
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
         new CMC("AL011X",   cs(RDCR, HTOL), 0, 1,                           "AL0111"),  // if CR(8) = 1 then GOTO AL0111
         new CMC("AL0110",   cs(RDCR, LTOL), 7, 1,                           "SWAB"),    // if CR(7) = 1 then GOTO SWAB
-        new CMC("AL01100",  cs(RDCR, LTOL), 6, 1,                           "TST"),     // if CR(6) = 1 then GOTO TST
-        new omc("SXTB",     cs(RDAC, SEXT, STNZ, SETV, WRAC)),                          // SEXT(AC) -> AC, N, Z, V
-        new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
-        new omc("TST",      cs(RDAC, HTOH, LTOL, STNZ, SETV)),                          // AC -> N, Z, V
+        new omc("SXTB",     cs(RDAC, SEXT, LTOL, STNZ, SETV, WRAC)),                    // SEXT(AC) -> AC, N, Z, V
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
         new omc("SWAB",     cs(RDAC, HTOL, LTOH, STNZ, SETV, WRAC)),                    // SWAB(AC) -> AC, N, Z, V
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
-        new CMC("AL0111",   cs(RDCR, LTOL), 7, 1,                           "DEC"),     // if CR(7) = 1 then GOTO DEC
-        new CMC("AL01110",  cs(RDCR, LTOL), 6, 1,                           "NEG"),     // if CR(6) = 1 then GOTO NEG
+        new CMC("AL0111",   cs(RDCR, LTOL), 7, 1,                           "NEG"),     // if CR(7) = 1 then GOTO NEG
+        new CMC("AL01110",  cs(RDCR, LTOL), 6, 1,                           "DEC"),     // if CR(6) = 1 then GOTO DEC
         new omc("INC",      cs(RDAC, PLS1, HTOH, LTOL, STNZ, SETV, SETC, WRAC)),        // AC + 1 -> AC, N, Z, V, C
+        new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
+        new omc("DEC",      cs(RDAC, COMR, HTOH, LTOL, STNZ, SETV, SETC, WRAC)),        // AC + ~0 -> AC, N, Z, V, C
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
         new omc("NEG",      cs(RDAC, COML, PLS1, HTOH, LTOL, STNZ, SETV, SETC, WRAC)),  // ~AC + 1 -> AC, N, Z, V, C
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
-        new omc("DEC",      cs(RDAC, COMR, HTOH, LTOL, STNZ, SETV, SETC, WRAC)),        // AC + ~0 -> AC, N, Z, V, C
         new CMC("AL1XXX",   cs(RDCR, HTOL), 2, 1,                           "AL11XX"),  // if CR(10) = 1 then AL11XX
         new omc("AL10XX",   cs(RDSP, HTOH, LTOL, WRAR)),                                // SP -> AR
         new omc(            cs(LOAD)),                                                  // MEM(AR) -> DR
         new CMC(            cs(RDCR, HTOL), 1, 1,                           "AL101X"),  // if CR(9) = 1 then AL101X
-        new CMC(            cs(RDCR, HTOL), 0, 1,                           "POPF"),    // if CR(8) = 1 then POPF
-        new omc("POP",      cs(RDDR, HTOH, LTOL, WRAC)),                                // DR -> AC
+        new CMC("AL100X",   cs(RDCR, HTOL), 0, 1,                           "POPF"),    // if CR(8) = 1 then POPF
+        new omc("POP",      cs(RDDR, HTOH, LTOL, STNZ, SETV, WRAC)),                    // DR -> AC, N, Z, V
         new omc("INCSP",    cs(RDSP, PLS1, HTOH, LTOL, WRSP)),                          // SP + 1 -> SP
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
         new omc("POPF",     cs(RDDR, HTOH, LTOL, WRPS)),                                // DR -> PS
@@ -280,13 +282,13 @@ public class MicroCode {
         new omc(            cs(LOAD)),                                                  // MEM(AR) -> DR
         new omc(            cs(RDDR, HTOH, LTOL, WRBR)),                                // DR -> BR
         new omc(            cs(RDAC, HTOH, LTOL, WRDR)),                                // AC -> DR
-        new omc(            cs(RDBR, HTOH, LTOL, WRBR, STOR)),                          // BR -> AC; DR -> MEM(AR)
+        new omc(            cs(RDBR, HTOH, LTOL, STNZ, SETV, WRAC, STOR)),              // BR -> AC, N, Z, V; DR -> MEM(AR)
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INT"),     // GOTO INT
         // IO
         new omc("IO",       cs(IO)),                                                    // IO
 
         // Цикл прерывания
-        new CMC("INT",      cs(RDPS, HTOL), RUN.ordinal() - 8, 0,           "HALT"),    // if RUN = 0 then GOTO HALT
+        new CMC("INT",      cs(RDPS, HTOL), RUN.ordinal() - 8, 0,           "STOP"),    // if RUN = 0 then GOTO STOP
         new CMC(            cs(RDPS, LTOL), INTR.ordinal(), 0    ,          "INFETCH"), // if INTR = 0 then GOTO INFETCH
         new omc(            cs(RDSP, COML, HTOH, LTOL, WRSP, WRAR)),                    // SP + ~0 -> SP, AR
         new omc(            cs(RDIP, HTOH, LTOL, WRDR)),                                // IP -> DR
@@ -306,16 +308,16 @@ public class MicroCode {
         new omc("READ",     cs(RDIP, HTOH, LTOL, WRAR)),                                // IP -> AR
         new omc(            cs(RDIR, HTOH, LTOL, WRDR)),                                // IR -> DR
         new omc(            cs(RDIP, PLS1, HTOH, LTOL, WRIP, LOAD)),                    // MEM(AR) -> DR; IP + 1 -> IP
-        new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "HALT"),    // GOTO HALT
+        new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "STOP"),    // GOTO STOP
         // Запись
         new omc("WRITE",    cs(RDIP, HTOH, LTOL, WRAR)),                                // IP -> AR
         new omc(            cs(RDIR, HTOH, LTOL, WRDR)),                                // IR -> DR
         new omc(            cs(RDIP, PLS1, HTOH, LTOL, WRIP, STOR)),                    // DR -> MEM(AR); IP + 1 -> IP
-        new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "HALT"),    // GOTO HALT
+        new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "STOP"),    // GOTO STOP
         // Ввод адреса
         new omc("SETIP",    cs(RDIR, HTOH, LTOL, WRIP)),                                // IR -> IP
-        // HALT
-        new omc("HALT",     cs(HALT)),                                                  // HLT: HALT
+        // STOP
+        new omc("STOP",     cs(HALT)),                                                  // HALT
         new CMC(            cs(RDPS, LTOL), PS0.ordinal(), 0,               "INFETCH"), // GOTO INFETCH
         // Reserved address space for user defined microcode
         new omc("RESERVED", cs()),
@@ -337,7 +339,7 @@ public class MicroCode {
         throw new Exception("Label '" + label + "' not found");
     }
 
-	public String getLabel(int addr) {
-		return addr < MP.length ? MP[addr].label : null;
-	}
+    public String getLabel(int addr) {
+        return addr < MP.length ? MP[addr].label : null;
+    }
 }

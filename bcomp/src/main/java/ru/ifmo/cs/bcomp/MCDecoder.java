@@ -44,6 +44,16 @@ public class MCDecoder {
 		return res;
 	}
 
+	public static String getFormattedMC(CPU cpu, long addr) {
+		String[] decoded = MCDecoder.decodeMC(cpu, addr);
+
+		return 
+			toHex(addr, 8) + " " +
+			decoded[1] + "\t" + 
+			(decoded[0] == null ? "\t\t" : decoded[0] + (decoded[0].length() > 7 ? "\t" : "\t\t")) +
+			(decoded[2] == null ? "No operations" : decoded[2]);
+	}
+
 	private static String decodeCMC(MicroCode mc, ArrayList<ControlSignal> cs, long checkbit, long addr, long expected) {
 		String label = mc.getLabel((int)addr);
 		String aluOutput = getAluOutput(cs);
@@ -173,8 +183,12 @@ public class MCDecoder {
 				return "HTOH(" + alu + ")";
 		}
 
-		if (cs.contains(LTOL))
-			return "LTOL(" + alu + ")";
+		if (cs.contains(LTOL)) {
+			if (cs.contains(SEXT))
+				return "extend sign " + alu + "(0..7)";
+			else
+				return "LTOL(" + alu + ")";
+		}
 
 		if (cs.contains(LTOH)) {
 			if (cs.contains(HTOL))
@@ -189,19 +203,18 @@ public class MCDecoder {
 		if (cs.contains(SEXT))
 			return "SEXT(" + alu + ")";
 
-
 		if (cs.contains(SHLT)) {
 			if (cs.contains(SHL0))
-				return "SHLT+SHL0(" + alu + ")";
+				return "ROL(" + alu + ")";
 			else
-				return "SHLT(" + alu + ")";
+				return "SHL(" + alu + ")";
 		}
 
 		if (cs.contains(SHRT)) {
 			if (cs.contains(SHRF))
-				return "SHRT+SHRF(" + alu + ")";
+				return "ROR(" + alu + ")";
 			else
-				return "SHRT(" + alu + ")";
+				return "ASR(" + alu + ")";
 		}
 
 		return null;
