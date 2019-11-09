@@ -28,7 +28,6 @@ public class BCompCLI extends CLI {
 				}
 
 				processLine(line);
-				lineProcessed();
 			}
 		}, "BCompCLI").start();
 	}
@@ -46,6 +45,7 @@ public class BCompCLI extends CLI {
 				"ma[ddress]\t- Переход на микрокоманду\n" +
 				"mw[rite]\t- Запись микрокоманды\n" +
 				"mr[ead]\t\t- Чтение микрокоманды\n" +
+				"md[ecode]\t- Декодировать текущую микрокоманду\n" +
 				"io\t\t- Вывод состояния всех ВУ\n" +
 				"io addr\t\t- Вывод состояния указанного ВУ\n" +
 				"io addr value\t- Запись value в указанное ВУ\n" +
@@ -69,7 +69,6 @@ public class BCompCLI extends CLI {
 		}
 	}
 
-
 	@Override
 	protected String fetchLine() throws Exception {
 		synchronized(lineLock){
@@ -78,13 +77,14 @@ public class BCompCLI extends CLI {
 		}
 	}
 
-	public void lineProcessed(){
-//		console.setScrollTop(console.getScrollHeight());
+	@Override
+	protected void print(String str){
+		console.appendChild(console.getOwnerDocument().createTextNode(str));
+		// Scroll to bottom
 		HTMLDocument.current().getDocumentElement().setScrollTop(HTMLDocument.current().getDocumentElement().getScrollHeight());
 	}
-
 	@Override
 	protected void println(String str){
-		console.appendChild(console.getOwnerDocument().createTextNode(str + "\n"));
+		print(str + "\n");
 	}
 }
