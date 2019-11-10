@@ -2,6 +2,7 @@ package ru.ifmo.cs.bcomp.js.glue;
 
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * JS <-> multithreaded java connector
@@ -12,6 +13,8 @@ public class GlueComponent<E> {
 	private GlueComponentExecutionListener<E> listener;
 	private final Object glueCmdExecLock = new Object();
 
+	private ReentrantLock executionLock = new ReentrantLock();
+
 	private boolean glueThreadStarted = false;
 	private Thread glueThread = new Thread(() -> {
 		while(true){
@@ -20,12 +23,17 @@ public class GlueComponent<E> {
 					if(cmdQueue.size() == 0)
 						glueCmdExecLock.wait();
 				}
-				Object cmdResult;
-				while(cmdQueue.size() > 0){
-					GlueComponentCmd<E> cmd = cmdQueue.poll();
 
-					cmdResult = listener.execute(cmd.getType(), cmd.getArgs());
-					cmd.processResult(cmdResult);
+				try{
+					executionLock.lock();
+					Object cmdResult;
+					while(cmdQueue.size() > 0){
+						GlueComponentCmd<E> cmd = cmdQueue.poll();
+						cmdResult = listener.execute(cmd.getType(), cmd.getArgs());
+						cmd.processResult(cmdResult);
+					}
+				}finally{
+					executionLock.unlock();
 				}
 			}catch(InterruptedException e){
 				e.printStackTrace();

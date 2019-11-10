@@ -13,8 +13,9 @@ public class TReentrantLock {
 	public void lock(){
 		synchronized (lock) {
 			if(locked){
-				if(getOwner().equals(Thread.currentThread()))
-					return;
+				//XXX: MT bug
+//				if(getOwner().equals(Thread.currentThread()))
+//					return;
 				try{
 //					System.out.println("[" + Thread.currentThread().getName() + "] lock wait started");
 

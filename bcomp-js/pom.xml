@@ -104,7 +104,7 @@
 
 
 							<!--        DEBUG        -->
-							<incremental>true</incremental>
+<!--							<incremental>true</incremental>-->
 							<minifying>false</minifying>
 							<debugInformationGenerated>true</debugInformationGenerated>
 							<sourceMapsGenerated>true</sourceMapsGenerated>
