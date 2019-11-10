@@ -36,28 +36,6 @@
 					<doUpdate>false</doUpdate>
 				</configuration>
 			</plugin>
-			<!--<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>2.1</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<transformers>
-						<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-						<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-							<mainClass>ru.ifmo.cs.bcompjs.BCompModule</mainClass>
-						</transformer>
-					</transformers>
-					<finalName>bcomp</finalName>
-				</configuration>
-			</plugin>-->
 			<!-- Configure Java compiler to use Java 8 syntax  -->
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -75,7 +53,10 @@
 				<configuration>
 				<webResources>
 					<resource>
-						<directory>${project.build.directory}/generated/js</directory>
+						<directory>${project.build.directory}/generated/js/teavm</directory>
+					</resource>
+					<resource>
+						<directory>${project.build.directory}/generated/js/angular</directory>
 					</resource>
 				</webResources>
 				</configuration>
@@ -96,26 +77,62 @@
 							<!-- Directory where TeaVM should put generated files. This configuration conforms to the settings
 								of the WAR plugin -->
 							<targetDirectory>${project.build.directory}/generated/js/teavm</targetDirectory>
-
 							<!-- Main class, containing static void main(String[]) -->
 							<mainClass>ru.ifmo.cs.bcomp.js.BCompExport</mainClass>
+							<!-- a name of a produced JavaScript file. The default value is classes.js -->
+							<targetFileName>bcomp.js</targetFileName>
+							<!-- what code to generate. Following options are supported: JAVASCRIPT, WEBASSEMBLY -->
+							<targetType>JAVASCRIPT</targetType>
 
+							<!--        PRODUCTION        -->
 							<!-- Whether TeaVM should produce minified JavaScript. Can reduce JavaScript file size more than
 								two times -->
-							<minifying>false</minifying>
+<!--							<minifying>true</minifying>-->
 
 							<!-- Whether TeaVM should produce debug information for its built-in debugger -->
-							<debugInformationGenerated>true</debugInformationGenerated>
+<!--							<debugInformationGenerated>false</debugInformationGenerated>-->
 
 							<!-- Whether TeaVM should produce source maps file -->
-							<sourceMapsGenerated>true</sourceMapsGenerated>
+<!--							<sourceMapsGenerated>false</sourceMapsGenerated>-->
 
 							<!-- Whether TeaVM should also put source files into output directory,
 								for compatibility with source maps -->
-							<sourceFilesCopied>true</sourceFilesCopied>
+<!--							<sourceFilesCopied>false</sourceFilesCopied>-->
 
 							<!-- Optimization level. Valid values are: SIMPLE, ADVANCED, FULL -->
+<!--							<optimizationLevel>ADVANCED</optimizationLevel>-->
+
+
+							<!--        DEBUG        -->
+							<incremental>true</incremental>
+							<minifying>false</minifying>
+							<debugInformationGenerated>true</debugInformationGenerated>
+							<sourceMapsGenerated>true</sourceMapsGenerated>
+							<sourceFilesCopied>true</sourceFilesCopied>
 							<optimizationLevel>SIMPLE</optimizationLevel>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Copy Angular app -->
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.1.0</version>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/generated/js/angular</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.basedir}/src/main/angular/dist/bcomp-app</directory>
+								</resource>
+							</resources>
 						</configuration>
 					</execution>
 				</executions>
@@ -123,12 +140,12 @@
 		</plugins>
 	</build>
 	<dependencies>
-		<dependency>
+		<!--<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.10</version>
 			<scope>test</scope>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>bcomp</artifactId>

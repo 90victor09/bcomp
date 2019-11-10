@@ -1,4 +1,4 @@
-package ru.ifmo.cs.bcomp.js.glue.impl;
+package ru.ifmo.cs.bcomp.js.glue.components;
 
 import org.teavm.jso.JSBody;
 import org.teavm.jso.JSObject;
@@ -6,6 +6,7 @@ import org.teavm.jso.dom.html.HTMLElement;
 import ru.ifmo.cs.bcomp.js.BCompCLI;
 import ru.ifmo.cs.bcomp.js.glue.GlueComponent;
 
+@SuppressWarnings("unused")
 public class ConsoleGlue {
 	enum CMD {
 		INIT_CLI,
@@ -17,8 +18,8 @@ public class ConsoleGlue {
 
 	@SuppressWarnings("unused")
 	@JSBody(params = {"console"}, script = "var c = {};"
-	+ "javaMethods.get('ru.ifmo.cs.bcomp.js.glue.impl.ConsoleGlue.init(Lorg/teavm/jso/dom/html/HTMLElement;)V').invoke(console);"
-	+ "c.enterLine = function(line){ return javaMethods.get('ru.ifmo.cs.bcomp.js.glue.impl.ConsoleGlue.enterLine(Ljava/lang/String;)V').invoke(line); };"
+	+ "javaMethods.get('ru.ifmo.cs.bcomp.js.glue.components.ConsoleGlue.init(Lorg/teavm/jso/dom/html/HTMLElement;)V').invoke(console);"
+	+ "c.enterLine = function(line){ return javaMethods.get('ru.ifmo.cs.bcomp.js.glue.components.ConsoleGlue.enterLine(Ljava/lang/String;)V').invoke(line); };"
 	+ "return c;")
 	public static native JSObject glue(HTMLElement console);
 

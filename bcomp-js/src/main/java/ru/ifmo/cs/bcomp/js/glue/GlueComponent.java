@@ -54,7 +54,7 @@ public class GlueComponent<E> {
 			glueThreadStarted = true;
 		}
 
-		cmdQueue.offer(new GlueComponentCmd<>(type, null, args));
+		cmdQueue.offer(new GlueComponentCmd<>(type, listener, args));
 
 		synchronized(glueCmdExecLock){
 			glueCmdExecLock.notify();

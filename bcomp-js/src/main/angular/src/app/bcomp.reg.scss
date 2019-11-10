@@ -1,0 +1,28 @@
+.bcomp-reg {
+  $height: 1.8rem;
+  $padding: 0.2rem;
+  label {
+    background-color: green;
+    position: absolute;
+    height: 100%;
+    width: $height;
+    line-height: $height - $padding*2;
+    color: #FFF;
+    left: 0;
+    top: 0;
+    text-align: center;
+  }
+  label, span {
+    padding: $padding;
+    box-sizing: border-box;
+  }
+  span {
+    margin-left: $height;
+    vertical-align: middle;
+    line-height: $height;
+  }
+  position: relative;
+  background-color: lightgreen;
+  display: inline-block;
+  height: $height;
+}

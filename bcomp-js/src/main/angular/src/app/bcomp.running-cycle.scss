@@ -1,0 +1,21 @@
+$padding: 0.4rem;
+
+.bcomp-running-cycle {
+  display: inline-block;
+}
+ul {
+  margin: 0;
+  padding: $padding;
+  li {
+    list-style: none;
+    text-align: center;
+  }
+  background-color: lightgreen;
+}
+.header {
+  padding: $padding;
+  background-color: green;
+  text-align: center;
+  color: #FFF;
+}
+
