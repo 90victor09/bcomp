@@ -22,7 +22,9 @@ public class AngularGlue {
 		GET_RUNNING_CYCLE,
 		ADD_SIGNAL_LISTENER,
 		SET_TICK_START_LISTENER,
-		SET_TICK_FINISH_LISTENER
+		SET_TICK_FINISH_LISTENER,
+		GET_MEMORY_VALUE,
+		GET_LAST_ACCESSED_MEMORY_ADDRESS
 	}
 	private static GlueComponent<CMD> glue = new GlueComponent<>(AngularGlue::execute);
 	private static BCompAngular bcomp;
@@ -36,6 +38,8 @@ public class AngularGlue {
 			+ "a.addSignalListener = function(sig, cb){ return javaMethods.get('" + angularGlue + ".addSignalListener(Ljava/lang/String;L" + listenersPackage + "GlueBCompSignalListener;)V').invoke(sig, cb); };"
 			+ "a.setTickStartListener = function(cb){ return javaMethods.get('" + angularGlue + ".setTickStartListener(L" + listenersPackage + "GlueVoidResultListener;)V').invoke(cb); };"
 			+ "a.setTickFinishListener = function(cb){ return javaMethods.get('" + angularGlue + ".setTickFinishListener(L" + listenersPackage + "GlueVoidResultListener;)V').invoke(cb); };"
+			+ "a.getMemoryValue = function(addr,cb){ return javaMethods.get('" + angularGlue + ".getMemoryValue(IL" + listenersPackage + "GlueStringResultListener;)V').invoke(addr,cb); };"
+			+ "a.getLastAccessedMemoryAddress = function(cb){ return javaMethods.get('" + angularGlue + ".getLastAccessedMemoryAddress(L" + listenersPackage + "GlueIntegerResultListener;)V').invoke(cb); };"
 			+ "return a;")
 	public static native JSObject glue(GlueVoidResultListener listener);
 
@@ -48,6 +52,8 @@ public class AngularGlue {
 			+ "a.addSignalListener = function(sig, cb){ return javaMethods.get('" + angularGlue + ".addSignalListener(Ljava/lang/String;L" + listenersPackage + "GlueBCompSignalListener;)V').invoke(sig, cb); };"
 			+ "a.setTickStartListener = function(cb){ return javaMethods.get('" + angularGlue + ".setTickStartListener(L" + listenersPackage + "GlueVoidResultListener;)V').invoke(cb); };"
 			+ "a.setTickFinishListener = function(cb){ return javaMethods.get('" + angularGlue + ".setTickFinishListener(L" + listenersPackage + "GlueVoidResultListener;)V').invoke(cb); };"
+			+ "a.getMemoryValue = function(addr,cb){ return javaMethods.get('" + angularGlue + ".getMemoryValue(IL" + listenersPackage + "GlueStringResultListener;)V').invoke(addr,cb); };"
+			+ "a.getLastAccessedMemoryAddress = function(cb){ return javaMethods.get('" + angularGlue + ".getLastAccessedMemoryAddress(L" + listenersPackage + "GlueIntegerResultListener;)V').invoke(cb); };"
 			+ "return a;")
 	public static native JSObject frankenstein(GlueVoidResultListener listener);
 
@@ -62,15 +68,12 @@ public class AngularGlue {
 			glue.sendCmd(CMD.INIT, (result -> listener.process()), true);
 		}
 	}
-	@SuppressWarnings("unused")
 	public static void getRegValue(String reg, GlueStringResultListener listener){
 		glue.sendCmd(CMD.GET_REG_VALUE, result -> listener.process((String) result), reg);
 	}
-	@SuppressWarnings("unused")
 	public static void getRegWidth(String reg, GlueIntegerResultListener listener){
 		glue.sendCmd(CMD.GET_REG_WIDTH, result -> listener.process((Integer) result), reg);
 	}
-	@SuppressWarnings("unused")
 	public static void getRunningCycle(GlueStringResultListener listener){
 		glue.sendCmd(CMD.GET_RUNNING_CYCLE, result -> listener.process((String) result));
 	}
@@ -83,7 +86,12 @@ public class AngularGlue {
 	public static void setTickFinishListener(GlueVoidResultListener listener){
 		glue.sendCmd(CMD.SET_TICK_FINISH_LISTENER, null, listener);
 	}
-
+	public static void getMemoryValue(int addr, GlueStringResultListener listener){
+		glue.sendCmd(CMD.GET_MEMORY_VALUE, result -> listener.process((String) result), addr);
+	}
+	public static void getLastAccessedMemoryAddress(GlueIntegerResultListener listener){
+		glue.sendCmd(CMD.GET_LAST_ACCESSED_MEMORY_ADDRESS, result -> listener.process((Integer)result));
+	}
 
 	private static Object execute(CMD type, Object... args){
 		switch(type){
@@ -108,6 +116,10 @@ public class AngularGlue {
 			case SET_TICK_FINISH_LISTENER:
 				bcomp.setTickFinishListener((GlueVoidResultListener) args[0]);
 				break;
+			case GET_MEMORY_VALUE:
+				return bcomp.getMemoryValue((Integer) args[0]);
+			case GET_LAST_ACCESSED_MEMORY_ADDRESS:
+				return bcomp.getLastAccessedMemoryAddress();
 		}
 		return null;
 	}

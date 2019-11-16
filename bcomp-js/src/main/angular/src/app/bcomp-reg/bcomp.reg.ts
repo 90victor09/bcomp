@@ -11,6 +11,7 @@ export class BCompReg {
   @Input() value : number = 0; //Possible overflow when > 53bit
   @Input() groupBy : number = 4;
   @Input() hex : boolean = false;
+  @Input() left : boolean = true;
 
   constructor(){ }
 }

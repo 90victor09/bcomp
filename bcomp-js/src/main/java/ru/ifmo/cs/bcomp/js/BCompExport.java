@@ -9,23 +9,25 @@ import ru.ifmo.cs.bcomp.State;
 import java.util.Arrays;
 
 public class BCompExport {
+	private final static String targetVar = "window.bcomp";
 	private final static String bcompExport = "ru.ifmo.cs.bcomp.js.BCompExport";
 	private final static String componentsPackage = "ru.ifmo.cs.bcomp.js.glue.components";
-	private static final String listenersPackage = "ru/ifmo/cs/bcomp/js/glue/listeners/";
+	private final static String listenersPackage = "ru/ifmo/cs/bcomp/js/glue/listeners/";
+	private final static String jsObj = "Lorg/teavm/jso/JSObject;";
 	public static void main(String[] args) {
 		export();
 	}
 
-	@JSBody(script="window.bcomp = { regs: {}, runningCycles: {}, controlSignals:{}, states:{} };"
+	@JSBody(script=targetVar+" = { regs: {}, runningCycles: {}, controlSignals:{}, states:{} };"
 		+ "javaMethods.get('" + bcompExport + ".exportEnums()V').invoke();"
-		+ "window.bcomp.startCLI = function(el){"
-			+ "return javaMethods.get('" + componentsPackage + ".ConsoleGlue.glue(Lorg/teavm/jso/dom/html/HTMLElement;)Lorg/teavm/jso/JSObject;').invoke(el);"
+		+ targetVar + ".startCLI = function(el){"
+			+ "return javaMethods.get('" + componentsPackage + ".ConsoleGlue.glue(Lorg/teavm/jso/dom/html/HTMLElement;)" + jsObj + "').invoke(el);"
 		+ "};"
-		+ "window.bcomp.startAngular = function(cb){"
-			+ "return javaMethods.get('" + componentsPackage + ".AngularGlue.glue(L" + listenersPackage + "GlueVoidResultListener;)Lorg/teavm/jso/JSObject;').invoke(cb);"
+		+ targetVar + ".startAngular = function(cb){"
+			+ "return javaMethods.get('" + componentsPackage + ".AngularGlue.glue(L" + listenersPackage + "GlueVoidResultListener;)" + jsObj + "').invoke(cb);"
 		+ "};"
-		+ "window.bcomp.startFrankenstein = function(cb){"  //TODO delete this
-			+ "return javaMethods.get('" + componentsPackage + ".AngularGlue.frankenstein(L" + listenersPackage + "GlueVoidResultListener;)Lorg/teavm/jso/JSObject;').invoke(cb);"
+		+ targetVar + ".startFrankenstein = function(cb){"  //TODO delete this
+			+ "return javaMethods.get('" + componentsPackage + ".AngularGlue.frankenstein(L" + listenersPackage + "GlueVoidResultListener;)" + jsObj + "').invoke(cb);"
 		+ "};")
 	private static native void export();
 
@@ -37,6 +39,6 @@ public class BCompExport {
 		exportStringArrayProperty("states", (String[]) Arrays.stream(State.values()).map(Enum::name).toArray());
 	}
 
-	@JSBody(params = {"propName","propVal"}, script = "window.bcomp[propName] = propVal")
+	@JSBody(params = {"propName","propVal"}, script = targetVar + "[propName] = propVal")
 	private static native void exportStringArrayProperty(String propName, String[] propVal);
 }

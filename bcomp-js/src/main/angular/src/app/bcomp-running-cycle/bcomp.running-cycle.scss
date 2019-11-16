@@ -1,25 +1,31 @@
+@import "../../common";
+
 $padding: 0.4rem;
 
 .bcomp-running-cycle {
-  display: inline-block;
-}
-ul {
-  margin: 0;
-  padding: $padding;
-  li {
-    list-style: none;
+  .header {
+    background-color: $title-color-bg;
+    color: $title-color;
     text-align: center;
-    color: black;
-    &.active {
-      color: red;
+    border-bottom: $border;
+  }
+  .body {
+    margin: 0;
+    background-color: $value-color-bg;
+    color: $value-color;
+    li {
+      list-style: none;
+      text-align: center;
+      color: black;
+      &.active {
+        color: red;
+      }
     }
   }
-  background-color: lightgreen;
+  .header, .body {
+    padding: $padding;
+  }
+  display: inline-block;
+  border: $border;
+  font-family: $font;
 }
-.header {
-  padding: $padding;
-  background-color: green;
-  text-align: center;
-  color: #FFF;
-}
-

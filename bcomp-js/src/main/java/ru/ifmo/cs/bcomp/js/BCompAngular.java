@@ -4,6 +4,7 @@ import ru.ifmo.cs.bcomp.*;
 import ru.ifmo.cs.bcomp.js.glue.listeners.GlueBCompSignalListener;
 import ru.ifmo.cs.bcomp.js.glue.listeners.GlueVoidResultListener;
 import ru.ifmo.cs.components.DataDestination;
+import ru.ifmo.cs.components.Memory;
 
 public class BCompAngular {
 	private BasicComp bcomp;
@@ -36,7 +37,7 @@ public class BCompAngular {
 
 	public void addSignalListener(ControlSignal signal, GlueBCompSignalListener listener){
 		cpu.addDestination(signal, value -> {
-			listener.setValue(Utils.toHex(value,64));
+			listener.setValue(Utils.toHex(value,Utils.getBinaryWidth((int)(value>>32)) + Utils.getBinaryWidth((int)(value&0xFFFFFFFF))));
 		});
 	}
 
@@ -45,6 +46,14 @@ public class BCompAngular {
 	}
 	public void setTickFinishListener(GlueVoidResultListener listener){
 		cpu.setTickFinishListener(listener::process);
+	}
+
+	public String getMemoryValue(int addr){
+		Memory mem = cpu.getMemory();
+		return Utils.toHex(mem.getValue(addr), mem.width);
+	}
+	public int getLastAccessedMemoryAddress(){
+		return (int)cpu.getMemory().getLastAccessedAddress(); //Possible overflow
 	}
 
 }

@@ -39,4 +39,6 @@ export interface BCompAngular {
   addSignalListener(signal: string, cb: (value: string) => void) : void;
   setTickStartListener(cb: () => void) : void;
   setTickFinishListener(cb: () => void) : void;
+  getMemoryValue(addr: number, cb: (value: string) => void) : void;
+  getLastAccessedMemoryAddress(cb: (value: number) => void) : void;
 }

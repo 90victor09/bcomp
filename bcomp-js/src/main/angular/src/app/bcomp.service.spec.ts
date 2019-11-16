@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { BcompService } from './bcomp-service.service';
+import { BCompService } from './bcomp.service';
 
 describe('BcompServiceService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: BcompService = TestBed.get(BcompService);
+    const service: BCompService = TestBed.get(BCompService);
     expect(service).toBeTruthy();
   });
 });
