@@ -8,18 +8,19 @@ import ru.ifmo.cs.bcomp.js.glue.GlueComponent;
 
 @SuppressWarnings("unused")
 public class ConsoleGlue {
+	private final static String consoleGlue = "ru.ifmo.cs.bcomp.js.glue.components.ConsoleGlue";
 	enum CMD {
 		INIT_CLI,
 		ENTER_LINE
 	}
 	private static GlueComponent<CMD> glue = new GlueComponent<>(ConsoleGlue::execute);
-	private static BCompCLI cli;
+	public static BCompCLI cli;  //TODO private this
 //	private static HTMLElement console;
 
 	@SuppressWarnings("unused")
 	@JSBody(params = {"console"}, script = "var c = {};"
-	+ "javaMethods.get('ru.ifmo.cs.bcomp.js.glue.components.ConsoleGlue.init(Lorg/teavm/jso/dom/html/HTMLElement;)V').invoke(console);"
-	+ "c.enterLine = function(line){ return javaMethods.get('ru.ifmo.cs.bcomp.js.glue.components.ConsoleGlue.enterLine(Ljava/lang/String;)V').invoke(line); };"
+	+ "javaMethods.get('" + consoleGlue + ".init(Lorg/teavm/jso/dom/html/HTMLElement;)V').invoke(console);"
+	+ "c.enterLine = function(line){ return javaMethods.get('" + consoleGlue + ".enterLine(Ljava/lang/String;)V').invoke(line); };"
 	+ "return c;")
 	public static native JSObject glue(HTMLElement console);
 

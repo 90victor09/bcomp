@@ -31,7 +31,7 @@
               "src/styles.scss"
             ],
             "scripts": [
-              "../../../target/bcomp-js-1/bcomp.js"
+              "../../../target/generated/js/teavm/bcomp.js"
             ]
           },
           "configurations": {

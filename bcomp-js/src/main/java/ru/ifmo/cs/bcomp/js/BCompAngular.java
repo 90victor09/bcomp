@@ -1,6 +1,9 @@
 package ru.ifmo.cs.bcomp.js;
 
 import ru.ifmo.cs.bcomp.*;
+import ru.ifmo.cs.bcomp.js.glue.listeners.GlueBCompSignalListener;
+import ru.ifmo.cs.bcomp.js.glue.listeners.GlueVoidResultListener;
+import ru.ifmo.cs.components.DataDestination;
 
 public class BCompAngular {
 	private BasicComp bcomp;
@@ -14,10 +17,10 @@ public class BCompAngular {
 			e.printStackTrace();
 		}
 	}
-
-//	public Reg getRegByName(String name){
-//		Reg.valueOf(name);
-//	}
+	public BCompAngular(BasicComp bcomp){  //TODO delete this
+		this.bcomp = bcomp;
+		this.cpu = bcomp.getCPU();
+	}
 
 	public String getRegValue(Reg reg){
 		return Utils.toHex(cpu.getRegValue(reg), cpu.getRegWidth(reg));
@@ -27,8 +30,21 @@ public class BCompAngular {
 		return (int)cpu.getRegWidth(reg);
 	}
 
-	public int getRunningCycle(){
-		return cpu.getRunningCycle().ordinal();
+	public String getRunningCycle(){
+		return cpu.getRunningCycle().name();
+	}
+
+	public void addSignalListener(ControlSignal signal, GlueBCompSignalListener listener){
+		cpu.addDestination(signal, value -> {
+			listener.setValue(Utils.toHex(value,64));
+		});
+	}
+
+	public void setTickStartListener(GlueVoidResultListener listener){
+		cpu.setTickStartListener(listener::process);
+	}
+	public void setTickFinishListener(GlueVoidResultListener listener){
+		cpu.setTickFinishListener(listener::process);
 	}
 
 }

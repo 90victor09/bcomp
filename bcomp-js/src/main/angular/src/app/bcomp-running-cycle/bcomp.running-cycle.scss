@@ -9,6 +9,10 @@ ul {
   li {
     list-style: none;
     text-align: center;
+    color: black;
+    &.active {
+      color: red;
+    }
   }
   background-color: lightgreen;
 }

@@ -1,23 +1,29 @@
+<div style="display: inline-block; width: 50%">
 <table>
   <tbody>
     <tr>
       <td>
-        <bcomp-reg name="AC" width="16"></bcomp-reg><br/>
-        <bcomp-reg name="BR" width="16"></bcomp-reg><br/>
-        <bcomp-reg name="PS" width="16"></bcomp-reg><br/>
-        <bcomp-reg name="IR" width="16"></bcomp-reg><br/>
+        <bcomp-reg [name]="reg.AC" [value]="getValue(reg.AC)"></bcomp-reg><br/>
+        <bcomp-reg [name]="reg.BR" [value]="getValue(reg.BR)"></bcomp-reg><br/>
+        <bcomp-reg [name]="reg.PS" [value]="getValue(reg.PS)"></bcomp-reg><br/>
+        <bcomp-reg [name]="reg.IR" [value]="getValue(reg.IR)"></bcomp-reg><br/>
       </td>
       <td>
-        <bcomp-reg name="DR" width="16"></bcomp-reg><br/>
-        <bcomp-reg name="CR" width="16"></bcomp-reg><br/>
-        <bcomp-reg name="IP" width="11"></bcomp-reg><br/>
-        <bcomp-reg name="SP" width="11"></bcomp-reg><br/>
+        <bcomp-reg [name]="reg.DR" [value]="getValue(reg.DR)"></bcomp-reg><br/>
+        <bcomp-reg [name]="reg.CR" [value]="getValue(reg.CR)"></bcomp-reg><br/>
+        <bcomp-reg [name]="reg.IP" [value]="getValue(reg.IP)" width="11"></bcomp-reg><br/>
+        <bcomp-reg [name]="reg.SP" [value]="getValue(reg.SP)" width="11"></bcomp-reg><br/>
       </td>
     </tr>
     <tr>
-      <td><bcomp-reg name="IR" width="16"></bcomp-reg></td>
-      <td><bcomp-reg name="AR" width="11"></bcomp-reg></td>
+      <td><bcomp-reg [name]="reg.IR" [value]="getValue(reg.IR)"></bcomp-reg></td>
+      <td><bcomp-reg [name]="reg.AR" [value]="getValue(reg.AR)" width="11"></bcomp-reg></td>
     </tr>
   </tbody>
 </table>
 <bcomp-running-cycle></bcomp-running-cycle>
+</div>
+<div style="display: inline-block; width: 50%"> <!-- TODO delete -->
+  <pre id="console"></pre>
+  <input type="text" id="console-input"/>
+</div>

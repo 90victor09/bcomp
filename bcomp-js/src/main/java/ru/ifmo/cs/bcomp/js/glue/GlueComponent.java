@@ -1,5 +1,8 @@
 package ru.ifmo.cs.bcomp.js.glue;
 
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.locks.ReentrantLock;
@@ -9,7 +12,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @param <E> enum with cmd types
  */
 public class GlueComponent<E> {
-	private Queue<GlueComponentCmd<E>> cmdQueue = new ArrayBlockingQueue<>(5);
+	private Deque<GlueComponentCmd<E>> cmdQueue = new LinkedList<>();
 	private GlueComponentExecutionListener<E> listener;
 	private final Object glueCmdExecLock = new Object();
 
@@ -28,7 +31,7 @@ public class GlueComponent<E> {
 					executionLock.lock();
 					Object cmdResult;
 					while(cmdQueue.size() > 0){
-						GlueComponentCmd<E> cmd = cmdQueue.poll();
+						GlueComponentCmd<E> cmd = cmdQueue.pollLast();
 						cmdResult = listener.execute(cmd.getType(), cmd.getArgs());
 						cmd.processResult(cmdResult);
 					}

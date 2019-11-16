@@ -1,0 +1,5 @@
+<div class="bcomp-reg">
+  <label>{{name}}</label>
+  <span *ngIf="!hex">{{value | binary:width | groupBy:groupBy}}</span>
+  <span *ngIf="hex">{{value | hexadecimal:width | groupBy:groupBy}}</span>
+</div>
