@@ -9,6 +9,7 @@ declare namespace bcomp {
   export const controlSignals : string[];
   export const states : string[];
 
+  function sleep(ms: number) : void;
   function startCLI(el: HTMLElement) : BCompCLI;
   function startAngular(cb: () => void) : BCompAngular;
   function startFrankenstein(cb: () => void) : BCompAngular; //TODO delete this

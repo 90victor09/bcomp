@@ -20,6 +20,7 @@ public class BCompExport {
 
 	@JSBody(script=targetVar+" = { regs: {}, runningCycles: {}, controlSignals:{}, states:{} };"
 		+ "javaMethods.get('" + bcompExport + ".exportEnums()V').invoke();"
+		+ targetVar + ".sleep = function(ms){ return javaMethods.get('" + bcompExport + ".sleep(I)V').invoke(ms); };"
 		+ targetVar + ".startCLI = function(el){"
 			+ "return javaMethods.get('" + componentsPackage + ".ConsoleGlue.glue(Lorg/teavm/jso/dom/html/HTMLElement;)" + jsObj + "').invoke(el);"
 		+ "};"
@@ -31,6 +32,13 @@ public class BCompExport {
 		+ "};")
 	private static native void export();
 
+	public static void sleep(int ms){
+		try{
+			Thread.sleep(ms);
+		}catch(InterruptedException e){
+			e.printStackTrace();
+		}
+	}
 	@SuppressWarnings("unused")
 	public static void exportEnums(){
 		exportStringArrayProperty("regs", (String[]) Arrays.stream(Reg.values()).map(Enum::name).toArray());

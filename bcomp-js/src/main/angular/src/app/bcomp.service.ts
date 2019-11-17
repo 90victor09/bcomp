@@ -48,6 +48,7 @@ export class BCompService {
     });
     bcompAngular.setTickFinishListener(() => {
       this.bcompAngular.getRegValue(reg.IR, (val) => this.regsValues[reg.IR] = Number("0x" + val));
+      bcomp.sleep(20);
     });
   }
 
