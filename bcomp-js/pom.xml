@@ -105,11 +105,11 @@
 						</goals>
 						<phase>prepare-package</phase>
 						<configuration>
-							<executable>npm</executable>
+							<executable>ng</executable>
 							<workingDirectory>./src/main/angular</workingDirectory>
 							<arguments>
-								<argument>run-script</argument>
 								<argument>build</argument>
+								<argument>--prod</argument>
 							</arguments>
 						</configuration>
 					</execution>
@@ -175,12 +175,12 @@
 		</dependency>-->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>bcomp</artifactId>
+			<artifactId>bcomp-ng</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>bcomp-ui</artifactId>
+			<artifactId>bcomp-ng-ui</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		
