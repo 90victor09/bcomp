@@ -1,0 +1,63 @@
+<div>
+  <label>Вариант:</label>
+  <input type="text"/>
+</div>
+<div>
+  <label>Текущий вариант:</label> {{taskVariantNumber}}
+</div>
+<table>
+  <thead>
+  <tr>
+    <th>Адрес</th>
+    <th>Команда/данные</th>
+    <th>IP</th>
+    <th>CR</th>
+    <th>AR</th>
+    <th>DR</th>
+    <th>SP</th>
+    <th>BR</th>
+    <th>AC</th>
+    <th>NZVC</th>
+    <th *ngIf="learning"></th>
+    <th *ngIf="learning"></th>
+  </tr>
+  </thead>
+  <tbody #linesContainer>
+  <tr *ngFor="let cmd of taskVariant.cmds; let i = index">
+    <td>{{cmd[0]}}</td>
+    <td>{{cmd[1]}}</td>
+    <td>
+      <input type="text" maxlength="3" size="3" [ngClass]="genRegClass(i, iIP)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][iIP] || ''" #IP/> <!-- *ngIf="isExecutable(i) && !answers[i]" -->
+    </td>
+    <td>
+      <input type="text" maxlength="4" size="4" [ngClass]="genRegClass(i, iCR)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][iCR] || ''" #CR/>
+    </td>
+    <td>
+      <input type="text" maxlength="3" size="3" [ngClass]="genRegClass(i, iAR)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][iAR] || ''" #AR/>
+    </td>
+    <td>
+      <input type="text" maxlength="4" size="4" [ngClass]="genRegClass(i, iDR)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][iDR] || ''" #DR/>
+    </td>
+    <td>
+      <input type="text" maxlength="3" size="3" [ngClass]="genRegClass(i, iSP)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][iSP] || ''" #SP/>
+    </td>
+    <td>
+      <input type="text" maxlength="4" size="4" [ngClass]="genRegClass(i, iBR)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][iBR] || ''" #BR/>
+    </td>
+    <td>
+      <input type="text" maxlength="4" size="4" [ngClass]="genRegClass(i, iAC)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][iAC] || ''" #AC/>
+    </td>
+    <td>
+      <input type="text" maxlength="4" size="4" [ngClass]="genRegClass(i, iNZVC)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][iNZVC] || ''" #NZVC/>
+    </td>
+    <td *ngIf="learning"><button (click)="checkLine(i, IP, CR, AR, DR, SP, BR, AC, NZVC)" *ngIf="isExecutable(i)">Проверить</button></td>
+    <td *ngIf="learning"><button (click)="showAnswer(i)" *ngIf="isExecutable(i)">Показать</button></td>
+  </tr>
+  </tbody>
+</table>
+<div>
+  <button (click)="checkAll(linesContainer.children)">Проверить всё</button>
+</div>
+<div>
+  <label>Выполнено правильно:</label> {{countDoneRight()}} / {{countAll()}} ({{countDoneRight()/countAll() | percent}})
+</div>

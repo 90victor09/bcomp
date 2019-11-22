@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
-  "newProjectRoot": "angular",
+  "newProjectRoot": "projects",
   "projects": {
     "bcomp-app": {
       "projectType": "application",
@@ -122,6 +122,130 @@
           "configurations": {
             "production": {
               "devServerTarget": "bcomp-app:serve:production"
+            }
+          }
+        }
+      }
+    },
+    "program-tracing": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "projects/program-tracing",
+      "sourceRoot": "projects/program-tracing/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/program-tracing",
+            "index": "projects/program-tracing/src/index.html",
+            "main": "projects/program-tracing/src/main.ts",
+            "polyfills": "projects/program-tracing/src/polyfills.ts",
+            "tsConfig": "projects/program-tracing/tsconfig.app.json",
+            "aot": false,
+            "assets": [
+              "projects/program-tracing/src/favicon.ico",
+              "projects/program-tracing/src/assets"
+            ],
+            "styles": [
+              "projects/program-tracing/src/styles.scss"
+            ],
+            "scripts": [
+              "../../../target/generated/js/teavm/bcomp.js"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/program-tracing/src/environments/environment.ts",
+                  "with": "projects/program-tracing/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "program-tracing:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "program-tracing:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "program-tracing:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/program-tracing/src/test.ts",
+            "polyfills": "projects/program-tracing/src/polyfills.ts",
+            "tsConfig": "projects/program-tracing/tsconfig.spec.json",
+            "karmaConfig": "projects/program-tracing/karma.conf.js",
+            "assets": [
+              "projects/program-tracing/src/favicon.ico",
+              "projects/program-tracing/src/assets"
+            ],
+            "styles": [
+              "projects/program-tracing/src/styles.scss"
+            ],
+            "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/program-tracing/tsconfig.app.json",
+              "projects/program-tracing/tsconfig.spec.json",
+              "projects/program-tracing/e2e/tsconfig.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        },
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "projects/program-tracing/e2e/protractor.conf.js",
+            "devServerTarget": "program-tracing:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "program-tracing:serve:production"
             }
           }
         }
