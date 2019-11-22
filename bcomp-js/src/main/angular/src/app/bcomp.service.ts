@@ -1,5 +1,5 @@
-import {Injectable, NgZone} from '@angular/core';
-import bcomp, { reg, cycle, cs } from "../bcomp"
+import { Injectable, NgZone } from '@angular/core';
+import bcomp, { reg, cs } from "../bcomp"
 import { BCompAngular } from "../bcomp"
 
 declare var window;
@@ -48,43 +48,62 @@ export class BCompService {
     });
     bcompAngular.setTickFinishListener(() => {
       this.bcompAngular.getRegValue(reg.IR, (val) => this.regsValues[reg.IR] = Number("0x" + val));
-      bcomp.sleep(20);
+      bcomp.sleep(0); // Context switching injection
     });
   }
 
-  public updateReg(name: string) : void {
-    this.bcompAngular.getRegValue(name, (val) => {
-      if(Number("0x"+val) != 0)
-        console.log(name," ",val,"(upd)");
+  public sync(cb: () => void) : void {
+    this.bcompAngular.sync(cb);
+  }
+  public executeContinue(cb?: () => void) : void {
+    if(!cb)
+      cb = () => {};
+    this.bcompAngular.executeContinue(cb);
+  }
 
-      // Weird change detection mechanism
-      this.ngZone.run(() => this.regsValues[name] = Number("0x" + val)); //XXX: Possible overflow while > 53 bits
+
+  public getProgramState(state: string) : boolean {
+    return ((this.regsValues[reg.PS] >> bcomp.states.indexOf(state)) & 1) > 0;
+  }
+
+  public setMemoryValue(addr: number, value: number) : void {
+    this.bcompAngular.setMemoryValue(addr, value);
+  }
+  public setRegValue(reg: string, value: number) : void {
+    this.bcompAngular.setRegValue(reg, value);
+  }
+  public getRegValue(reg: string, cb: (val: number) => void){
+    this.bcompAngular.getRegValue(reg, (value: number) => {
+      cb(Number("0x" + value));
     });
   }
-  public updateRegs(): void {
-    for(let reg of bcomp.regs)
-        this.updateReg(reg);
-  }
+
 
   private addRegUpdateSignals(reg: string, ...signals: string[]) : void {
     for(let sig of signals)
       this.bcompAngular.addSignalListener(sig, (val) => this.updateReg(reg));
   }
 
-  private addSignalsListener(sigs: string[], cb: (val) => void){
+  private addSignalsListener(sigs: string[], cb: (val) => void) : void {
     for(let sig of sigs)
       this.bcompAngular.addSignalListener(sig, cb);
   }
 
-  private static getPage(addr: number) : number {
-    return addr & (~0xF);
+
+
+  public updateRegs() : void {
+    for(let reg of bcomp.regs)
+      this.updateReg(reg);
   }
-  private updateMemory() : void {
-    for(let i = 0; i < this.memoryView.length; i++){
-      this.bcompAngular.getMemoryValue(this.memoryViewOffset + i, (val) => {
-        this.ngZone.run(() => this.memoryView[i] = Number("0x" + val))
-      });
-    }
+  public updateReg(name: string) : void {
+    this.getRegValue(name, (val) => {
+      if(val != 0)
+        console.log(name," ", val,"(upd)");
+
+      // Weird change detection mechanism
+      this.regsValues[name] = val;
+      this.ngZone.run(() => this.regsValues[name] = val);
+    });
   }
 
   public updateRunningCycle() : void {
@@ -93,8 +112,17 @@ export class BCompService {
     });
   }
 
-  public getProgramState(state: string) : boolean {
-    return ((this.regsValues[reg.PS] >> bcomp.states.indexOf(state)) & 1) > 0;
+  private updateMemory() : void {
+    for(let i = 0; i < this.memoryView.length; i++){
+      this.bcompAngular.getMemoryValue(this.memoryViewOffset + i, (val) => {
+        this.ngZone.run(() => this.memoryView[i] = Number("0x" + val))
+      });
+    }
   }
 
+
+
+  private static getPage(addr: number) : number {
+    return addr & (~0xF);
+  }
 }

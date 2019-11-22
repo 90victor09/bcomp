@@ -3,6 +3,10 @@
 declare var loadBComp: () => void;
 loadBComp();
 
+type RegValue = number;
+type MemoryAddress = number;
+type MemoryValue = number;
+
 declare namespace bcomp {
   export const regs : string[];
   export const runningCycles : string[];
@@ -34,12 +38,21 @@ export interface BCompCLI {
 }
 
 export interface BCompAngular {
-  getRegValue(reg: string, cb: (value: string) => void) : void;
+  sync(cb: () => void) : void;
+
+  setRegValue(reg: string, value: RegValue) : void;
+  getRegValue(reg: string, cb: (value: RegValue) => void) : void;
   getRegWidth(reg: string, cb: (width: number) => void) : void;
+
   getRunningCycle(cb: (cycle: string) => void) : void;
-  addSignalListener(signal: string, cb: (value: string) => void) : void;
+
+  addSignalListener(signal: string, cb: (value: number) => void) : void;
   setTickStartListener(cb: () => void) : void;
   setTickFinishListener(cb: () => void) : void;
-  getMemoryValue(addr: number, cb: (value: string) => void) : void;
-  getLastAccessedMemoryAddress(cb: (value: number) => void) : void;
+
+  executeContinue(cb: () => void) : void;
+
+  setMemoryValue(addr: MemoryAddress, value: MemoryValue) : void;
+  getMemoryValue(addr: MemoryAddress, cb: (value: MemoryValue) => void) : void;
+  getLastAccessedMemoryAddress(cb: (value: MemoryAddress) => void) : void;
 }

@@ -1,5 +1,5 @@
-import {Component, Input} from '@angular/core';
-import {BCompService} from "../bcomp.service";
+import { Component } from '@angular/core';
+import { BCompService } from "../bcomp.service";
 
 @Component({
   selector: 'bcomp-memory-view',
@@ -7,5 +7,5 @@ import {BCompService} from "../bcomp.service";
   styleUrls: ['./bcomp.memory-view.scss']
 })
 export class BCompMemoryView {
-  constructor(private bcompService: BCompService){ }
+  constructor(public bcompService: BCompService){ }
 }

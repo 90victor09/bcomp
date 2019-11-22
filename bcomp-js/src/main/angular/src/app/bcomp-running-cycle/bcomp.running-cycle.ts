@@ -1,6 +1,6 @@
-import {Component} from '@angular/core';
-import {BCompService} from "../bcomp.service";
-import {cycle, state} from "../../bcomp";
+import { Component } from '@angular/core';
+import { BCompService } from "../bcomp.service";
+import { cycle, state } from "../../bcomp";
 
 @Component({
   selector: 'bcomp-running-cycle',
@@ -8,7 +8,7 @@ import {cycle, state} from "../../bcomp";
   styleUrls: ['./bcomp.running-cycle.scss']
 })
 export class BCompRunningCycle {
-  private cycle = cycle;
+  public cycle = cycle;
 
   constructor(private bcompService: BCompService){}
 

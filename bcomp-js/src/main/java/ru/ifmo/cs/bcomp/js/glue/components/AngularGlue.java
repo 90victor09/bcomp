@@ -6,10 +6,11 @@ import ru.ifmo.cs.bcomp.ControlSignal;
 import ru.ifmo.cs.bcomp.Reg;
 import ru.ifmo.cs.bcomp.js.BCompAngular;
 import ru.ifmo.cs.bcomp.js.glue.GlueComponent;
-import ru.ifmo.cs.bcomp.js.glue.listeners.GlueBCompSignalListener;
-import ru.ifmo.cs.bcomp.js.glue.listeners.GlueIntegerResultListener;
-import ru.ifmo.cs.bcomp.js.glue.listeners.GlueStringResultListener;
-import ru.ifmo.cs.bcomp.js.glue.listeners.GlueVoidResultListener;
+import ru.ifmo.cs.bcomp.js.glue.listeners.*;
+
+/*
+ * XXX: Overflow long -> double
+ */
 
 @SuppressWarnings("unused")
 public class AngularGlue {
@@ -17,44 +18,56 @@ public class AngularGlue {
 	private static final String listenersPackage = "ru/ifmo/cs/bcomp/js/glue/listeners/";
 	enum CMD {
 		INIT,
+		SYNC,
+
+		SET_REG_VALUE,
 		GET_REG_VALUE,
 		GET_REG_WIDTH,
+
 		GET_RUNNING_CYCLE,
+
 		ADD_SIGNAL_LISTENER,
 		SET_TICK_START_LISTENER,
 		SET_TICK_FINISH_LISTENER,
+
+		EXECUTE_CONTINUE,
+
+		SET_MEMORY_VALUE,
 		GET_MEMORY_VALUE,
 		GET_LAST_ACCESSED_MEMORY_ADDRESS
 	}
 	private static GlueComponent<CMD> glue = new GlueComponent<>(AngularGlue::execute);
 	private static BCompAngular bcomp;
 
-	@SuppressWarnings("unused")
-	@JSBody(params = {"listener"}, script = "var a = {};"
-			+ "javaMethods.get('" + angularGlue + ".init(ZL" + listenersPackage + "GlueVoidResultListener;)V').invoke(false, listener);"
-			+ "a.getRegValue = function(reg, cb){ return javaMethods.get('" + angularGlue + ".getRegValue(Ljava/lang/String;L" + listenersPackage + "GlueStringResultListener;)V').invoke(reg, cb); };"
+	private static final String script =
+			"a.sync = function(listener){ return javaMethods.get('" + angularGlue + ".sync(L" + listenersPackage + "GlueVoidResultListener;)V').invoke(listener); };"
+			+ "a.setRegValue = function(reg, value){ return javaMethods.get('" + angularGlue + ".setRegValue(Ljava/lang/String;D)V').invoke(reg, value); };"
+			+ "a.getRegValue = function(reg, cb){ return javaMethods.get('" + angularGlue + ".getRegValue(Ljava/lang/String;L" + listenersPackage + "GlueDoubleResultListener;)V').invoke(reg, cb); };"
 			+ "a.getRegWidth = function(reg, cb){ return javaMethods.get('" + angularGlue + ".getRegWidth(Ljava/lang/String;L" + listenersPackage + "GlueIntegerResultListener;)V').invoke(reg, cb); };"
+
 			+ "a.getRunningCycle = function(cb){ return javaMethods.get('" + angularGlue + ".getRunningCycle(L" + listenersPackage + "GlueStringResultListener;)V').invoke(cb); };"
+
 			+ "a.addSignalListener = function(sig, cb){ return javaMethods.get('" + angularGlue + ".addSignalListener(Ljava/lang/String;L" + listenersPackage + "GlueBCompSignalListener;)V').invoke(sig, cb); };"
 			+ "a.setTickStartListener = function(cb){ return javaMethods.get('" + angularGlue + ".setTickStartListener(L" + listenersPackage + "GlueVoidResultListener;)V').invoke(cb); };"
 			+ "a.setTickFinishListener = function(cb){ return javaMethods.get('" + angularGlue + ".setTickFinishListener(L" + listenersPackage + "GlueVoidResultListener;)V').invoke(cb); };"
-			+ "a.getMemoryValue = function(addr,cb){ return javaMethods.get('" + angularGlue + ".getMemoryValue(IL" + listenersPackage + "GlueStringResultListener;)V').invoke(addr,cb); };"
-			+ "a.getLastAccessedMemoryAddress = function(cb){ return javaMethods.get('" + angularGlue + ".getLastAccessedMemoryAddress(L" + listenersPackage + "GlueIntegerResultListener;)V').invoke(cb); };"
-			+ "return a;")
+
+			+ "a.executeContinue = function(cb){ return javaMethods.get('" + angularGlue + ".executeContinue(L" + listenersPackage + "GlueVoidResultListener;)V').invoke(cb); };"
+
+			+ "a.setMemoryValue = function(addr,value){ return javaMethods.get('" + angularGlue + ".setMemoryValue(DD)V').invoke(addr,value); };"
+			+ "a.getMemoryValue = function(addr,cb){ return javaMethods.get('" + angularGlue + ".getMemoryValue(DL" + listenersPackage + "GlueDoubleResultListener;)V').invoke(addr,cb); };"
+			+ "a.getLastAccessedMemoryAddress = function(cb){ return javaMethods.get('" + angularGlue + ".getLastAccessedMemoryAddress(L" + listenersPackage + "GlueDoubleResultListener;)V').invoke(cb); };"
+			+ "return a;";
+
+	@SuppressWarnings("unused")
+	@JSBody(params = {"listener"}, script = "var a = {};"
+			+ "javaMethods.get('" + angularGlue + ".init(ZL" + listenersPackage + "GlueVoidResultListener;)V').invoke(false, listener);"
+			+ script)
 	public static native JSObject glue(GlueVoidResultListener listener);
 
 	@SuppressWarnings("unused")
 	@JSBody(params = {"listener"}, script = "var a = {};"  //TODO delete this
 			+ "javaMethods.get('" + angularGlue + ".init(ZL" + listenersPackage + "GlueVoidResultListener;)V').invoke(true, listener);"
-			+ "a.getRegValue = function(reg, cb){ return javaMethods.get('" + angularGlue + ".getRegValue(Ljava/lang/String;L" + listenersPackage + "GlueStringResultListener;)V').invoke(reg, cb); };"
-			+ "a.getRegWidth = function(reg, cb){ return javaMethods.get('" + angularGlue + ".getRegWidth(Ljava/lang/String;L" + listenersPackage + "GlueIntegerResultListener;)V').invoke(reg, cb); };"
-			+ "a.getRunningCycle = function(cb){ return javaMethods.get('" + angularGlue + ".getRunningCycle(L" + listenersPackage + "GlueStringResultListener;)V').invoke(cb); };"
-			+ "a.addSignalListener = function(sig, cb){ return javaMethods.get('" + angularGlue + ".addSignalListener(Ljava/lang/String;L" + listenersPackage + "GlueBCompSignalListener;)V').invoke(sig, cb); };"
-			+ "a.setTickStartListener = function(cb){ return javaMethods.get('" + angularGlue + ".setTickStartListener(L" + listenersPackage + "GlueVoidResultListener;)V').invoke(cb); };"
-			+ "a.setTickFinishListener = function(cb){ return javaMethods.get('" + angularGlue + ".setTickFinishListener(L" + listenersPackage + "GlueVoidResultListener;)V').invoke(cb); };"
-			+ "a.getMemoryValue = function(addr,cb){ return javaMethods.get('" + angularGlue + ".getMemoryValue(IL" + listenersPackage + "GlueStringResultListener;)V').invoke(addr,cb); };"
-			+ "a.getLastAccessedMemoryAddress = function(cb){ return javaMethods.get('" + angularGlue + ".getLastAccessedMemoryAddress(L" + listenersPackage + "GlueIntegerResultListener;)V').invoke(cb); };"
-			+ "return a;")
+			+ script)
 	public static native JSObject frankenstein(GlueVoidResultListener listener);
 
 //	@SuppressWarnings("unused")
@@ -68,15 +81,27 @@ public class AngularGlue {
 			glue.sendCmd(CMD.INIT, (result -> listener.process()), true);
 		}
 	}
-	public static void getRegValue(String reg, GlueStringResultListener listener){
-		glue.sendCmd(CMD.GET_REG_VALUE, result -> listener.process((String) result), reg);
+	public static void sync(GlueVoidResultListener listener){
+		glue.sendCmd(CMD.SYNC, result -> listener.process());
+	}
+
+
+	public static void setRegValue(String reg, double value){
+		glue.sendCmd(CMD.SET_REG_VALUE, null, reg, value);
+	}
+	public static void getRegValue(String reg, GlueDoubleResultListener listener){
+		glue.sendCmd(CMD.GET_REG_VALUE, result -> listener.process((Double) result), reg);
 	}
 	public static void getRegWidth(String reg, GlueIntegerResultListener listener){
 		glue.sendCmd(CMD.GET_REG_WIDTH, result -> listener.process((Integer) result), reg);
 	}
+
+
 	public static void getRunningCycle(GlueStringResultListener listener){
 		glue.sendCmd(CMD.GET_RUNNING_CYCLE, result -> listener.process((String) result));
 	}
+
+
 	public static void addSignalListener(String signal, GlueBCompSignalListener listener){
 		glue.sendCmd(CMD.ADD_SIGNAL_LISTENER, null, signal, listener);
 	}
@@ -86,11 +111,21 @@ public class AngularGlue {
 	public static void setTickFinishListener(GlueVoidResultListener listener){
 		glue.sendCmd(CMD.SET_TICK_FINISH_LISTENER, null, listener);
 	}
-	public static void getMemoryValue(int addr, GlueStringResultListener listener){
-		glue.sendCmd(CMD.GET_MEMORY_VALUE, result -> listener.process((String) result), addr);
+
+
+	public static void executeContinue(GlueVoidResultListener listener){
+		glue.sendCmd(CMD.EXECUTE_CONTINUE, result -> listener.process());
 	}
-	public static void getLastAccessedMemoryAddress(GlueIntegerResultListener listener){
-		glue.sendCmd(CMD.GET_LAST_ACCESSED_MEMORY_ADDRESS, result -> listener.process((Integer)result));
+
+
+	public static void setMemoryValue(double addr, double value){
+		glue.sendCmd(CMD.SET_MEMORY_VALUE, null, addr, value);
+	}
+	public static void getMemoryValue(double addr, GlueDoubleResultListener listener){
+		glue.sendCmd(CMD.GET_MEMORY_VALUE, result -> listener.process((Double) result), addr);
+	}
+	public static void getLastAccessedMemoryAddress(GlueDoubleResultListener listener){
+		glue.sendCmd(CMD.GET_LAST_ACCESSED_MEMORY_ADDRESS, result -> listener.process((Double) result));
 	}
 
 	private static Object execute(CMD type, Object... args){
@@ -101,8 +136,13 @@ public class AngularGlue {
 				else
 					bcomp = new BCompAngular(ConsoleGlue.cli.bcomp);  //TODO delete this
 				break;
+			case SYNC:
+				break;
+			case SET_REG_VALUE:
+				bcomp.setRegValue(Reg.valueOf((String) args[0]), (long)(double) args[1]);
+				break;
 			case GET_REG_VALUE:
-				return bcomp.getRegValue(Reg.valueOf((String) args[0]));
+				return (double) bcomp.getRegValue(Reg.valueOf((String) args[0]));
 			case GET_REG_WIDTH:
 				return bcomp.getRegWidth(Reg.valueOf((String) args[0]));
 			case GET_RUNNING_CYCLE:
@@ -116,10 +156,16 @@ public class AngularGlue {
 			case SET_TICK_FINISH_LISTENER:
 				bcomp.setTickFinishListener((GlueVoidResultListener) args[0]);
 				break;
+			case EXECUTE_CONTINUE:
+				bcomp.executeContinue();
+				break;
+			case SET_MEMORY_VALUE:
+				bcomp.setMemoryValue((long)(double)args[0], (long)(double) args[1]);
+				break;
 			case GET_MEMORY_VALUE:
-				return bcomp.getMemoryValue((Integer) args[0]);
+				return (double) bcomp.getMemoryValue((long)(double) args[0]);
 			case GET_LAST_ACCESSED_MEMORY_ADDRESS:
-				return bcomp.getLastAccessedMemoryAddress();
+				return (double) bcomp.getLastAccessedMemoryAddress();
 		}
 		return null;
 	}

@@ -23,12 +23,15 @@ public class BCompAngular {
 		this.cpu = bcomp.getCPU();
 	}
 
-	public String getRegValue(Reg reg){
-		return Utils.toHex(cpu.getRegValue(reg), cpu.getRegWidth(reg));
+	public void setRegValue(Reg reg, long value){
+		cpu.getRegister(reg).setValue(value);
+	}
+	public long getRegValue(Reg reg){
+		return cpu.getRegValue(reg);
 	}
 
 	public int getRegWidth(Reg reg){
-		return (int)cpu.getRegWidth(reg);
+		return (int) cpu.getRegWidth(reg);
 	}
 
 	public String getRunningCycle(){
@@ -37,7 +40,7 @@ public class BCompAngular {
 
 	public void addSignalListener(ControlSignal signal, GlueBCompSignalListener listener){
 		cpu.addDestination(signal, value -> {
-			listener.setValue(Utils.toHex(value,Utils.getBinaryWidth((int)(value>>32)) + Utils.getBinaryWidth((int)(value&0xFFFFFFFF))));
+			listener.setValue((double) value);
 		});
 	}
 
@@ -48,12 +51,19 @@ public class BCompAngular {
 		cpu.setTickFinishListener(listener::process);
 	}
 
-	public String getMemoryValue(int addr){
-		Memory mem = cpu.getMemory();
-		return Utils.toHex(mem.getValue(addr), mem.width);
+	public void executeContinue(){
+		cpu.executeContinue();
 	}
-	public int getLastAccessedMemoryAddress(){
-		return (int)cpu.getMemory().getLastAccessedAddress(); //Possible overflow
+
+	public void setMemoryValue(long addr, long value){
+		cpu.getMemory().setValue(addr, value);
+	}
+	public long getMemoryValue(long addr){
+		Memory mem = cpu.getMemory();
+		return mem.getValue(addr);
+	}
+	public long getLastAccessedMemoryAddress(){
+		return cpu.getMemory().getLastAccessedAddress();
 	}
 
 }
