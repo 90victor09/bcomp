@@ -9,13 +9,10 @@ export function frankenstein(bcompService: BCompService) {
 
   let bcompConsole = bcomp.startCLI(consoleEl);
   let bcompFrankenstein;
-  setTimeout(function(){
-    bcompFrankenstein = bcomp.startFrankenstein(() => {
-      bcompService.updateRegs();
-      console.log("inited");
-    });
+  bcompConsole.sync(() => {
+    bcompFrankenstein = bcomp.startFrankenstein(() => bcompService.updateRegs());
     bcompService.setBComp(bcompFrankenstein);
-  },1000);
+  });
 
   consoleInputEl.onkeydown = function (e) {
     if (e.keyCode !== 13)

@@ -1,22 +1,20 @@
 import { Injectable, NgZone } from '@angular/core';
 import bcomp, { reg, cs } from "../bcomp"
 import { BCompAngular } from "../bcomp"
+import { values } from "../common";
 
-declare var window;
 @Injectable({
   providedIn: 'root'
 })
 export class BCompService {
   private bcompAngular : BCompAngular;
   public regsValues : object = {};
-  public runningCycle : string;
+  public runningCycle : bcomp.runningCycles;
   public memoryView : number[] = [];
   public memoryViewOffset : number = 0;
 
   constructor(private ngZone: NgZone){
-    window.updateRegs = () => this.updateRegs();
-    window.updateMemory = () => this.updateMemory();
-    for(let reg of bcomp.regs)
+    for(let reg of values(bcomp.regs))
       this.regsValues[reg] = 0;
     for(let i = 0; i < 16; i++)
       this.memoryView.push(0);
@@ -62,29 +60,29 @@ export class BCompService {
   }
 
 
-  public getProgramState(state: string) : boolean {
-    return ((this.regsValues[reg.PS] >> bcomp.states.indexOf(state)) & 1) > 0;
+  public getProgramState(state: bcomp.states) : boolean {
+    return ((this.regsValues[reg.PS] >> state) & 1) > 0;
   }
 
   public setMemoryValue(addr: number, value: number) : void {
     this.bcompAngular.setMemoryValue(addr, value);
   }
-  public setRegValue(reg: string, value: number) : void {
+  public setRegValue(reg: bcomp.regs, value: number) : void {
     this.bcompAngular.setRegValue(reg, value);
   }
-  public getRegValue(reg: string, cb: (val: number) => void){
+  public getRegValue(reg: bcomp.regs, cb: (val: number) => void){
     this.bcompAngular.getRegValue(reg, (value: number) => {
       cb(Number("0x" + value));
     });
   }
 
 
-  private addRegUpdateSignals(reg: string, ...signals: string[]) : void {
+  private addRegUpdateSignals(reg: bcomp.regs, ...signals: bcomp.controlSignals[]) : void {
     for(let sig of signals)
       this.bcompAngular.addSignalListener(sig, (val) => this.updateReg(reg));
   }
 
-  private addSignalsListener(sigs: string[], cb: (val) => void) : void {
+  private addSignalsListener(sigs: bcomp.controlSignals[], cb: (val) => void) : void {
     for(let sig of sigs)
       this.bcompAngular.addSignalListener(sig, cb);
   }
@@ -92,10 +90,10 @@ export class BCompService {
 
 
   public updateRegs() : void {
-    for(let reg of bcomp.regs)
-      this.updateReg(reg);
+    for(let reg of values(bcomp.regs))
+      this.updateReg(Number(reg));
   }
-  public updateReg(name: string) : void {
+  public updateReg(name: bcomp.regs) : void {
     this.getRegValue(name, (val) => {
       if(val != 0)
         console.log(name," ", val,"(upd)");

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { BCompService } from "../bcomp.service";
-import { cycle, state } from "../../bcomp";
+import bcomp, { cycle, state } from "../../bcomp";
+import { values } from "../../common";
 
 @Component({
   selector: 'bcomp-running-cycle',
@@ -8,16 +9,16 @@ import { cycle, state } from "../../bcomp";
   styleUrls: ['./bcomp.running-cycle.scss']
 })
 export class BCompRunningCycle {
-  public cycle = cycle;
+  cycle = cycle;
 
   constructor(private bcompService: BCompService){}
 
-  isActive(cycle: string | string[]) : boolean {
-    if(typeof cycle == "string")
+  isActive(cycle: bcomp.runningCycles | bcomp.runningCycles[]) : boolean {
+    if(!Array.isArray(cycle))
       return this.bcompService.runningCycle == cycle;
 
-    for(let c of cycle)
-      if(this.isActive(c))
+    for(let c of values(bcomp.runningCycles))
+      if(this.isActive(Number(c)))
         return true;
 
     return false;

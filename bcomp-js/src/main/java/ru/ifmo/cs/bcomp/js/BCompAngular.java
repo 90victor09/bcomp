@@ -34,8 +34,8 @@ public class BCompAngular {
 		return (int) cpu.getRegWidth(reg);
 	}
 
-	public String getRunningCycle(){
-		return cpu.getRunningCycle().name();
+	public int getRunningCycle(){
+		return cpu.getRunningCycle().ordinal();
 	}
 
 	public void addSignalListener(ControlSignal signal, GlueBCompSignalListener listener){

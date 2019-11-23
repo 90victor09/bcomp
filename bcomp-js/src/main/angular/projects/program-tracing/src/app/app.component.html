@@ -27,28 +27,28 @@
     <td>{{cmd[0]}}</td>
     <td>{{cmd[1]}}</td>
     <td>
-      <input type="text" maxlength="3" size="3" [ngClass]="genRegClass(i, iIP)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][iIP] || ''" #IP/> <!-- *ngIf="isExecutable(i) && !answers[i]" -->
+      <input type="text" class="IP" maxlength="3" size="3" [ngClass]="genRegClass(i, reg.IP)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][reg.IP] || ''" #IP/> <!-- *ngIf="isExecutable(i) && !answers[i]" -->
     </td>
     <td>
-      <input type="text" maxlength="4" size="4" [ngClass]="genRegClass(i, iCR)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][iCR] || ''" #CR/>
+      <input type="text" class="CR" maxlength="4" size="4" [ngClass]="genRegClass(i, reg.CR)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][reg.CR] || ''" #CR/>
     </td>
     <td>
-      <input type="text" maxlength="3" size="3" [ngClass]="genRegClass(i, iAR)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][iAR] || ''" #AR/>
+      <input type="text" class="AR" maxlength="3" size="3" [ngClass]="genRegClass(i, reg.AR)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][reg.AR] || ''" #AR/>
     </td>
     <td>
-      <input type="text" maxlength="4" size="4" [ngClass]="genRegClass(i, iDR)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][iDR] || ''" #DR/>
+      <input type="text" class="DR" maxlength="4" size="4" [ngClass]="genRegClass(i, reg.DR)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][reg.DR] || ''" #DR/>
     </td>
     <td>
-      <input type="text" maxlength="3" size="3" [ngClass]="genRegClass(i, iSP)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][iSP] || ''" #SP/>
+      <input type="text" class="SP" maxlength="3" size="3" [ngClass]="genRegClass(i, reg.SP)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][reg.SP] || ''" #SP/>
     </td>
     <td>
-      <input type="text" maxlength="4" size="4" [ngClass]="genRegClass(i, iBR)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][iBR] || ''" #BR/>
+      <input type="text" class="BR" maxlength="4" size="4" [ngClass]="genRegClass(i, reg.BR)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][reg.BR] || ''" #BR/>
     </td>
     <td>
-      <input type="text" maxlength="4" size="4" [ngClass]="genRegClass(i, iAC)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][iAC] || ''" #AC/>
+      <input type="text" class="AC" maxlength="4" size="4" [ngClass]="genRegClass(i, reg.AC)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][reg.AC] || ''" #AC/>
     </td>
     <td>
-      <input type="text" maxlength="4" size="4" [ngClass]="genRegClass(i, iNZVC)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][iNZVC] || ''" #NZVC/>
+      <input type="text" class="NZVC" maxlength="4" size="4" [ngClass]="genRegClass(i, iNZVC)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][iNZVC] || ''" #NZVC/>
     </td>
     <td *ngIf="learning"><button (click)="checkLine(i, IP, CR, AR, DR, SP, BR, AC, NZVC)" *ngIf="isExecutable(i)">Проверить</button></td>
     <td *ngIf="learning"><button (click)="showAnswer(i)" *ngIf="isExecutable(i)">Показать</button></td>
@@ -59,5 +59,5 @@
   <button (click)="checkAll(linesContainer.children)">Проверить всё</button>
 </div>
 <div>
-  <label>Выполнено правильно:</label> {{countDoneRight()}} / {{countAll()}} ({{countDoneRight()/countAll() | percent}})
+  <label>Выполнено правильно:</label> {{countDoneRight()}} / {{countAll()}} ({{countDoneRight()/countAll() | percent:".2"}})
 </div>

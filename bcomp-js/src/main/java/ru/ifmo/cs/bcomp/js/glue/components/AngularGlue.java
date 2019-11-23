@@ -41,13 +41,13 @@ public class AngularGlue {
 
 	private static final String script =
 			"a.sync = function(listener){ return javaMethods.get('" + angularGlue + ".sync(L" + listenersPackage + "GlueVoidResultListener;)V').invoke(listener); };"
-			+ "a.setRegValue = function(reg, value){ return javaMethods.get('" + angularGlue + ".setRegValue(Ljava/lang/String;D)V').invoke(reg, value); };"
-			+ "a.getRegValue = function(reg, cb){ return javaMethods.get('" + angularGlue + ".getRegValue(Ljava/lang/String;L" + listenersPackage + "GlueDoubleResultListener;)V').invoke(reg, cb); };"
-			+ "a.getRegWidth = function(reg, cb){ return javaMethods.get('" + angularGlue + ".getRegWidth(Ljava/lang/String;L" + listenersPackage + "GlueIntegerResultListener;)V').invoke(reg, cb); };"
+			+ "a.setRegValue = function(reg, value){ return javaMethods.get('" + angularGlue + ".setRegValue(ID)V').invoke(reg, value); };"
+			+ "a.getRegValue = function(reg, cb){ return javaMethods.get('" + angularGlue + ".getRegValue(IL" + listenersPackage + "GlueDoubleResultListener;)V').invoke(reg, cb); };"
+			+ "a.getRegWidth = function(reg, cb){ return javaMethods.get('" + angularGlue + ".getRegWidth(IL" + listenersPackage + "GlueIntegerResultListener;)V').invoke(reg, cb); };"
 
-			+ "a.getRunningCycle = function(cb){ return javaMethods.get('" + angularGlue + ".getRunningCycle(L" + listenersPackage + "GlueStringResultListener;)V').invoke(cb); };"
+			+ "a.getRunningCycle = function(cb){ return javaMethods.get('" + angularGlue + ".getRunningCycle(L" + listenersPackage + "GlueIntegerResultListener;)V').invoke(cb); };"
 
-			+ "a.addSignalListener = function(sig, cb){ return javaMethods.get('" + angularGlue + ".addSignalListener(Ljava/lang/String;L" + listenersPackage + "GlueBCompSignalListener;)V').invoke(sig, cb); };"
+			+ "a.addSignalListener = function(sig, cb){ return javaMethods.get('" + angularGlue + ".addSignalListener(IL" + listenersPackage + "GlueBCompSignalListener;)V').invoke(sig, cb); };"
 			+ "a.setTickStartListener = function(cb){ return javaMethods.get('" + angularGlue + ".setTickStartListener(L" + listenersPackage + "GlueVoidResultListener;)V').invoke(cb); };"
 			+ "a.setTickFinishListener = function(cb){ return javaMethods.get('" + angularGlue + ".setTickFinishListener(L" + listenersPackage + "GlueVoidResultListener;)V').invoke(cb); };"
 
@@ -86,23 +86,23 @@ public class AngularGlue {
 	}
 
 
-	public static void setRegValue(String reg, double value){
+	public static void setRegValue(int reg, double value){
 		glue.sendCmd(CMD.SET_REG_VALUE, null, reg, value);
 	}
-	public static void getRegValue(String reg, GlueDoubleResultListener listener){
+	public static void getRegValue(int reg, GlueDoubleResultListener listener){
 		glue.sendCmd(CMD.GET_REG_VALUE, result -> listener.process((Double) result), reg);
 	}
-	public static void getRegWidth(String reg, GlueIntegerResultListener listener){
+	public static void getRegWidth(int reg, GlueIntegerResultListener listener){
 		glue.sendCmd(CMD.GET_REG_WIDTH, result -> listener.process((Integer) result), reg);
 	}
 
 
-	public static void getRunningCycle(GlueStringResultListener listener){
-		glue.sendCmd(CMD.GET_RUNNING_CYCLE, result -> listener.process((String) result));
+	public static void getRunningCycle(GlueIntegerResultListener listener){
+		glue.sendCmd(CMD.GET_RUNNING_CYCLE, result -> listener.process((Integer) result));
 	}
 
 
-	public static void addSignalListener(String signal, GlueBCompSignalListener listener){
+	public static void addSignalListener(int signal, GlueBCompSignalListener listener){
 		glue.sendCmd(CMD.ADD_SIGNAL_LISTENER, null, signal, listener);
 	}
 	public static void setTickStartListener(GlueVoidResultListener listener){
@@ -139,16 +139,16 @@ public class AngularGlue {
 			case SYNC:
 				break;
 			case SET_REG_VALUE:
-				bcomp.setRegValue(Reg.valueOf((String) args[0]), (long)(double) args[1]);
+				bcomp.setRegValue(Reg.values()[(int) args[0]], (long)(double) args[1]);
 				break;
 			case GET_REG_VALUE:
-				return (double) bcomp.getRegValue(Reg.valueOf((String) args[0]));
+				return (double) bcomp.getRegValue(Reg.values()[(int) args[0]]);
 			case GET_REG_WIDTH:
-				return bcomp.getRegWidth(Reg.valueOf((String) args[0]));
+				return bcomp.getRegWidth(Reg.values()[(int) args[0]]);
 			case GET_RUNNING_CYCLE:
 				return bcomp.getRunningCycle();
 			case ADD_SIGNAL_LISTENER:
-				bcomp.addSignalListener(ControlSignal.valueOf((String) args[0]), (GlueBCompSignalListener) args[1]);
+				bcomp.addSignalListener(ControlSignal.values()[(int) args[0]], (GlueBCompSignalListener) args[1]);
 				break;
 			case SET_TICK_START_LISTENER:
 				bcomp.setTickStartListener((GlueVoidResultListener) args[0]);
@@ -160,7 +160,7 @@ public class AngularGlue {
 				bcomp.executeContinue();
 				break;
 			case SET_MEMORY_VALUE:
-				bcomp.setMemoryValue((long)(double)args[0], (long)(double) args[1]);
+				bcomp.setMemoryValue((long)(double) args[0], (long)(double) args[1]);
 				break;
 			case GET_MEMORY_VALUE:
 				return (double) bcomp.getMemoryValue((long)(double) args[0]);

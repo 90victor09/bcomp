@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { reg } from '../bcomp';
+import bcomp, { reg } from '../bcomp';
 import { frankenstein } from "../frankenstein"
 import { BCompService } from "./bcomp.service";
 
@@ -10,7 +10,6 @@ import { BCompService } from "./bcomp.service";
 })
 export class AppComponent implements OnInit {
   reg = reg;
-  title = 'bcomp-app';
 
   constructor(private bcompService: BCompService){ }
 
@@ -18,7 +17,7 @@ export class AppComponent implements OnInit {
     frankenstein(this.bcompService);
   }
 
-  public getValue(reg: string) : number {
+  public getValue(reg: bcomp.regs) : number {
     return this.bcompService.regsValues[reg];
   }
 }

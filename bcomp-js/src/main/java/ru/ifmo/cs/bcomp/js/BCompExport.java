@@ -41,12 +41,15 @@ public class BCompExport {
 	}
 	@SuppressWarnings("unused")
 	public static void exportEnums(){
-		exportStringArrayProperty("regs", (String[]) Arrays.stream(Reg.values()).map(Enum::name).toArray());
-		exportStringArrayProperty("runningCycles", (String[]) Arrays.stream(RunningCycle.values()).map(Enum::name).toArray());
-		exportStringArrayProperty("controlSignals", (String[]) Arrays.stream(ControlSignal.values()).map(Enum::name).toArray());
-		exportStringArrayProperty("states", (String[]) Arrays.stream(State.values()).map(Enum::name).toArray());
+		exportEnum("regs", (String[]) Arrays.stream(Reg.values()).map(Enum::name).toArray());
+		exportEnum("runningCycles", (String[]) Arrays.stream(RunningCycle.values()).map(Enum::name).toArray());
+		exportEnum("controlSignals", (String[]) Arrays.stream(ControlSignal.values()).map(Enum::name).toArray());
+		exportEnum("states", (String[]) Arrays.stream(State.values()).map(Enum::name).toArray());
 	}
 
-	@JSBody(params = {"propName","propVal"}, script = targetVar + "[propName] = propVal")
-	private static native void exportStringArrayProperty(String propName, String[] propVal);
+	@JSBody(params = {"enumName", "names"}, script =
+		targetVar + "[enumName] = " + targetVar + "[enumName] || {};"
+		+ "for(var i = 0; i < names.length; i++)"
+			+ targetVar + "[enumName][" + targetVar + "[enumName][names[i]] = i] = names[i];")
+	private static native void exportEnum(String enumName, String[] names);
 }
