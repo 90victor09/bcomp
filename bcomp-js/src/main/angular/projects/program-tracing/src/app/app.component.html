@@ -1,11 +1,14 @@
-<div>
-  <label>Вариант:</label>
+<div align="center">
+  <label>Вариант: </label>
   <input type="text"/>
 </div>
-<div>
+<br>
+<div align="center">
   <label>Текущий вариант:</label> {{taskVariantNumber}}
 </div>
-<table>
+<br>
+<br>
+<table align="center">
   <thead>
   <tr>
     <th>Адрес</th>
@@ -50,14 +53,16 @@
     <td>
       <input type="text" maxlength="4" size="4" [ngClass]="genRegClass(i, iNZVC)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][iNZVC] || ''" #NZVC/>
     </td>
-    <td *ngIf="learning"><button (click)="checkLine(i, IP, CR, AR, DR, SP, BR, AC, NZVC)" *ngIf="isExecutable(i)">Проверить</button></td>
-    <td *ngIf="learning"><button (click)="showAnswer(i)" *ngIf="isExecutable(i)">Показать</button></td>
+    <td *ngIf="learning"><button (click)="checkLine(i, IP, CR, AR, DR, SP, BR, AC, NZVC)" [disabled]="!isExecutable(i)">Проверить</button></td>
+    <td *ngIf="learning"><button (click)="showAnswer(i)" [disabled]="!isExecutable(i)">Показать</button></td>
   </tr>
   </tbody>
 </table>
-<div>
+<br>
+<div align="center">
   <button (click)="checkAll(linesContainer.children)">Проверить всё</button>
 </div>
-<div>
+<br>
+<div align="center">
   <label>Выполнено правильно:</label> {{countDoneRight()}} / {{countAll()}} ({{countDoneRight()/countAll() | percent}})
 </div>

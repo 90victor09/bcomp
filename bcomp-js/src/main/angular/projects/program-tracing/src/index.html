@@ -6,6 +6,54 @@
 <!--  <base href="/">-->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <style>
+    body{
+      background-color: rgb(200, 221, 242);
+    }
+
+
+    td,th{
+      border: thin solid black ;
+      background-color: rgb(219, 249, 235);
+    }
+    th{
+      background-color: rgb(157,189,165);
+    }
+    td>input,td{
+      vertical-align: center;
+      text-align: center;
+      font-size: 100%;
+      margin: 0;
+      padding: 0;
+
+    }
+    td>input{
+      text-transform: uppercase;
+    }
+
+    input:disabled{
+      background-color: rgb(200, 221, 242);
+    }
+
+    input,button{
+      background-color: rgb(219, 249, 235);
+      color: black;
+      border-radius: 0;
+      border: thin solid rgb(219, 249, 235);
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+    div>input, div>button{
+      border: thin solid black;
+      padding: 3px;
+    }
+    button:disabled{
+      visibility: hidden;
+    }
+
+
+  </style>
 </head>
 <body>
   <app-root></app-root>
