@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import bcomp, { BCompAngular, reg, state } from "../../../../src/bcomp";
-import { HexadecimalPipe } from "../../../../src/app/hexadecimal.pipe";
-import { hex, setBit, values } from "../../../../src/common";
+import { hex, setBit, toHex, values } from "../../../../src/common";
 
 
 @Component({
@@ -11,8 +10,8 @@ import { hex, setBit, values } from "../../../../src/common";
 })
 export class AppComponent {
   reg = reg;
-  taskVariantNumber : number = 1234;
   taskVariant = {
+    variant: 1234,
     startWith: "004",
     cmds: [
       ["001", "WORD 0000","0000"],
@@ -22,8 +21,8 @@ export class AppComponent {
       ["005", "HALT",     "F200"]
     ]
   };
-  learning : boolean = true;
-
+  learningMode : boolean = true;
+  tryCount : number = 0;
   // var.
 
   iNZVC = reg.PS;
@@ -59,6 +58,16 @@ export class AppComponent {
 
     for(let i = 0; i < lineNo- startWithIdx + 1; i++)
       this.bcomp.executeContinue(() => {});
+  }
+
+  fetchTask(variantStr: string){
+    let variant = Number(variantStr);
+    if(isNaN(variant))
+      return;
+
+    //TODO HTTP request
+
+    this.tryCount = 0;
   }
 
 
@@ -99,6 +108,7 @@ export class AppComponent {
         byClass("AC"),
         byClass("NZVC"));
     }
+    this.tryCount++;
   }
 
 
@@ -129,7 +139,7 @@ export class AppComponent {
     if(r == reg.IP || r == reg.AR || r == reg.SP)
       width = 3;
 
-    this.bcomp.getRegValue(r, (regVal) => cb(HexadecimalPipe.toHex(regVal, width)));
+    this.bcomp.getRegValue(r, (regVal) => cb(toHex(regVal, width)));
   }
 
   getProgramState(psval: number, state: bcomp.states) : boolean {
@@ -146,7 +156,7 @@ export class AppComponent {
   }
 
 
-  countAll() : number {
+  get countAll() : number {
     let c = 0;
     for(let i = 0; i < this.taskVariant.cmds.length; i++){
       if(!this.isExecutable(i) || this.answers[i])
@@ -155,7 +165,7 @@ export class AppComponent {
     }
     return c;
   }
-  countDoneRight() : number {
+  get doneRight() : number {
     let c = 0;
     for(let i = 0; i < this.taskVariant.cmds.length; i++){
       if(!this.isExecutable(i) || this.answers[i] || !this.checks[i])
@@ -179,19 +189,57 @@ export class AppComponent {
   }
 
   genRegClass(lineNo: number, regIdx: number) : string {
-    if(!this.checks[lineNo] || this.answers[lineNo])
+    if(this.checks[lineNo] == undefined || this.answers[lineNo] != undefined)
       return "";
 
     return this.isValid(lineNo, regIdx) ? "valid" : "invalid";
   }
 
-  changeFocus(input1, input2, event){
-     if (event.key.length==1 && input1.selectionEnd == input1.maxLength)
-       input2.focus();
+  getAnswer(i: number, regIdx: number){
+    return this.answers[i] && this.answers[i][regIdx] || '';
   }
 
-  focusToNextLine(i: number, lines: HTMLCollection, input, event ){
-    if (event.key.length==1  && input.selectionEnd==input.maxLength)
-      (<HTMLInputElement>lines[i+1].getElementsByClassName("IP")[0]).focus();
+  changeFocus(e: KeyboardEvent, linesContainer: HTMLElement){
+    let input = <HTMLInputElement>e.target;
+    if(input.selectionStart != input.selectionEnd || e.altKey || e.ctrlKey || e.shiftKey || e.metaKey)
+      return;
+
+    let inputs = Array.from(linesContainer.getElementsByTagName("input"));
+    let idx = inputs.indexOf(input);
+
+    // *Char*, enter, ArrowRight
+    if(e.key.length == 1 || e.keyCode == 13 || e.keyCode == 39){
+      // At the end of input && has next input
+      if(input.selectionEnd != (e.key.length != 1 ? input.value.length : input.maxLength) || ++idx == inputs.length)
+        return;
+    }else // Backspace, ArrowLeft
+    if(e.keyCode == 8 || e.keyCode == 37){
+      // At the start && has previous input
+      if(input.selectionStart != 0 || --idx == -1)
+        return;
+    }else // ArrowUp
+    if(e.keyCode == 38) {
+      idx -= 8;
+
+      if(idx < 0)
+        return;
+    }else // ArrowDown
+    if(e.keyCode == 40){
+      idx += 8;
+
+      if(idx > inputs.length)
+        return;
+    }else // None
+      return;
+
+    let pos = input.selectionEnd;
+    inputs[idx].focus();
+
+    if(e.keyCode == 38 || e.keyCode == 40)
+      inputs[idx].selectionEnd = inputs[idx].selectionStart = Math.min(pos, inputs[idx].maxLength);
+
+    // Prevent arrows (and enter) after focus
+    if(e.key.length != 1 && e.keyCode != 8)
+      e.preventDefault();
   }
 }

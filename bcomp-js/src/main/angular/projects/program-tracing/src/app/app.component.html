@@ -1,10 +1,16 @@
 <div align="center">
+  <label>Режим обучения: </label>
+  <input type="checkbox" [checked]="learningMode" (change)="learningMode = learningSwitch.checked" #learningSwitch/>
+</div>
+<br>
+<div align="center">
   <label>Вариант: </label>
-  <input type="text"/>
+  <input type="text" (change)="fetchTask(variantInput.value)" (keypress.enter)="fetchTask(variantInput.value)" #variantInput/>
 </div>
 <br>
 <div>
-  <label>Текущий вариант:</label> {{taskVariantNumber}}
+  <label>Текущий вариант: </label>
+  <span>{{taskVariant.variant}}</span>
 </div>
 <br>
 <br>
@@ -21,8 +27,8 @@
     <th>BR</th>
     <th>AC</th>
     <th>NZVC</th>
-    <th *ngIf="learning"></th>
-    <th *ngIf="learning"></th>
+    <th *ngIf="learningMode"></th>
+    <th *ngIf="learningMode"></th>
   </tr>
   </thead>
   <tbody #linesContainer>
@@ -30,31 +36,31 @@
     <td>{{cmd[0]}}</td>
     <td>{{cmd[1]}}</td>
     <td>
-      <input (keyup)="changeFocus(IP, CR, this.$event)" type="text" class="IP" maxlength="3" [ngClass]="genRegClass(i, reg.IP)" [disabled]="!isExecutable(i)" [value]=" answers[i] && answers[i][reg.IP] || ''" #IP/> <!-- *ngIf="isExecutable(i) && !answers[i]" -->
+      <input (keydown)="changeFocus($event, linesContainer)" type="text" class="IP" maxlength="3" [ngClass]="genRegClass(i, reg.IP)" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.IP)" #IP/>
     </td>
     <td>
-      <input (keyup)="changeFocus(CR, AR, this.$event)" type="text" class="CR" maxlength="4"  [ngClass]="genRegClass(i, reg.CR)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][reg.CR] || ''" #CR/>
+      <input (keydown)="changeFocus($event, linesContainer)" type="text" class="CR" maxlength="4"  [ngClass]="genRegClass(i, reg.CR)" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.CR)" #CR/>
     </td>
     <td>
-      <input (keyup)="changeFocus(AR, DR, this.$event)" type="text" class="AR" maxlength="3"  [ngClass]="genRegClass(i, reg.AR)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][reg.AR] || ''" #AR/>
+      <input (keydown)="changeFocus($event, linesContainer)" type="text" class="AR" maxlength="3"  [ngClass]="genRegClass(i, reg.AR)" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.AR)" #AR/>
     </td>
     <td>
-      <input (keyup)="changeFocus(DR, SP, this.$event)" type="text" class="DR" maxlength="4" [ngClass]="genRegClass(i, reg.DR)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][reg.DR] || ''" #DR/>
+      <input (keydown)="changeFocus($event, linesContainer)" type="text" class="DR" maxlength="4" [ngClass]="genRegClass(i, reg.DR)" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.DR)" #DR/>
     </td>
     <td>
-      <input (keyup)="changeFocus(SP, BR, this.$event)" type="text" class="SP" maxlength="3" [ngClass]="genRegClass(i, reg.SP)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][reg.SP] || ''" #SP/>
+      <input (keydown)="changeFocus($event, linesContainer)" type="text" class="SP" maxlength="3" [ngClass]="genRegClass(i, reg.SP)" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.SP)" #SP/>
     </td>
     <td>
-      <input (keyup)="changeFocus(BR, AC, this.$event)" type="text" class="BR" maxlength="4"  [ngClass]="genRegClass(i, reg.BR)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][reg.BR] || ''" #BR/>
+      <input (keydown)="changeFocus($event, linesContainer)" type="text" class="BR" maxlength="4"  [ngClass]="genRegClass(i, reg.BR)" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.BR)" #BR/>
     </td>
     <td>
-      <input (keyup)="changeFocus(AC, NZVC, this.$event)" type="text" class="AC" maxlength="4" [ngClass]="genRegClass(i, reg.AC)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][reg.AC] || ''" #AC/>
+      <input (keydown)="changeFocus($event, linesContainer)" type="text" class="AC" maxlength="4" [ngClass]="genRegClass(i, reg.AC)" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.AC)" #AC/>
     </td>
     <td>
-      <input (keyup)="focusToNextLine(i, linesContainer.children, NZVC, this.$event)"  type="text" class="NZVC" maxlength="4" [ngClass]="genRegClass(i, iNZVC)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][iNZVC] || ''" #NZVC/>
+      <input (keydown)="changeFocus($event, linesContainer)" type="text" class="NZVC" maxlength="4" [ngClass]="genRegClass(i, iNZVC)" [disabled]="!isExecutable(i)" [value]="getAnswer(i, iNZVC)" #NZVC/>
     </td>
-    <td *ngIf="learning"><button (click)="checkLine(i, IP, CR, AR, DR, SP, BR, AC, NZVC)" [disabled]="!isExecutable(i)">Проверить</button></td>
-    <td *ngIf="learning"><button (click)="showAnswer(i)" [disabled]="!isExecutable(i)">Показать</button></td>
+    <td *ngIf="learningMode"><button (click)="checkLine(i, IP, CR, AR, DR, SP, BR, AC, NZVC)" [disabled]="!isExecutable(i)">Проверить</button></td>
+    <td *ngIf="learningMode"><button (click)="showAnswer(i)" [disabled]="!isExecutable(i)">Показать</button></td>
   </tr>
   </tbody>
 </table>
@@ -64,5 +70,11 @@
 </div>
 <br>
 <div>
-  <label>Выполнено правильно:</label> {{countDoneRight()}} / {{countAll()}} ({{countDoneRight()/countAll() | percent:".2"}})
+  <label>Выполнено правильно: </label>
+  <span>{{doneRight}} / {{countAll}} ({{(doneRight/countAll || 0) | percent:".2"}})</span>
+  <br>
+</div>
+<div *ngIf="!learningMode">
+  <label>Попытка: </label>
+  <span>{{tryCount}}</span>
 </div>
