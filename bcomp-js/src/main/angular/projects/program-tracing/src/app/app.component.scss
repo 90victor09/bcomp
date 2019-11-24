@@ -1,5 +1,3 @@
-
-
 @font-face {
   font-family: Roboto;
   src: url("../fonts/Roboto-Medium.ttf");
@@ -37,13 +35,9 @@ td > input, td > button {
   min-height: 1.5em;
 }
 
-td > input {
-  text-transform: uppercase;
-}
-
-input:disabled {
-  background-color: rgb(200, 221, 242);
-  border-color: rgb(200, 221, 242);
+label{
+  font-family: Roboto, monospace;
+  font-size: 0.9em;
 }
 
 input, button {
@@ -53,11 +47,6 @@ input, button {
   border: thin solid rgb(219, 249, 235);
   margin: 0;
   padding: 0;
-}
-
-label + input, div > button {
-  border: thin solid black;
-  padding: 3px;
 }
 
 div, table {
@@ -81,3 +70,22 @@ input[maxlength='4'] {
   width: 3.15em;
 }
 
+input[type='checkbox'] {
+  position: relative;
+  top: 0.2em;
+  height: 1em;
+}
+
+label > input, div > button {
+  border: thin solid black;
+  padding: 3px;
+}
+
+td > input {
+  text-transform: uppercase;
+}
+
+input:disabled {
+  background-color: rgb(200, 221, 242);
+  border-color: rgb(200, 221, 242);
+}
