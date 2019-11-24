@@ -23,7 +23,7 @@ export class AppComponent {
     ]
   };
   learning : boolean = true;
-  tabindex: number = 1;
+
   // var.
 
   iNZVC = reg.PS;
@@ -185,17 +185,13 @@ export class AppComponent {
     return this.isValid(lineNo, regIdx) ? "valid" : "invalid";
   }
 
-  focusForward(input){
-     if (input.value.length == input.maxLength)
-       document.querySelector<HTMLInputElement>("input[tabindex='"+(Number(input.getAttribute("tabindex"))+1)+"']").focus();
+  changeFocus(input1, input2, event){
+     if (event.key.length==1 && input1.selectionEnd == input1.maxLength)
+       input2.focus();
   }
 
-  focusBack(input){
-    if (input.value.length == 0)
-      document.querySelector<HTMLInputElement>("input[tabindex='"+(Number(input.getAttribute("tabindex"))-1)+"']").focus()
-  }
-
-  getTabIndex(){
-    return this.tabindex++;
+  focusToNextLine(i: number, lines: HTMLCollection, input, event ){
+    if (event.key.length==1  && input.selectionEnd==input.maxLength)
+      (<HTMLInputElement>lines[i+1].getElementsByClassName("IP")[0]).focus();
   }
 }

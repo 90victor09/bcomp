@@ -24,21 +24,23 @@ th {
 td > input, td {
   vertical-align: center;
   text-align: center;
-  font-size: 100%;
   margin: 0;
   padding: 0;
+  overflow: hidden;
 }
 
-.instr {
-  min-width: 100px;
+.data-col {
+  min-width: 7em;
 }
 
 td > input {
   text-transform: uppercase;
+  min-height: 1.5em;
 }
 
 input:disabled {
   background-color: rgb(200, 221, 242);
+  border-color: rgb(200, 221, 242);
 }
 
 input, button {
@@ -66,5 +68,13 @@ button:disabled {
 
 button {
   cursor: pointer;
+}
+
+input[maxlength='3'] {
+  width: 2.5em;
+}
+
+input[maxlength='4'] {
+  width: 3em;
 }
 
