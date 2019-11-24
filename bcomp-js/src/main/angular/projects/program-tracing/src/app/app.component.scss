@@ -32,7 +32,8 @@ td > input, td {
 }
 
 td > input, td > button {
-  min-height: 1.5em;
+  position: relative;
+  min-height: 1.7em;
 }
 
 label{
