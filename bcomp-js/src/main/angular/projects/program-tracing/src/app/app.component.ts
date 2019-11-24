@@ -10,16 +10,13 @@ import { hex, setBit, toHex, values } from "../../../../src/common";
 })
 export class AppComponent {
   reg = reg;
-  taskVariant = {
-    variant: 1234,
-    startWith: "004",
+  taskVariant : {variant: number, startWith: string, cmds: string[][], executableLines: number} = {
+    variant: 0,
+    startWith: "001",
     cmds: [
-      ["001", "WORD 0000","0000"],
-      ["002", "WORD 0000","0000"],
-      ["003", "WORD 4F22","4F22"],
-      ["004", "ADD 003",  "4003"],
-      ["005", "HALT",     "F200"]
-    ]
+      ["000", "NOP", "0000"]
+    ],
+    executableLines: 0
   };
   learningMode : boolean = true;
   tryCount : number = 0;
@@ -33,6 +30,7 @@ export class AppComponent {
   private readonly bcomp : BCompAngular;
   constructor() {
     this.bcomp = bcomp.startAngular(() => {});
+    this.fetchTask(1234); //TODO remove
   }
 
 
@@ -60,12 +58,34 @@ export class AppComponent {
       this.bcomp.executeContinue(() => {});
   }
 
-  fetchTask(variantStr: string){
+  fetchTask(variantStr: string | number, e?){
+    console.log(e);
     let variant = Number(variantStr);
     if(isNaN(variant))
       return;
 
-    //TODO HTTP request
+    let response : any = {
+      variant: 1234,
+      startWith: "004",
+      cmds: [
+        ["001", "WORD 0000","0000"],
+        ["002", "WORD 0000","0000"],
+        ["003", "WORD 4F22","4F22"],
+        ["004", "ADD 003",  "4003"],
+        ["005", "HALT",     "F200"]
+      ]
+    }; //TODO HTTP request
+
+    this.taskVariant = {
+      variant: variant,
+      startWith: response.startWith,
+      cmds: response.cmds,
+      executableLines: 0
+    };
+
+    for(let i = 0; i < this.taskVariant.cmds.length; i++)
+      if(this.isExecutable(i))
+        this.taskVariant.executableLines += 1;
 
     this.tryCount = 0;
   }
@@ -84,6 +104,7 @@ export class AppComponent {
     this.checkReg(lineNo, reg.AC, AC.value);
 
     this.formNZVC((val) => this.checks[lineNo] = setBit(this.checks[lineNo], this.iNZVC, val == NZVC.value));
+    this.tryCount += 1/this.taskVariant.executableLines;
   }
   checkReg(lineNo: number, r: bcomp.regs, val: string) : void {
     this.getRegHexValue(r, (hexVal) => {
@@ -95,20 +116,20 @@ export class AppComponent {
       if(!this.isExecutable(i))
         continue;
 
-      function byClass(name: string) : HTMLInputElement {
-        return <HTMLInputElement>lines[i].getElementsByClassName(name)[0];
+      function byTitle(name: string) : HTMLInputElement { //LOL
+        return <HTMLInputElement>lines[i].querySelector("input[title='" + name + "']");
       }
       this.checkLine(i,
-        byClass("IP"),
-        byClass("CR"),
-        byClass("AR"),
-        byClass("DR"),
-        byClass("SP"),
-        byClass("BR"),
-        byClass("AC"),
-        byClass("NZVC"));
+        byTitle("IP"),
+        byTitle("CR"),
+        byTitle("AR"),
+        byTitle("DR"),
+        byTitle("SP"),
+        byTitle("BR"),
+        byTitle("AC"),
+        byTitle("NZVC"));
     }
-    this.tryCount++;
+    this.tryCount = Math.floor(this.tryCount);
   }
 
 
@@ -157,6 +178,9 @@ export class AppComponent {
 
 
   get countAll() : number {
+    if(!this.taskVariant)
+      return 0;
+
     let c = 0;
     for(let i = 0; i < this.taskVariant.cmds.length; i++){
       if(!this.isExecutable(i) || this.answers[i])
@@ -166,6 +190,9 @@ export class AppComponent {
     return c;
   }
   get doneRight() : number {
+    if(!this.taskVariant)
+      return 0;
+
     let c = 0;
     for(let i = 0; i < this.taskVariant.cmds.length; i++){
       if(!this.isExecutable(i) || this.answers[i] || !this.checks[i])
@@ -207,24 +234,24 @@ export class AppComponent {
     let inputs = Array.from(linesContainer.getElementsByTagName("input"));
     let idx = inputs.indexOf(input);
 
-    // *Char*, enter, ArrowRight
-    if(e.key.length == 1 || e.keyCode == 13 || e.keyCode == 39){
+    // *Char*, Enter, ArrowRight
+    if(e.key.length == 1 || e.key == "Enter" || e.key == "ArrowRight" || e.key == "Right"){
       // At the end of input && has next input
       if(input.selectionEnd != (e.key.length != 1 ? input.value.length : input.maxLength) || ++idx == inputs.length)
         return;
-    }else // Backspace, ArrowLeft
-    if(e.keyCode == 8 || e.keyCode == 37){
+    }else
+    if(e.key == "Backspace" || e.key == "ArrowLeft" || e.key == "Left"){
       // At the start && has previous input
       if(input.selectionStart != 0 || --idx == -1)
         return;
-    }else // ArrowUp
-    if(e.keyCode == 38) {
+    }else
+    if(e.key == "ArrowUp" || e.key == "Up") {
       idx -= 8;
 
       if(idx < 0)
         return;
-    }else // ArrowDown
-    if(e.keyCode == 40){
+    }else
+    if(e.key == "ArrowDown" || e.key == "Down"){
       idx += 8;
 
       if(idx > inputs.length)
@@ -235,11 +262,11 @@ export class AppComponent {
     let pos = input.selectionEnd;
     inputs[idx].focus();
 
-    if(e.keyCode == 38 || e.keyCode == 40)
+    if(e.key == "ArrowUp" || e.key == "ArrowDown" || e.key == "Up" || e.key == "Down")
       inputs[idx].selectionEnd = inputs[idx].selectionStart = Math.min(pos, inputs[idx].maxLength);
 
     // Prevent arrows (and enter) after focus
-    if(e.key.length != 1 && e.keyCode != 8)
+    if(e.key.length != 1 && e.key != "Backspace")
       e.preventDefault();
   }
 }
