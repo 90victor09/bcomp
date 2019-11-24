@@ -1,9 +1,11 @@
-
-export function* values(Enum: object){
+// No polyfills for generators(
+export function values(Enum: object){
+  let values = [];
   for(let key of Object.keys(Enum)){
     if(!isNaN(Number(key)))
-      yield key;
+      values.push(key);
   }
+  return values;
 }
 
 let digits = ["0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"];
