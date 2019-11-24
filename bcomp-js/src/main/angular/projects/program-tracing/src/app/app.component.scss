@@ -33,9 +33,12 @@ td > input, td {
   min-width: 7em;
 }
 
+td > input, td > button {
+  min-height: 1.5em;
+}
+
 td > input {
   text-transform: uppercase;
-  min-height: 1.5em;
 }
 
 input:disabled {
@@ -75,6 +78,6 @@ input[maxlength='3'] {
 }
 
 input[maxlength='4'] {
-  width: 3em;
+  width: 3.15em;
 }
 
