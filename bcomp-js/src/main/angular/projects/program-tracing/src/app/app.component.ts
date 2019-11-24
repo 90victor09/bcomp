@@ -108,7 +108,7 @@ export class AppComponent {
   }
   checkReg(lineNo: number, r: bcomp.regs, val: string) : void {
     this.getRegHexValue(r, (hexVal) => {
-      this.checks[lineNo] = setBit(this.checks[lineNo], r, hexVal == val);
+      this.checks[lineNo] = setBit(this.checks[lineNo], r, hexVal == val.toUpperCase());
     });
   }
   checkAll(lines: HTMLCollection) : void {
