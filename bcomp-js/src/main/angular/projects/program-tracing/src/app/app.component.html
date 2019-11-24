@@ -30,28 +30,28 @@
     <td>{{cmd[0]}}</td>
     <td>{{cmd[1]}}</td>
     <td>
-      <input type="text" class="IP" maxlength="3" size="3" [ngClass]="genRegClass(i, reg.IP)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][reg.IP] || ''" #IP/> <!-- *ngIf="isExecutable(i) && !answers[i]" -->
+      <input (keyup.backspace)="focusBack(IP)" (keyup)="focusForward(IP)" [tabIndex]=getTabIndex() type="text" class="IP" maxlength="3" size="3" [ngClass]="genRegClass(i, reg.IP)" [disabled]="!isExecutable(i)" [value]=" answers[i] && answers[i][reg.IP] || ''" #IP/> <!-- *ngIf="isExecutable(i) && !answers[i]" -->
     </td>
     <td>
-      <input type="text" class="CR" maxlength="4" size="4" [ngClass]="genRegClass(i, reg.CR)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][reg.CR] || ''" #CR/>
+      <input (keyup.backspace)="focusBack(CR)" (keyup)="focusForward(CR)" [tabIndex]=getTabIndex() type="text" class="CR" maxlength="4" size="4" [ngClass]="genRegClass(i, reg.CR)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][reg.CR] || ''" #CR/>
     </td>
     <td>
-      <input type="text" class="AR" maxlength="3" size="3" [ngClass]="genRegClass(i, reg.AR)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][reg.AR] || ''" #AR/>
+      <input (keyup.backspace)="focusBack(AR)" (keyup)="focusForward(AR)" [tabIndex]=getTabIndex() type="text" class="AR" maxlength="3" size="3" [ngClass]="genRegClass(i, reg.AR)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][reg.AR] || ''" #AR/>
     </td>
     <td>
-      <input type="text" class="DR" maxlength="4" size="4" [ngClass]="genRegClass(i, reg.DR)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][reg.DR] || ''" #DR/>
+      <input (keyup.backspace)="focusBack(DR)" (keyup)="focusForward(DR)" [tabIndex]=getTabIndex() type="text" class="DR" maxlength="4" size="4" [ngClass]="genRegClass(i, reg.DR)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][reg.DR] || ''" #DR/>
     </td>
     <td>
-      <input type="text" class="SP" maxlength="3" size="3" [ngClass]="genRegClass(i, reg.SP)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][reg.SP] || ''" #SP/>
+      <input (keyup.backspace)="focusBack(SP)" (keyup)="focusForward(SP)" [tabIndex]=getTabIndex() type="text" class="SP" maxlength="3" size="3" [ngClass]="genRegClass(i, reg.SP)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][reg.SP] || ''" #SP/>
     </td>
     <td>
-      <input type="text" class="BR" maxlength="4" size="4" [ngClass]="genRegClass(i, reg.BR)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][reg.BR] || ''" #BR/>
+      <input (keyup.backspace)="focusBack(BR)" (keyup)="focusForward(BR)" [tabIndex]=getTabIndex() type="text" class="BR" maxlength="4" size="4" [ngClass]="genRegClass(i, reg.BR)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][reg.BR] || ''" #BR/>
     </td>
     <td>
-      <input type="text" class="AC" maxlength="4" size="4" [ngClass]="genRegClass(i, reg.AC)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][reg.AC] || ''" #AC/>
+      <input (keyup.backspace)="focusBack(AC)" (keyup)="focusForward(AC)" [tabIndex]=getTabIndex() type="text" class="AC" maxlength="4" size="4" [ngClass]="genRegClass(i, reg.AC)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][reg.AC] || ''" #AC/>
     </td>
     <td>
-      <input type="text" class="NZVC" maxlength="4" size="4" [ngClass]="genRegClass(i, iNZVC)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][iNZVC] || ''" #NZVC/>
+      <input (keyup.backspace)="focusBack(NZVC)" (keyup)="focusForward(NZVC)" [tabIndex]=getTabIndex() type="text" class="NZVC" maxlength="4" size="4" [ngClass]="genRegClass(i, iNZVC)" [disabled]="!isExecutable(i)" [value]="answers[i] && answers[i][iNZVC] || ''" #NZVC/>
     </td>
     <td *ngIf="learning"><button (click)="checkLine(i, IP, CR, AR, DR, SP, BR, AC, NZVC)" [disabled]="!isExecutable(i)">Проверить</button></td>
     <td *ngIf="learning"><button (click)="showAnswer(i)" [disabled]="!isExecutable(i)">Показать</button></td>
