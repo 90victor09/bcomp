@@ -1,3 +1,11 @@
+
+
+@font-face {
+  font-family: Roboto;
+  src: url("../fonts/Roboto-Medium.ttf");
+  src: url("../fonts/Roboto-Regular.ttf");
+}
+
 .invalid {
   border-color: red;
 }
@@ -8,6 +16,7 @@
 td, th {
   border: thin solid black ;
   background-color: rgb(219, 249, 235);
+  font-family: Roboto, monospace;
 }
 th {
   background-color: rgb(157,189,165);
@@ -18,8 +27,12 @@ td > input, td {
   font-size: 100%;
   margin: 0;
   padding: 0;
-
 }
+
+.instr {
+  min-width: 100px;
+}
+
 td > input {
   text-transform: uppercase;
 }
@@ -37,9 +50,14 @@ input, button {
   padding: 0;
 }
 
-div > input, div > button {
+label + input, div > button {
   border: thin solid black;
   padding: 3px;
+}
+
+div, table {
+  text-align: center;
+  margin: auto;
 }
 
 button:disabled {
