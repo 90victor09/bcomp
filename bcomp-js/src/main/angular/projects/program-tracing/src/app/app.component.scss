@@ -35,12 +35,18 @@ input, button {
   border: thin solid rgb(219, 249, 235);
   margin: 0;
   padding: 0;
-  height: 100%;
 }
+
 div > input, div > button {
   border: thin solid black;
   padding: 3px;
 }
+
 button:disabled {
   visibility: hidden;
 }
+
+button {
+  cursor: pointer;
+}
+
