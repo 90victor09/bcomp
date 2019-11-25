@@ -1,6 +1,13 @@
+@font-face {
+  font-family: Roboto;
+  src: url("src/assets/fonts/Roboto-Regular.ttf");
+}
+
 $title-color: black;
 $title-color-bg: #9dbda5;
 $value-color: black;
 $value-color-bg: #dbf9eb;
+$color-bg: #C8DDF2;
 $border: 1px solid black;
-$font: Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace;
+$font: Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter, Roboto monospace;
+

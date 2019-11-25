@@ -1,8 +1,4 @@
-@font-face {
-  font-family: Roboto;
-  src: url("../fonts/Roboto-Medium.ttf");
-  src: url("../fonts/Roboto-Regular.ttf");
-}
+@import "../angular/src/common";
 
 .invalid {
   border-color: red;
@@ -43,10 +39,10 @@ label{
 }
 
 input, button {
-  background-color: rgb(219, 249, 235);
-  color: black;
+  background-color: $value-color-bg;
+  color: $value-color;
   border-radius: 0;
-  border: thin solid rgb(219, 249, 235);
+  border: thin solid $value-color-bg;
   margin: 0;
   padding: 0;
 }
@@ -79,7 +75,7 @@ input[type='checkbox'] {
 }
 
 label > input, div > button {
-  border: thin solid black;
+  border: thin solid $value-color;
   padding: 3px;
 }
 
@@ -88,6 +84,6 @@ td > input {
 }
 
 input:disabled {
-  background-color: rgb(200, 221, 242);
+  background-color: $color-bg;
   border-color: rgb(200, 221, 242);
 }
