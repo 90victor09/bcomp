@@ -1,20 +1,40 @@
 @import "../angular/src/common";
 
-.invalid {
-  border-color: red;
+div {
+
+  font-family: $font;
+  font-size: 0.9em;
+
+  input[type='checkbox'] {
+    position: relative;
+    top: 0.2em;
+    height: 1em;
+  }
+
+  input, button {
+    border: $border $value-color;
+    padding: 3px;
+  }
 }
+
+.invalid {
+    border-color: red;
+}
+
 .valid {
-  border-color: green;
+    border-color: green;
 }
 
 td, th {
-  border: thin solid black ;
-  background-color: rgb(219, 249, 235);
-  font-family: Roboto, monospace;
+  border: $border $value-color ;
+  background-color: $value-color-bg;
+  font-family: $font;
 }
+
 th {
-  background-color: rgb(157,189,165);
+  background-color: $title-color-bg;
 }
+
 td > input, td {
   vertical-align: center;
   text-align: center;
@@ -27,24 +47,23 @@ td > input, td {
   min-width: 7em;
 }
 
-td > input, td > button {
-  position: relative;
-  line-height: 1.8em;
-  vertical-align: middle;
-}
-
-label{
-  font-family: Roboto, monospace;
-  font-size: 0.9em;
-}
-
 input, button {
   background-color: $value-color-bg;
   color: $value-color;
   border-radius: 0;
-  border: thin solid $value-color-bg;
+  border: $border $value-color-bg;
   margin: 0;
   padding: 0;
+}
+
+td {
+  height: auto;
+  input, button {
+    position: relative;
+    line-height: 1.6rem;
+    vertical-align: center;
+    height: 1.6rem;
+  }
 }
 
 div, table {
@@ -68,16 +87,6 @@ input[maxlength='4'] {
 width: 3.5em;
 }
 
-input[type='checkbox'] {
-  position: relative;
-  top: 0.2em;
-  height: 1em;
-}
-
-label > input, div > button {
-  border: thin solid $value-color;
-  padding: 3px;
-}
 
 td > input {
   text-transform: uppercase;
@@ -85,5 +94,5 @@ td > input {
 
 input:disabled {
   background-color: $color-bg;
-  border-color: rgb(200, 221, 242);
+  border-color: $color-bg;
 }
