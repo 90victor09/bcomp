@@ -3,7 +3,7 @@
 </div>
 <br>
 <div>
-  <label>Вариант: <input type="text" (change)="fetchTask(variantInput.value)" (keypress.enter)="fetchTask(variantInput.value, $event)" #variantInput/></label>
+  <label>Вариант: <input type="text" (change)="fetchTask(variantInput.value)" (keypress.enter)="fetchTask(variantInput.value)" #variantInput/></label>
 </div>
 <br>
 <div>
@@ -37,10 +37,10 @@
       <input (keydown)="changeFocus($event, linesContainer)" type="text" title="IP" maxlength="3" [ngClass]="genRegClass(i, reg.IP)" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.IP)" #IP/>
     </td>
     <td>
-      <input (keydown)="changeFocus($event, linesContainer)" type="text" title="CR" maxlength="4"  [ngClass]="genRegClass(i, reg.CR)" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.CR)" #CR/>
+      <input (keydown)="changeFocus($event, linesContainer)" type="text" title="CR" maxlength="4" [ngClass]="genRegClass(i, reg.CR)" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.CR)" #CR/>
     </td>
     <td>
-      <input (keydown)="changeFocus($event, linesContainer)" type="text" title="AR" maxlength="3"  [ngClass]="genRegClass(i, reg.AR)" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.AR)" #AR/>
+      <input (keydown)="changeFocus($event, linesContainer)" type="text" title="AR" maxlength="3" [ngClass]="genRegClass(i, reg.AR)" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.AR)" #AR/>
     </td>
     <td>
       <input (keydown)="changeFocus($event, linesContainer)" type="text" title="DR" maxlength="4" [ngClass]="genRegClass(i, reg.DR)" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.DR)" #DR/>
@@ -49,7 +49,7 @@
       <input (keydown)="changeFocus($event, linesContainer)" type="text" title="SP" maxlength="3" [ngClass]="genRegClass(i, reg.SP)" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.SP)" #SP/>
     </td>
     <td>
-      <input (keydown)="changeFocus($event, linesContainer)" type="text" title="BR" maxlength="4"  [ngClass]="genRegClass(i, reg.BR)" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.BR)" #BR/>
+      <input (keydown)="changeFocus($event, linesContainer)" type="text" title="BR" maxlength="4" [ngClass]="genRegClass(i, reg.BR)" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.BR)" #BR/>
     </td>
     <td>
       <input (keydown)="changeFocus($event, linesContainer)" type="text" title="AC" maxlength="4" [ngClass]="genRegClass(i, reg.AC)" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.AC)" #AC/>
@@ -75,4 +75,9 @@
 <div>
   <label for="tryCount">Попытка: </label>
   <span id="tryCount">{{tryCount | number:'.0-3'}}</span>
+</div>
+<br>
+<div>
+  <label for="timer">Время: </label>
+  <span id="timer">{{formattedTime}}</span>
 </div>

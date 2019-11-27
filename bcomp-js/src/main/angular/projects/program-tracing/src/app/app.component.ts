@@ -20,7 +20,8 @@ export class AppComponent {
   };
   learningMode : boolean = true;
   tryCount : number = 0;
-  // var.
+  timer : number;
+  time : number = 0;
 
   iNZVC = reg.PS;
 
@@ -30,6 +31,7 @@ export class AppComponent {
   private readonly bcomp : BCompAngular;
   constructor() {
     this.bcomp = bcomp.startAngular(() => {});
+    this.timer = setInterval(() => this.time++, 1000);
     this.fetchTask(1234); //TODO remove
   }
 
@@ -58,8 +60,7 @@ export class AppComponent {
       this.bcomp.executeContinue(() => {});
   }
 
-  fetchTask(variantStr: string | number, e?){
-    console.log(e);
+  fetchTask(variantStr: string | number){
     let variant = Number(variantStr);
     if(isNaN(variant))
       return;
@@ -68,11 +69,11 @@ export class AppComponent {
       variant: 1234,
       startWith: "004",
       cmds: [
-        ["001", "WORD 0000","0000"],
-        ["002", "WORD 0000","0000"],
-        ["003", "WORD 4F22","4F22"],
-        ["004", "ADD 003",  "4003"],
-        ["005", "HALT",     "F200"]
+        ["001", "0000",     "0000"],
+        ["002", "0000",     "0000"],
+        ["003", "4F22",     "4F22"],
+        ["004", "+ADD 003", "4003"],
+        ["005", "HLT",      "0100"]
       ]
     }; //TODO HTTP request
 
@@ -88,6 +89,7 @@ export class AppComponent {
         this.taskVariant.executableLines += 1;
 
     this.tryCount = 0;
+    this.time = 0;
   }
 
 
@@ -205,6 +207,13 @@ export class AppComponent {
       }
     }
     return c;
+  }
+
+  get formattedTime() : string {
+    let hours = Math.floor(this.time / 3600);
+    let minutes = Math.floor((this.time - hours*3600) / 60);
+    let seconds = this.time  - hours*3600 - minutes*60;
+    return hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
   }
 
 
