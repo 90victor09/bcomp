@@ -218,7 +218,7 @@ export class AppComponent {
 
 
   isExecutable(i: number) : boolean {
-    return hex(this.taskVariant.startWith) <= hex(this.taskVariant.cmds[i][0]) && !this.answers[i];
+    return hex(this.taskVariant.startWith) <= hex(this.taskVariant.cmds[i][0]);
   }
   isValid(lineNo: number, regIdx: number) : boolean {
     return (!this.checks[lineNo] ? false : ((this.checks[lineNo] >> regIdx) & 1) > 0);
@@ -240,7 +240,7 @@ export class AppComponent {
     if(input.selectionStart != input.selectionEnd || e.altKey || e.ctrlKey || e.shiftKey || e.metaKey)
       return;
 
-    let inputs = Array.from(linesContainer.getElementsByTagName("input"));
+    let inputs = Array.from(linesContainer.querySelectorAll<HTMLInputElement>("input:not([readOnly])"));
     let idx = inputs.indexOf(input);
 
     // *Char*, Enter, ArrowRight
