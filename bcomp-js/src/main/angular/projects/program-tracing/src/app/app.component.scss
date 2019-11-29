@@ -1,28 +1,43 @@
 @import "../angular/src/common";
 
-div {
+input, button {
+  background-color: $value-color-bg;
+  color: $value-color;
+  border-radius: 0;
+  border: $border $value-color;
+  margin: 0;
+  padding: 0 0.2em;
 
+  &:disabled {
+    background-color: $color-bg;
+    border-color: $color-bg;
+  }
+  &.invalid {
+     border-color: #ff0523;
+   }
+
+  &.valid {
+    border-color: #00bd00;
+  }
+}
+
+input[type='checkbox'] {
+  position: relative;
+  top: 0.2em;
+  height: 1em;
+}
+
+div {
   font-family: $font;
   font-size: 0.9em;
+  text-align: center;
 
-  input[type='checkbox'] {
-    position: relative;
-    top: 0.2em;
-    height: 1em;
+  & > button{
+    padding: 0.2em;
   }
-
-  input, button {
-    border: $border $value-color;
-    padding: 3px;
+  &.trace-table {
+    overflow-x: auto;
   }
-}
-
-.invalid {
-    border-color: red;
-}
-
-.valid {
-    border-color: green;
 }
 
 td, th {
@@ -35,64 +50,40 @@ th {
   background-color: $title-color-bg;
 }
 
-td > input, td {
-  vertical-align: center;
-  text-align: center;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
-
-.data-col {
-  min-width: 7em;
-}
-
-input, button {
-  background-color: $value-color-bg;
-  color: $value-color;
-  border-radius: 0;
-  border: $border $value-color-bg;
-  margin: 0;
-  padding: 0;
-}
-
 td {
-  height: auto;
+  height: 1.6rem;
+  padding: 0;
   input, button {
     position: relative;
     line-height: 1.6rem;
     vertical-align: center;
     height: 1.6rem;
+    box-sizing: border-box;
   }
+  input {
+    width: 100%;
+    text-transform: uppercase;
+    text-align: center;
+  }
+  button {
+     cursor: pointer;
+     &:disabled {
+       visibility: hidden;
+     }
+   }
 }
 
-div, table {
+table {
   text-align: center;
   margin: auto;
 }
 
-button:disabled {
-  visibility: hidden;
-}
-
-button {
-  cursor: pointer;
-}
-
-input[maxlength='3'] {
+.addr-col {
   width: 2.5em;
+  min-width: 2.5em;
 }
 
-input[maxlength='4'] {
-width: 3.5em;
-}
-
-
-td > input {
-  text-transform: uppercase;
-}
-
-input:disabled {
-  background-color: $color-bg;
-  border-color: $color-bg;
+.data-col {
+  width: 3.5em;
+  min-width: 3.5em;
 }
