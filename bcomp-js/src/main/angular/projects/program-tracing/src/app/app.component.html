@@ -34,29 +34,29 @@
   <tr *ngFor="let cmd of taskVariant?.cmds; let i = index">
     <td>{{cmd[0]}}</td>
     <td>{{cmd[1]}}</td>
-    <td class="addr-col">
-      <input (keydown)="changeFocus($event, linesContainer)" type="text" title="IP" maxlength="3" [ngClass]="genRegClass(i, reg.IP)" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.IP)" #IP/>
+    <td class="addr-col" [ngClass]="genRegClass(i, reg.IP)" [ngStyle]="{'background-color': isExecutable(i)?'#dbf9eb':'#C8DDF2'}">
+      <input (keydown)="changeFocus($event, linesContainer)" type="text" title="IP" maxlength="3"  [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.IP)" #IP/>
     </td>
-    <td class="data-col">
-      <input (keydown)="changeFocus($event, linesContainer)" type="text" title="CR" maxlength="4" [ngClass]="genRegClass(i, reg.CR)" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.CR)" #CR/>
+    <td class="data-col" [ngClass]="genRegClass(i, reg.CR)" [ngStyle]="{'background-color': isExecutable(i)?'#dbf9eb':'#C8DDF2'}">
+      <input (keydown)="changeFocus($event, linesContainer)" type="text" title="CR" maxlength="4" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.CR)" #CR/>
     </td>
-    <td class="addr-col">
-      <input (keydown)="changeFocus($event, linesContainer)" type="text" title="AR" maxlength="3" [ngClass]="genRegClass(i, reg.AR)" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.AR)" #AR/>
+    <td class="addr-col" [ngClass]="genRegClass(i, reg.AR)" [ngStyle]="{'background-color': isExecutable(i)?'#dbf9eb':'#C8DDF2'}">
+      <input (keydown)="changeFocus($event, linesContainer)" type="text" title="AR" maxlength="3" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.AR)" #AR/>
     </td>
-    <td class="data-col">
-      <input (keydown)="changeFocus($event, linesContainer)" type="text" title="DR" maxlength="4" [ngClass]="genRegClass(i, reg.DR)" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.DR)" #DR/>
+    <td class="data-col" [ngClass]="genRegClass(i, reg.DR)" [ngStyle]="{'background-color': isExecutable(i)?'#dbf9eb':'#C8DDF2'}">
+      <input (keydown)="changeFocus($event, linesContainer)" type="text" title="DR" maxlength="4" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.DR)" #DR/>
     </td>
-    <td class="addr-col">
-      <input (keydown)="changeFocus($event, linesContainer)" type="text" title="SP" maxlength="3" [ngClass]="genRegClass(i, reg.SP)" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.SP)" #SP/>
+    <td class="addr-col" [ngClass]="genRegClass(i, reg.SP)" [ngStyle]="{'background-color': isExecutable(i)?'#dbf9eb':'#C8DDF2'}">
+      <input (keydown)="changeFocus($event, linesContainer)" type="text" title="SP" maxlength="3" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.SP)" #SP/>
     </td>
-    <td class="data-col">
-      <input (keydown)="changeFocus($event, linesContainer)" type="text" title="BR" maxlength="4" [ngClass]="genRegClass(i, reg.BR)" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.BR)" #BR/>
+    <td class="data-col" [ngClass]="genRegClass(i, reg.BR)" [ngStyle]="{'background-color': isExecutable(i)?'#dbf9eb':'#C8DDF2'}">
+      <input (keydown)="changeFocus($event, linesContainer)" type="text" title="BR" maxlength="4" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.BR)" #BR/>
     </td>
-    <td class="data-col">
-      <input (keydown)="changeFocus($event, linesContainer)" type="text" title="AC" maxlength="4" [ngClass]="genRegClass(i, reg.AC)" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.AC)" #AC/>
+    <td class="data-col" [ngClass]="genRegClass(i, reg.AC)" [ngStyle]="{'background-color': isExecutable(i)?'#dbf9eb':'#C8DDF2'}">
+      <input (keydown)="changeFocus($event, linesContainer)" type="text" title="AC" maxlength="4" [disabled]="!isExecutable(i)" [value]="getAnswer(i, reg.AC)" #AC/>
     </td>
-    <td class="data-col">
-      <input (keydown)="changeFocus($event, linesContainer)" type="text" title="NZVC" maxlength="4" [ngClass]="genRegClass(i, iNZVC)" [disabled]="!isExecutable(i)" [value]="getAnswer(i, iNZVC)" #NZVC/>
+    <td class="data-col" [ngClass]="genRegClass(i, iNZVC)" [ngStyle]="{'background-color': isExecutable(i)?'#dbf9eb':'#C8DDF2'}">
+      <input (keydown)="changeFocus($event, linesContainer)" type="text" title="NZVC" maxlength="4" [disabled]="!isExecutable(i)" [value]="getAnswer(i, iNZVC)" #NZVC/>
     </td>
     <td *ngIf="learningMode"><button (click)="checkLine(i, IP, CR, AR, DR, SP, BR, AC, NZVC)" [disabled]="!isExecutable(i)">Проверить</button></td>
     <td *ngIf="learningMode"><button (click)="showAnswer(i)" [disabled]="!isExecutable(i)">Показать</button></td>
