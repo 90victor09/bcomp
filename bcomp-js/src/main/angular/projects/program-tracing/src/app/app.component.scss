@@ -7,6 +7,8 @@ input, button {
   border: $border $value-color;
   margin: 0;
   padding: 0 0.2em;
+  height: 1.6rem;
+  line-height: 1.6rem;
   &:disabled {
     visibility: hidden;
   }
@@ -22,9 +24,6 @@ input[type='checkbox'] {
 div {
   font-family: $font;
   text-align: center;
-  & > button{
-    padding: 0.2em;
-  }
   &.trace-table {
     overflow-x: auto;
   }
@@ -47,9 +46,7 @@ td {
   text-align: center;
   input, button {
     position: relative;
-    line-height: 1.6rem;
     vertical-align: middle;
-    height: 1.6rem;
     box-sizing: border-box;
     width: 100%;
     border: none;
