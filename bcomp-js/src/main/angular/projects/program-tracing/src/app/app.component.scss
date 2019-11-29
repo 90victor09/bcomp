@@ -1,5 +1,9 @@
 @import "../angular/src/common";
 
+html{
+  font-size: 12pt;
+}
+
 input, button {
   background-color: $value-color-bg;
   color: $value-color;
@@ -29,9 +33,7 @@ input[type='checkbox'] {
 
 div {
   font-family: $font;
-  font-size: 0.9em;
   text-align: center;
-
   & > button{
     padding: 0.2em;
   }
@@ -44,6 +46,7 @@ td, th {
   border: $border $value-color ;
   background-color: $value-color-bg;
   font-family: $font;
+  white-space: nowrap;
 }
 
 th {
@@ -60,6 +63,7 @@ td {
     height: 1.6rem;
     box-sizing: border-box;
     width: 100%;
+    border: 3px solid transparent;
   }
   input {
     text-transform: uppercase;
@@ -74,6 +78,7 @@ td {
 }
 
 table {
+  padding: 0 3px;
   text-align: center;
   margin: auto;
 }
