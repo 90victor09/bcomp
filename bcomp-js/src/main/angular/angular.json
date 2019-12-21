@@ -31,7 +31,7 @@
               "src/styles.scss"
             ],
             "scripts": [
-              { "input": "../../../target/generated/js/teavm/bcomp.js", "inject": false, "bundleName": "bcomp" }
+              { "input": "../../../target/generated/js/teavm/bcomp.js", "bundleName": "bcomp.[contenthash]" }
             ]
           },
           "configurations": {
@@ -155,7 +155,7 @@
               "projects/program-tracing/src/styles.scss"
             ],
             "scripts": [
-              { "input": "../../../target/generated/js/teavm/bcomp.js", "inject": false, "bundleName": "bcomp" }
+              { "input": "../../../target/generated/js/teavm/bcomp.js", "bundleName": "bcomp.[contenthash]" }
             ]
           },
           "configurations": {
