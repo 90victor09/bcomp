@@ -14,9 +14,23 @@
 	<name>bcomp-js</name>
 	<url>http://maven.apache.org</url>
 	<properties>
-		<teavm.version>0.6.1</teavm.version>
+		<teavm.version>0.7.0-dev-943</teavm.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+
+	<repositories>
+		<repository>
+			<id>teavm-dev</id>
+			<url>https://dl.bintray.com/konsoletyper/teavm</url>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>teavm-dev</id>
+			<url>https://dl.bintray.com/konsoletyper/teavm</url>
+		</pluginRepository>
+	</pluginRepositories>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -173,6 +187,11 @@
 			<version>4.10</version>
 			<scope>test</scope>
 		</dependency>-->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>bcomp-js-classlib</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>bcomp-ng</artifactId>

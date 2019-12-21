@@ -11,6 +11,7 @@
 		<module>bcomp-assembler</module>
                 <module>bcomp-ng</module>
                 <module>bcomp-ng-ui</module>
+		<module>bcomp-js/classlib</module>
 		<module>bcomp-js</module>
 	</modules>
 	<properties>
