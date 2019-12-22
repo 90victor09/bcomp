@@ -1,5 +1,7 @@
 // declare  var bcomp:  any;
 
+import "../../../../target/generated/js/teavm/bcomp"
+
 declare var loadBComp: () => void;
 loadBComp();
 

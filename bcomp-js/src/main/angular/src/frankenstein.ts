@@ -1,5 +1,5 @@
 import bcomp from "./bcomp"
-import { BCompService } from "./app/bcomp.service";
+import { BCompService } from "../projects/bcomp-app/src/app/bcomp.service";
 
 //TODO delete this
 
