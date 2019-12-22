@@ -5,31 +5,47 @@
   <title>BcompApp</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="preload" href="assets/gif/loading.gif" as="image">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <style>
     body{
       background-color: #C8DDF2;
     }
 
-    img{
+    .spinner {
+      width: 80px;
+      height: 80px;
+
       position: absolute;
       left: 0;
       right: 0;
       top: 0;
       bottom: 0;
       margin: auto;
-      vertical-align: middle;
-      text-align: center;
-      height: 50%;
+    }
+    .spinner:after {
+      content: " ";
+      display: block;
+      width: 64px;
+      height: 64px;
+      margin: 8px;
+      border-radius: 50%;
+      border: 6px solid #fff;
+      border-color: #fff transparent #fff transparent;
+      animation: spinner 1.2s linear infinite;
+    }
+    @keyframes spinner {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
     }
   </style>
 </head>
 <body>
   <app-root>
-    <div>
-      <img src="assets/gif/loading.gif" alt="Загрузка">
-    </div>
+      <div class="spinner"></div>
   </app-root>
 </body>
 </html>

@@ -22,7 +22,7 @@ export class BCompService {
     // this.bcompAngular = bcomp.startAngular(() => updateRegs())
   }
 
-  public setBComp(bcompAngular: BCompAngular){ //TODO move to constructor
+  public setBComp(bcompAngular: BCompAngular) : void { //TODO move to constructor
     this.bcompAngular = bcompAngular;
 
     this.addRegUpdateSignals(reg.AR, cs.WRAR);
@@ -70,7 +70,7 @@ export class BCompService {
   public setRegValue(reg: bcomp.regs, value: number) : void {
     this.bcompAngular.setRegValue(reg, value);
   }
-  public getRegValue(reg: bcomp.regs, cb: (val: number) => void){
+  public getRegValue(reg: bcomp.regs, cb: (val: number) => void) : void {
     this.bcompAngular.getRegValue(reg, (value: number) => {
       cb(Number("0x" + value));
     });

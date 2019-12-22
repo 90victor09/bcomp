@@ -63,6 +63,27 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
+                },
+
+                {
+                  "replace": "projects/bcomp-app/src/environments/environment.ts",
+                  "with": "src/environments/environment.child.prod.ts"
+                },
+                {
+                  "replace": "projects/console/src/environments/environment.ts",
+                  "with": "src/environments/environment.child.prod.ts"
+                },
+                {
+                  "replace": "projects/microprogram-listing/src/environments/environment.ts",
+                  "with": "src/environments/environment.child.prod.ts"
+                },
+                {
+                  "replace": "projects/program-tracing/src/environments/environment.ts",
+                  "with": "src/environments/environment.child.prod.ts"
+                },
+                {
+                  "replace": "projects/microprogram-tracing/src/environments/environment.ts",
+                  "with": "src/environments/environment.child.prod.ts"
                 }
               ],
               "optimization": true,
@@ -70,10 +91,10 @@
               "sourceMap": false,
               "extractCss": true,
               "namedChunks": false,
-              "aot": true,
+              "aot": false,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": true,
+              "buildOptimizer": false,
               "budgets": [
                 {
                   "type": "initial",
