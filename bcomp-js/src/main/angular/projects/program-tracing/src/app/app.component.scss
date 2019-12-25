@@ -52,12 +52,12 @@ td {
     position: relative;
     vertical-align: middle;
     box-sizing: border-box;
-    width: 100%;
     border: none;
   }
   input {
     text-transform: uppercase;
     text-align: center;
+    width: 100%;
     }
   &.invalid  {
     border-color:  #ff0523
@@ -68,6 +68,7 @@ td {
   }
   button {
      cursor: pointer;
+     width: initial;
    }
 }
 
