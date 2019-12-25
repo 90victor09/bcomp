@@ -1,4 +1,5 @@
 export const environment = {
   production: true,
-  child: false
+  child: false,
+  programTracingApiEndpoint: ""
 };

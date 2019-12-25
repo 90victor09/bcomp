@@ -5,6 +5,9 @@
 <div>
   <label>Вариант: <input type="text" (change)="fetchTask(variantInput.value)" (keypress.enter)="fetchTask(variantInput.value)" #variantInput/></label>
 </div>
+<div class="error" *ngIf="errorMessage">
+  {{errorMessage}}
+</div>
 <br>
 <div>
   <label for="task-variant">Текущий вариант: </label>
@@ -58,8 +61,8 @@
     <td class="data-col" [ngClass]="genRegClass(i, iNZVC)" [ngStyle]="{'background-color': isExecutable(i)?'#dbf9eb':'#C8DDF2'}">
       <input (keydown)="changeFocus($event, linesContainer)" type="text" title="NZVC" maxlength="4" [disabled]="!isExecutable(i)" [readOnly]="this.answers[i]" [value]="getAnswer(i, iNZVC)" #NZVC/>
     </td>
-    <td *ngIf="learningMode"><button (click)="checkLine(i, IP, CR, AR, DR, SP, BR, AC, NZVC)" [disabled]="!isExecutable(i)">Проверить</button></td>
-    <td *ngIf="learningMode"><button (click)="showAnswer(i)" [disabled]="!isExecutable(i)">Показать</button></td>
+    <td *ngIf="learningMode"><button (click)="checkLine(i, IP, CR, AR, DR, SP, BR, AC, NZVC)" [disabled]="!isExecutable(i) || this.answers[i]">Проверить</button></td>
+    <td *ngIf="learningMode"><button (click)="showAnswer(i)" [disabled]="!isExecutable(i) || this.answers[i]">Показать</button></td>
   </tr>
   </tbody>
 </table>

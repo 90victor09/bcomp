@@ -1,7 +1,16 @@
 import { Component } from '@angular/core';
 import bcomp, { BCompAngular, reg, state } from "../../../../src/bcomp";
 import { hex, setBit, toHex, values } from "../../../../src/common";
+import { HttpClient } from "@angular/common/http";
+import { environment } from "../environments/environment";
+import { Observable } from "rxjs";
 
+
+interface Task {
+  variant: number,
+  startWith: string,
+  cmds: string[][]
+}
 
 @Component({
   selector: 'app-root',
@@ -23,16 +32,17 @@ export class AppComponent {
   timer : number;
   time : number = 0;
 
+  errorMessage : string = null;
+
   iNZVC = reg.PS;
 
   checks = {};
   answers = {};
 
   private readonly bcomp : BCompAngular;
-  constructor() {
+  constructor(private http: HttpClient) {
     this.bcomp = bcomp.startAngular(() => {});
     this.timer = setInterval(() => this.time++, 1000);
-    this.fetchTask(1234); //TODO remove
   }
 
 
@@ -62,34 +72,51 @@ export class AppComponent {
 
   fetchTask(variantStr: string | number){
     let variant = Number(variantStr);
-    if(isNaN(variant))
-      return;
+    if(isNaN(variant) || variant < 1 || variant > 1000)
+      return this.errorMessage = "Вариант должен быть числом от 1 до 1000";
 
-    let response : any = {
-      variant: 1234,
-      startWith: "004",
-      cmds: [
-        ["001", "0000",     "0000"],
-        ["002", "0000",     "0000"],
-        ["003", "4F22",     "4F22"],
-        ["004", "+ADD 003", "4003"],
-        ["005", "HLT",      "0100"]
-      ]
-    }; //TODO HTTP request
+    this.errorMessage = null;
 
-    this.taskVariant = {
-      variant: variant,
-      startWith: response.startWith,
-      cmds: response.cmds,
-      executableLines: 0
-    };
+    new Observable<Task>((observer) => {
+      if(!environment.production) {
+        observer.next({
+          variant: 1234,
+          startWith: "004",
+          cmds: [
+            ["001", "0000", "0000"],
+            ["002", "0000", "0000"],
+            ["003", "4F22", "4F22"],
+            ["004", "+ADD 003", "4003"],
+            ["005", "HLT", "0100"]
+          ]
+        });
+        observer.complete();
+      }else{
+        this.http.get<Task>(environment.programTracingApiEndpoint + (variant % (1000+1))).subscribe((resp: Task) => {
+          observer.next(resp);
+          observer.complete();
+        }, (err) => {
+          console.error(err);
+          observer.error(err);
+        });
+      }
+    }).subscribe((response: Task) => {
+      this.taskVariant = {
+        variant: variant,
+        startWith: response.startWith,
+        cmds: response.cmds,
+        executableLines: 0
+      };
 
-    for(let i = 0; i < this.taskVariant.cmds.length; i++)
-      if(this.isExecutable(i))
-        this.taskVariant.executableLines += 1;
+      for(let i = 0; i < this.taskVariant.cmds.length; i++)
+        if(this.isExecutable(i))
+          this.taskVariant.executableLines += 1;
 
-    this.tryCount = 0;
-    this.time = 0;
+      this.checks = {};
+      this.answers = {};
+      this.tryCount = 0;
+      this.time = 0;
+    });
   }
 
 
@@ -110,7 +137,7 @@ export class AppComponent {
   }
   checkReg(lineNo: number, r: bcomp.regs, val: string) : void {
     this.getRegHexValue(r, (hexVal) => {
-      this.checks[lineNo] = setBit(this.checks[lineNo], r, hexVal == val.toUpperCase());
+      this.checks[lineNo] = setBit(this.checks[lineNo], r, hexVal == Number("0x" + val));
     });
   }
   checkAll(lines: HTMLCollection) : void {
@@ -152,17 +179,16 @@ export class AppComponent {
   }
   showRegAnswer(lineNo: number, r: bcomp.regs) : void {
     this.getRegHexValue(r, (hexVal) => {
-      this.answers[lineNo][r] = hexVal;
+      let width = 4;
+      if(r == reg.IP || r == reg.AR || r == reg.SP)
+        width = 3;
+      this.answers[lineNo][r] = toHex(hexVal, width);
     });
   }
 
 
   getRegHexValue(r: bcomp.regs, cb: (hexVal) => void) : void {
-    let width = 4;
-    if(r == reg.IP || r == reg.AR || r == reg.SP)
-      width = 3;
-
-    this.bcomp.getRegValue(r, (regVal) => cb(toHex(regVal, width)));
+    this.bcomp.getRegValue(r, (regVal) => cb(regVal)); //toHex(regVal, width)));
   }
 
   getProgramState(psval: number, state: bcomp.states) : boolean {

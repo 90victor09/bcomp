@@ -5,6 +5,7 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from "./app-routing.module";
 import { environment } from "../environments/environment";
+import { HttpClientModule } from "@angular/common/http";
 
 @NgModule({
   declarations: [
@@ -12,6 +13,7 @@ import { environment } from "../environments/environment";
   ],
   imports: [
     (!environment.child ? BrowserModule : CommonModule),
+    HttpClientModule,
     AppRoutingModule
   ],
   providers: [],
