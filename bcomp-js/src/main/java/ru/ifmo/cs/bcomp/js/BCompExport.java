@@ -26,9 +26,6 @@ public class BCompExport {
 		+ "};"
 		+ targetVar + ".startAngular = function(cb){"
 			+ "return javaMethods.get('" + componentsPackage + ".AngularGlue.glue(L" + listenersPackage + "GlueVoidResultListener;)" + jsObj + "').invoke(cb);"
-		+ "};"
-		+ targetVar + ".startFrankenstein = function(cb){"  //TODO delete this
-			+ "return javaMethods.get('" + componentsPackage + ".AngularGlue.frankenstein(L" + listenersPackage + "GlueVoidResultListener;)" + jsObj + "').invoke(cb);"
 		+ "};")
 	private static native void export();
 

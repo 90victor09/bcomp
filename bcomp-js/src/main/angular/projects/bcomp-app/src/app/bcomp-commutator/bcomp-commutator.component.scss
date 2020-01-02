@@ -1,0 +1,24 @@
+@import "../../../../../src/common";
+
+.bcomp-commutator{
+  $height: 2rem;
+  .commutator {
+    font-size: 21px;
+    padding: 0 0.8rem;
+    line-height: $height;
+    display: inline-block;
+    background-color: $title-color-bg;
+    border: $border;
+  }
+  .flags {
+    position: relative;
+  }
+  .flag {
+    padding: 0.1rem 0.2rem;
+    font-size: 21px;
+    position: absolute;
+    display: inline-block;
+    background-color: $value-color-bg;
+    border: $border;
+  }
+}

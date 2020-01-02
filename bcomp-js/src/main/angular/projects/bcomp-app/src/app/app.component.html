@@ -1,33 +1,27 @@
 <a routerLink="program-tracing">test</a>
-<div style="display: inline-block; width: 50%">
-  <table>
-    <tbody>
-    <tr>
-      <td>
-        <bcomp-reg [name]="reg.AC" [value]="getValue(reg.AC)" [left]="false"></bcomp-reg><br/>
-        <bcomp-reg [name]="reg.BR" [value]="getValue(reg.BR)" [left]="false"></bcomp-reg><br/>
-        <bcomp-reg [name]="reg.PS" [value]="getValue(reg.PS)" [left]="false"></bcomp-reg><br/>
-        <bcomp-reg [name]="reg.IR" [value]="getValue(reg.IR)" [left]="false"></bcomp-reg><br/>
-      </td>
-      <td>
-        <bcomp-reg [name]="reg.DR" [value]="getValue(reg.DR)"></bcomp-reg><br/>
-        <bcomp-reg [name]="reg.CR" [value]="getValue(reg.CR)"></bcomp-reg><br/>
-        <bcomp-reg [name]="reg.IP" [value]="getValue(reg.IP)" width="11"></bcomp-reg><br/>
-        <bcomp-reg [name]="reg.SP" [value]="getValue(reg.SP)" width="11"></bcomp-reg><br/>
-      </td>
-    </tr>
-    <tr>
-      <td><bcomp-reg [name]="reg.IR" [value]="getValue(reg.IR)" [left]="false"></bcomp-reg></td>
-      <td><bcomp-reg [name]="reg.AR" [value]="getValue(reg.AR)" width="11"></bcomp-reg></td>
-    </tr>
-    <tr>
-      <td><bcomp-running-cycle></bcomp-running-cycle></td>
-      <td><bcomp-memory-view></bcomp-memory-view></td>
-    </tr>
-    </tbody>
-  </table>
-</div>
-<div style="display: inline-block; width: 50%"> <!-- TODO delete -->
-  <pre id="console"></pre>
-  <input type="text" id="console-input"/>
+
+<div class="graphics">
+  <canvas width="1000" height="500" #busesCanvas></canvas>
+  <div class="elements">
+    <bcomp-reg [name]="reg[reg.AC]" [value]="getValue(reg.AC)" [left]="false" style="left:2.5%; top:12.5%"></bcomp-reg>
+    <bcomp-reg [name]="reg[reg.BR]" [value]="getValue(reg.BR)" [left]="false" style="left:2.5%; top:20%"></bcomp-reg>
+    <bcomp-reg [name]="reg[reg.PS]" [value]="getValue(reg.PS)" [left]="false" style="left:2.5%; top:27.5%"></bcomp-reg>
+    <bcomp-reg [name]="reg[reg.IR]" [value]="getValue(reg.IR)" [left]="false" style="left:2.5%; top:35%"></bcomp-reg>
+
+    <bcomp-reg [name]="reg[reg.DR]" [value]="getValue(reg.DR)" style="left:52.5%; top:12.5%"></bcomp-reg>
+    <bcomp-reg [name]="reg[reg.CR]" [value]="getValue(reg.CR)" style="left:52.5%; top:20%"></bcomp-reg>
+    <bcomp-reg [name]="reg[reg.IP]" [value]="getValue(reg.IP)" width="11" style="left:52.5%; top:27.5%"></bcomp-reg>
+    <bcomp-reg [name]="reg[reg.SP]" [value]="getValue(reg.SP)" width="11" style="left:52.5%; top:35%"></bcomp-reg>
+
+
+    <bcomp-alu style="left:30%; top:47.5%"></bcomp-alu>
+    <bcomp-bcomp-commutator  style="left:31%; top:70%"></bcomp-bcomp-commutator>
+
+    <bcomp-running-cycle style="left:57.5%; top:47.5%"></bcomp-running-cycle>
+
+    <bcomp-memory-view style="left:85%; top:0"></bcomp-memory-view>
+
+    <bcomp-reg [name]="reg[reg.IR]" [value]="getValue(reg.IR)" [left]="false" style="left:50%; top:95%"></bcomp-reg>
+    <bcomp-reg [name]="reg[reg.AR]" [value]="getValue(reg.AR)" width="11" style="left:77.5%; top:87.5%"></bcomp-reg>
+  </div>
 </div>

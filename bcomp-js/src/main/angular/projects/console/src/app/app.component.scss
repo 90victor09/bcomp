@@ -1,0 +1,36 @@
+@import "../../../../src/common";
+
+$padding: 0.5rem;
+$input: 4*$padding;
+$bg-color: #111;
+$text-color: #DDD;
+
+* {
+  box-sizing: border-box;
+}
+pre {
+  margin: 0;
+  min-height: 100%;
+  padding: $padding $padding $input;
+  //font-family: Roboto, sans-serif;
+  background-color: $bg-color;
+  color: $text-color;
+}
+
+form {
+  margin-top: -$input;
+}
+
+input[type='text'] {
+  height: $input;
+  //line-height: $input;
+  padding: $padding;
+  width: 100%;
+  border: none;
+  background-color: transparent;
+  color: $text-color;
+}
+
+input[type='submit'] {
+  display: none;
+}

@@ -18,10 +18,6 @@ public class BCompAngular {
 			e.printStackTrace();
 		}
 	}
-	public BCompAngular(BasicComp bcomp){  //TODO delete this
-		this.bcomp = bcomp;
-		this.cpu = bcomp.getCPU();
-	}
 
 	public void setRegValue(Reg reg, long value){
 		cpu.getRegister(reg).setValue(value);
@@ -66,4 +62,7 @@ public class BCompAngular {
 		return cpu.getMemory().getLastAccessedAddress();
 	}
 
+	public String[] decodeMC(long addr){
+		return MCDecoder.decodeMC(cpu, addr);
+	}
 }

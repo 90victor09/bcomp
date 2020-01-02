@@ -34,7 +34,9 @@ public class AngularGlue {
 
 		SET_MEMORY_VALUE,
 		GET_MEMORY_VALUE,
-		GET_LAST_ACCESSED_MEMORY_ADDRESS
+		GET_LAST_ACCESSED_MEMORY_ADDRESS,
+
+		DECODE_MC
 	}
 	private static GlueComponent<CMD> glue = new GlueComponent<>(AngularGlue::execute);
 	private static BCompAngular bcomp;
@@ -53,9 +55,10 @@ public class AngularGlue {
 
 			+ "a.executeContinue = function(cb){ return javaMethods.get('" + angularGlue + ".executeContinue(L" + listenersPackage + "GlueVoidResultListener;)V').invoke(cb); };"
 
-			+ "a.setMemoryValue = function(addr,value){ return javaMethods.get('" + angularGlue + ".setMemoryValue(DD)V').invoke(addr,value); };"
-			+ "a.getMemoryValue = function(addr,cb){ return javaMethods.get('" + angularGlue + ".getMemoryValue(DL" + listenersPackage + "GlueDoubleResultListener;)V').invoke(addr,cb); };"
+			+ "a.setMemoryValue = function(addr, value){ return javaMethods.get('" + angularGlue + ".setMemoryValue(DD)V').invoke(addr, value); };"
+			+ "a.getMemoryValue = function(addr, cb){ return javaMethods.get('" + angularGlue + ".getMemoryValue(DL" + listenersPackage + "GlueDoubleResultListener;)V').invoke(addr, cb); };"
 			+ "a.getLastAccessedMemoryAddress = function(cb){ return javaMethods.get('" + angularGlue + ".getLastAccessedMemoryAddress(L" + listenersPackage + "GlueDoubleResultListener;)V').invoke(cb); };"
+			+ "a.decodeMC = function(addr, cb){ return javaMethods.get('" + angularGlue + ".decodeMC(DL" + listenersPackage + "GlueStringArrayResultListener;)V').invoke(addr, cb); };"
 			+ "return a;";
 
 	@SuppressWarnings("unused")
@@ -64,22 +67,12 @@ public class AngularGlue {
 			+ script)
 	public static native JSObject glue(GlueVoidResultListener listener);
 
-	@SuppressWarnings("unused")
-	@JSBody(params = {"listener"}, script = "var a = {};"  //TODO delete this
-			+ "javaMethods.get('" + angularGlue + ".init(ZL" + listenersPackage + "GlueVoidResultListener;)V').invoke(true, listener);"
-			+ script)
-	public static native JSObject frankenstein(GlueVoidResultListener listener);
-
 //	@SuppressWarnings("unused")
 //	public static void init() {
 //		glue.sendCmd(CMD.INIT, null);
 //	}
 	public static void init(boolean b, GlueVoidResultListener listener) {
-		if(!b){
-			glue.sendCmd(CMD.INIT, (result) -> listener.process());
-		}else{
-			glue.sendCmd(CMD.INIT, (result -> listener.process()), true);
-		}
+		glue.sendCmd(CMD.INIT, (result) -> listener.process());
 	}
 	public static void sync(GlueVoidResultListener listener){
 		glue.sendCmd(CMD.SYNC, result -> listener.process());
@@ -128,13 +121,14 @@ public class AngularGlue {
 		glue.sendCmd(CMD.GET_LAST_ACCESSED_MEMORY_ADDRESS, result -> listener.process((Double) result));
 	}
 
+	public static void decodeMC(double addr, GlueStringArrayResultListener listener){
+		glue.sendCmd(CMD.DECODE_MC, result -> listener.process((String[]) result));
+	}
+
 	private static Object execute(CMD type, Object... args){
 		switch(type){
 			case INIT:
-				if(args.length == 0)
-					bcomp = new BCompAngular();
-				else
-					bcomp = new BCompAngular(ConsoleGlue.cli.bcomp);  //TODO delete this
+				bcomp = new BCompAngular();
 				break;
 			case SYNC:
 				break;
@@ -166,6 +160,8 @@ public class AngularGlue {
 				return (double) bcomp.getMemoryValue((long)(double) args[0]);
 			case GET_LAST_ACCESSED_MEMORY_ADDRESS:
 				return (double) bcomp.getLastAccessedMemoryAddress();
+			case DECODE_MC:
+				return bcomp.decodeMC((long)(double) args[0]);
 		}
 		return null;
 	}

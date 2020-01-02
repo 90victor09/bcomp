@@ -123,7 +123,6 @@ declare namespace bcomp {
   function sleep(ms: number) : void;
   function startCLI(el: HTMLElement) : BCompCLI;
   function startAngular(cb: () => void) : BCompAngular;
-  function startFrankenstein(cb: () => void) : BCompAngular; //TODO delete this
 }
 export default bcomp;
 
@@ -155,4 +154,5 @@ export interface BCompAngular {
   setMemoryValue(addr: MemoryAddress, value: MemoryValue) : void;
   getMemoryValue(addr: MemoryAddress, cb: (value: MemoryValue) => void) : void;
   getLastAccessedMemoryAddress(cb: (value: MemoryAddress) => void) : void;
+  decodeMC(addr: MemoryAddress, cb: (value: string[]) => void) : void;
 }
