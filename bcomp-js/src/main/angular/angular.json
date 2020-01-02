@@ -36,24 +36,8 @@
             ],
             "fileReplacements": [
               {
-                "replace": "projects/bcomp-app/src/environments/environment.ts",
-                "with": "src/environments/environment.child.prod.ts"
-              },
-              {
-                "replace": "projects/console/src/environments/environment.ts",
-                "with": "src/environments/environment.child.prod.ts"
-              },
-              {
-                "replace": "projects/microprogram-listing/src/environments/environment.ts",
-                "with": "src/environments/environment.child.prod.ts"
-              },
-              {
-                "replace": "projects/program-tracing/src/environments/environment.ts",
-                "with": "src/environments/environment.child.prod.ts"
-              },
-              {
-                "replace": "projects/microprogram-tracing/src/environments/environment.ts",
-                "with": "src/environments/environment.child.prod.ts"
+                "replace": "src/environments/environment.nochild.ts",
+                "with": "src/environments/environment.child.ts"
               }
             ]
           },
@@ -64,26 +48,29 @@
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
                 },
-
+                {
+                  "replace": "src/environments/environment.nochild.ts",
+                  "with": "src/environments/environment.child.ts"
+                },
                 {
                   "replace": "projects/bcomp-app/src/environments/environment.ts",
-                  "with": "src/environments/environment.child.prod.ts"
+                  "with": "projects/bcomp-app/src/environments/environment.prod.ts"
                 },
                 {
                   "replace": "projects/console/src/environments/environment.ts",
-                  "with": "src/environments/environment.child.prod.ts"
+                  "with": "projects/console/src/environments/environment.prod.ts"
                 },
                 {
                   "replace": "projects/microprogram-listing/src/environments/environment.ts",
-                  "with": "src/environments/environment.child.prod.ts"
-                },
-                {
-                  "replace": "projects/program-tracing/src/environments/environment.ts",
-                  "with": "src/environments/environment.child.prod.ts"
+                  "with": "projects/microprogram-listing/src/environments/environment.prod.ts"
                 },
                 {
                   "replace": "projects/microprogram-tracing/src/environments/environment.ts",
-                  "with": "src/environments/environment.child.prod.ts"
+                  "with": "projects/microprogram-tracing/src/environments/environment.prod.ts"
+                },
+                {
+                  "replace": "projects/program-tracing/src/environments/environment.ts",
+                  "with": "projects/program-tracing/src/environments/environment.prod.ts"
                 }
               ],
               "optimization": true,
@@ -180,7 +167,7 @@
       },
       "root": "projects/bcomp-app",
       "sourceRoot": "projects/bcomp-app/src",
-      "prefix": "app",
+      "prefix": "bcomp",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
@@ -208,6 +195,10 @@
                 {
                   "replace": "projects/bcomp-app/src/environments/environment.ts",
                   "with": "projects/bcomp-app/src/environments/environment.prod.ts"
+                },
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
                 }
               ],
               "optimization": true,
@@ -332,6 +323,10 @@
                 {
                   "replace": "projects/program-tracing/src/environments/environment.ts",
                   "with": "projects/program-tracing/src/environments/environment.prod.ts"
+                },
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
                 }
               ],
               "optimization": true,
@@ -456,6 +451,10 @@
                 {
                   "replace": "projects/microprogram-tracing/src/environments/environment.ts",
                   "with": "projects/microprogram-tracing/src/environments/environment.prod.ts"
+                },
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
                 }
               ],
               "optimization": true,
@@ -580,6 +579,10 @@
                 {
                   "replace": "projects/console/src/environments/environment.ts",
                   "with": "projects/console/src/environments/environment.prod.ts"
+                },
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
                 }
               ],
               "optimization": true,
@@ -704,6 +707,10 @@
                 {
                   "replace": "projects/microprogram-listing/src/environments/environment.ts",
                   "with": "projects/microprogram-listing/src/environments/environment.prod.ts"
+                },
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
                 }
               ],
               "optimization": true,
