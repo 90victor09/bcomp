@@ -1,5 +1,6 @@
-import { merge, environment as env } from "../../../../src/environments/environment.common"
+import { environment as env0 } from "../../../../src/environments/environment.common"
 
-export const environment = merge(env, {
-  programTracingApiEndpoint: ""
-});
+let env = env0;
+env["programTracingApiEndpoint"] = "";
+
+export const environment = env;

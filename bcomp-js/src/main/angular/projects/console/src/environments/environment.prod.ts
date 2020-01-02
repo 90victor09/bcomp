@@ -1,5 +1,5 @@
-import { merge, environment as env } from "../../../../src/environments/environment.common"
+import { environment as env0 } from "../../../../src/environments/environment.common"
 
-export const environment = merge(env, {
+let env = env0;
 
-});
+export const environment = env;

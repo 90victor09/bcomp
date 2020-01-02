@@ -1,3 +1,1 @@
-export const environment = {
-  child: true,
-};
+export const child = true;
