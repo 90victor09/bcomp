@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { BCompService } from "../bcomp.service";
+import { BCompService } from "../../../../../src/app/bcomp.service";
 import bcomp, { cycle, state } from "../../../../../src/bcomp";
 import { values } from "../../../../../src/common";
 

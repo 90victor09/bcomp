@@ -1,7 +1,7 @@
 import { Injectable, NgZone } from '@angular/core';
-import bcomp, { reg, cs } from "../../../../src/bcomp"
-import { BCompAngular } from "../../../../src/bcomp"
-import { values } from "../../../../src/common";
+import bcomp, { reg, cs } from "../bcomp"
+import { BCompAngular } from "../bcomp"
+import { values } from "../common";
 
 @Injectable({
   providedIn: 'root'
@@ -19,11 +19,7 @@ export class BCompService {
     for(let i = 0; i < 16; i++)
       this.memoryView.push(0);
 
-    // this.bcompAngular = bcomp.startAngular(() => updateRegs())
-  }
-
-  public setBComp(bcompAngular: BCompAngular) : void { //TODO move to constructor
-    this.bcompAngular = bcompAngular;
+    this.bcompAngular = bcomp.startAngular(() => this.updateRegs());
 
     this.addRegUpdateSignals(reg.AR, cs.WRAR);
     this.addRegUpdateSignals(reg.DR, cs.WRDR, cs.LOAD);
@@ -41,10 +37,10 @@ export class BCompService {
       })
     });
 
-    bcompAngular.setTickStartListener(() => {
+    this.bcompAngular.setTickStartListener(() => {
       this.updateRunningCycle();
     });
-    bcompAngular.setTickFinishListener(() => {
+    this.bcompAngular.setTickFinishListener(() => {
       this.bcompAngular.getRegValue(reg.IR, (val) => this.regsValues[reg.IR] = Number("0x" + val));
       bcomp.sleep(0); // Context switching injection
     });
@@ -79,7 +75,7 @@ export class BCompService {
 
   private addRegUpdateSignals(reg: bcomp.regs, ...signals: bcomp.controlSignals[]) : void {
     for(let sig of signals)
-      this.bcompAngular.addSignalListener(sig, (val) => this.updateReg(reg));
+      this.bcompAngular.addSignalListener(sig, () => this.updateReg(reg));
   }
 
   private addSignalsListener(sigs: bcomp.controlSignals[], cb: (val) => void) : void {

@@ -1,1 +1,18 @@
-<p>microprogram-listing</p>
+<table cellspacing="0">
+  <thead>
+    <tr>
+      <th class="label-col">Метка</th>
+      <th class="addr-col">Адр</th>
+      <th class="mc-col">МК</th>
+      <th class="operation-col">Расшифровка</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let decoded of decodedMCs; let i = index">
+      <td class="label-col" [attr.id]="decoded[0] && ('L-' + decoded[0])">{{ decoded[0] }}</td>
+      <td class="addr-col" [attr.id]="'A-' + (i | hexadecimal:2)">{{ i | hexadecimal:2 }}</td>
+      <td class="mc-col">{{ decoded[1] }}</td>
+      <td class="operation-col"><app-interactive-op [op]="decoded[2]" (jump)="jumpTo($event)"></app-interactive-op></td>
+    </tr>
+  </tbody>
+</table>

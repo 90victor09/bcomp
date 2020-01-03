@@ -11,9 +11,7 @@ import { BCompMemoryView } from "./bcomp-memory-view/bcomp.memory-view";
 import { BCompALUComponent } from './bcomp-alu/bcomp-alu.component';
 import { BCompCommutatorComponent } from './bcomp-commutator/bcomp-commutator.component';
 
-import { BinaryPipe } from "./binary.pipe";
-import { HexadecimalPipe } from "./hexadecimal.pipe";
-import { GroupByPipe } from "./group-by.pipe";
+import { BCompModule } from "../../../../src/app/bcomp.module";
 
 @NgModule({
   declarations: [
@@ -23,17 +21,15 @@ import { GroupByPipe } from "./group-by.pipe";
     BCompALUComponent,
     BCompCommutatorComponent,
     BCompRunningCycle,
-    BCompMemoryView,
-
-    BinaryPipe,
-    HexadecimalPipe,
-    GroupByPipe
+    BCompMemoryView
   ],
   imports: [
     (!environment.child ? BrowserModule : CommonModule),
+    BCompModule,
     AppRoutingModule
   ],
   providers: [],
+  exports: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { BCompService } from "../bcomp.service";
+import { BCompService } from "../../../../../src/app/bcomp.service";
 
 @Component({
   selector: 'bcomp-memory-view',

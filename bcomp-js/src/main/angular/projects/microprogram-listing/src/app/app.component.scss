@@ -1,0 +1,36 @@
+$even-color: #EEE;
+$hover-color: #DDD;
+
+table {
+  width: 100%;
+
+  thead th {
+    border-bottom: 3px solid #CCC;
+  }
+
+  tr:nth-child(2n){
+    background-color: $even-color;
+  }
+  tbody tr:hover {
+    background-color: $hover-color;
+  }
+}
+
+
+.addr-col, .mc-col {
+  text-align: center;
+}
+
+.addr-col {
+  width: 3em;
+}
+.label-col {
+  text-align: right;
+  width: 7em;
+}
+.mc-col {
+  width: 7em;
+}
+.operation-col {
+  padding-left: 4rem;
+}

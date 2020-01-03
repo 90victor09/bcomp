@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, ViewChild } from '@angular/core';
 import bcomp, { BCompAngular, reg, state } from "../../../../src/bcomp";
 import { hex, setBit, toHex, values } from "../../../../src/common";
 import { HttpClient } from "@angular/common/http";
@@ -17,7 +17,7 @@ interface Task {
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements AfterViewChecked {
   reg = reg;
   taskVariant : {variant: number, startWith: string, cmds: string[][], executableLines: number} = {
     variant: 0,
@@ -38,6 +38,8 @@ export class AppComponent {
 
   checks = {};
   answers = {};
+
+  private shouldUpdateInputs: boolean = false;
 
   private readonly bcomp : BCompAngular;
   constructor(private http: HttpClient) {
@@ -101,6 +103,7 @@ export class AppComponent {
         });
       }
     }).subscribe((response: Task) => {
+      this.shouldUpdateInputs = true;
       this.taskVariant = {
         variant: variant,
         startWith: response.startWith,
@@ -261,18 +264,27 @@ export class AppComponent {
     return this.answers[i] && this.answers[i][regIdx] || '';
   }
 
-  changeFocus(e: KeyboardEvent, linesContainer: HTMLElement){
+  @ViewChild("linesContainer", {static: true}) linesContainerRef: ElementRef;
+  private inputs: HTMLInputElement[] = [];
+  ngAfterViewChecked(): void {
+    if(!this.shouldUpdateInputs)
+      return;
+    this.shouldUpdateInputs = false;
+
+    this.inputs = Array.from<HTMLInputElement>(this.linesContainerRef.nativeElement.querySelectorAll("input:not([readOnly]):not([disabled])"));
+  }
+
+  changeFocus(e: KeyboardEvent){
     let input = <HTMLInputElement>e.target;
     if(input.selectionStart != input.selectionEnd || e.altKey || e.ctrlKey || e.shiftKey || e.metaKey)
       return;
 
-    let inputs = Array.from(linesContainer.querySelectorAll<HTMLInputElement>("input:not([readOnly])"));
-    let idx = inputs.indexOf(input);
+    let idx = this.inputs.indexOf(input);
 
     // *Char*, Enter, ArrowRight
     if(e.key.length == 1 || e.key == "Enter" || e.key == "ArrowRight" || e.key == "Right"){
       // At the end of input && has next input
-      if(input.selectionEnd != (e.key.length != 1 ? input.value.length : input.maxLength) || ++idx == inputs.length)
+      if(input.selectionEnd != (e.key.length != 1 ? input.value.length : input.maxLength) || ++idx == this.inputs.length)
         return;
     }else
     if(e.key == "Backspace" || e.key == "ArrowLeft" || e.key == "Left"){
@@ -289,16 +301,16 @@ export class AppComponent {
     if(e.key == "ArrowDown" || e.key == "Down"){
       idx += 8;
 
-      if(idx > inputs.length)
+      if(idx >= this.inputs.length)
         return;
     }else // None
       return;
 
     let pos = input.selectionEnd;
-    inputs[idx].focus();
+    this.inputs[idx].focus();
 
     if(e.key == "ArrowUp" || e.key == "ArrowDown" || e.key == "Up" || e.key == "Down")
-      inputs[idx].selectionEnd = inputs[idx].selectionStart = Math.min(pos, inputs[idx].maxLength);
+      this.inputs[idx].selectionEnd = this.inputs[idx].selectionStart = Math.min(pos, this.inputs[idx].maxLength);
 
     // Prevent arrows (and enter) after focus
     if(e.key.length != 1 && e.key != "Backspace")

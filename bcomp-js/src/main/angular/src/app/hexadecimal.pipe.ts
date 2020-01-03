@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { toHex } from "../../../../src/common";
+import { toHex } from "../common";
 
 @Pipe({
   name: 'hexadecimal'

@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import bcomp, { reg } from '../../../../src/bcomp';
-import { BCompService } from "./bcomp.service";
+import { BCompService } from "../../../../src/app/bcomp.service";
 
 import { BCompCanvas } from "./bcomp-canvas";
 

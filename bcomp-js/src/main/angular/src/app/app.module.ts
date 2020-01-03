@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from "./app.component";
-import { BCompService } from "../../projects/bcomp-app/src/app/bcomp.service";
+import { BCompService } from "./bcomp.service";
 import { AppRoutingModule } from "./app-routing.module";
 
 @NgModule({

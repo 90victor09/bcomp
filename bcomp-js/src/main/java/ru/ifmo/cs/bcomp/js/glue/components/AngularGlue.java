@@ -122,7 +122,7 @@ public class AngularGlue {
 	}
 
 	public static void decodeMC(double addr, GlueStringArrayResultListener listener){
-		glue.sendCmd(CMD.DECODE_MC, result -> listener.process((String[]) result));
+		glue.sendCmd(CMD.DECODE_MC, result -> listener.process((String[]) result), addr);
 	}
 
 	private static Object execute(CMD type, Object... args){
