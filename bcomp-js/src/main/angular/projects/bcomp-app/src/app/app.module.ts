@@ -13,6 +13,10 @@ import { BCompCommutatorComponent } from './bcomp-commutator/bcomp-commutator.co
 
 import { BCompModule } from "../../../../src/app/bcomp.module";
 
+let coreModule: any = BrowserModule;
+if(environment.child)
+  coreModule = CommonModule;
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -24,7 +28,7 @@ import { BCompModule } from "../../../../src/app/bcomp.module";
     BCompMemoryView
   ],
   imports: [
-    (!environment.child ? BrowserModule : CommonModule),
+    coreModule,
     BCompModule,
     AppRoutingModule
   ],

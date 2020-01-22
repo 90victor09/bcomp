@@ -34,47 +34,47 @@
   </tr>
   </thead>
   <tbody #linesContainer>
-  <tr *ngFor="let cmd of taskVariant?.cmds; let i = index">
+  <tr *ngFor="let cmd of taskVariant?.cmds; let i = index" [class.not-executable]="!isExecutable(i)">
     <td>{{cmd[0]}}</td>
     <td>{{cmd[1]}}</td>
-    <td class="addr-col" [ngClass]="genRegClass(i, reg.IP)" [ngStyle]="{'background-color': isExecutable(i)?'#dbf9eb':'#C8DDF2'}">
-      <input (keydown)="changeFocus($event)" type="text" title="IP" maxlength="3" [disabled]="!isExecutable(i)" [readOnly]="this.answers[i]" [value]="getAnswer(i, reg.IP)" #IP/>
+    <td class="addr-col" [attr.data-check]="isValid(i, reg.IP)">
+      <input (keydown)="changeFocus($event)" type="text" title="IP" maxlength="3" [readOnly]="answers[i]" [value]="getAnswer(i, reg.IP)" #IP/>
     </td>
-    <td class="data-col" [ngClass]="genRegClass(i, reg.CR)" [ngStyle]="{'background-color': isExecutable(i)?'#dbf9eb':'#C8DDF2'}">
-      <input (keydown)="changeFocus($event)" type="text" title="CR" maxlength="4" [disabled]="!isExecutable(i)" [readOnly]="this.answers[i]" [value]="getAnswer(i, reg.CR)" #CR/>
+    <td class="data-col" [attr.data-check]="isValid(i, reg.CR)">
+      <input (keydown)="changeFocus($event)" type="text" title="CR" maxlength="4" [readOnly]="answers[i]" [value]="getAnswer(i, reg.CR)" #CR/>
     </td>
-    <td class="addr-col" [ngClass]="genRegClass(i, reg.AR)" [ngStyle]="{'background-color': isExecutable(i)?'#dbf9eb':'#C8DDF2'}">
-      <input (keydown)="changeFocus($event)" type="text" title="AR" maxlength="3" [disabled]="!isExecutable(i)" [readOnly]="this.answers[i]" [value]="getAnswer(i, reg.AR)" #AR/>
+    <td class="addr-col" [attr.data-check]="isValid(i, reg.AR)">
+      <input (keydown)="changeFocus($event)" type="text" title="AR" maxlength="3" [readOnly]="answers[i]" [value]="getAnswer(i, reg.AR)" #AR/>
     </td>
-    <td class="data-col" [ngClass]="genRegClass(i, reg.DR)" [ngStyle]="{'background-color': isExecutable(i)?'#dbf9eb':'#C8DDF2'}">
-      <input (keydown)="changeFocus($event)" type="text" title="DR" maxlength="4" [disabled]="!isExecutable(i)" [readOnly]="this.answers[i]" [value]="getAnswer(i, reg.DR)" #DR/>
+    <td class="data-col" [attr.data-check]="isValid(i, reg.DR)">
+      <input (keydown)="changeFocus($event)" type="text" title="DR" maxlength="4" [readOnly]="answers[i]" [value]="getAnswer(i, reg.DR)" #DR/>
     </td>
-    <td class="addr-col" [ngClass]="genRegClass(i, reg.SP)" [ngStyle]="{'background-color': isExecutable(i)?'#dbf9eb':'#C8DDF2'}">
-      <input (keydown)="changeFocus($event)" type="text" title="SP" maxlength="3" [disabled]="!isExecutable(i)" [readOnly]="this.answers[i]" [value]="getAnswer(i, reg.SP)" #SP/>
+    <td class="addr-col" [attr.data-check]="isValid(i, reg.SP)">
+      <input (keydown)="changeFocus($event)" type="text" title="SP" maxlength="3" [readOnly]="answers[i]" [value]="getAnswer(i, reg.SP)" #SP/>
     </td>
-    <td class="data-col" [ngClass]="genRegClass(i, reg.BR)" [ngStyle]="{'background-color': isExecutable(i)?'#dbf9eb':'#C8DDF2'}">
-      <input (keydown)="changeFocus($event)" type="text" title="BR" maxlength="4" [disabled]="!isExecutable(i)" [readOnly]="this.answers[i]" [value]="getAnswer(i, reg.BR)" #BR/>
+    <td class="data-col" [attr.data-check]="isValid(i, reg.BR)">
+      <input (keydown)="changeFocus($event)" type="text" title="BR" maxlength="4" [readOnly]="answers[i]" [value]="getAnswer(i, reg.BR)" #BR/>
     </td>
-    <td class="data-col" [ngClass]="genRegClass(i, reg.AC)" [ngStyle]="{'background-color': isExecutable(i)?'#dbf9eb':'#C8DDF2'}">
-      <input (keydown)="changeFocus($event)" type="text" title="AC" maxlength="4" [disabled]="!isExecutable(i)" [readOnly]="this.answers[i]" [value]="getAnswer(i, reg.AC)" #AC/>
+    <td class="data-col" [attr.data-check]="isValid(i, reg.AC)">
+      <input (keydown)="changeFocus($event)" type="text" title="AC" maxlength="4" [readOnly]="answers[i]" [value]="getAnswer(i, reg.AC)" #AC/>
     </td>
-    <td class="data-col" [ngClass]="genRegClass(i, iNZVC)" [ngStyle]="{'background-color': isExecutable(i)?'#dbf9eb':'#C8DDF2'}">
-      <input (keydown)="changeFocus($event)" type="text" title="NZVC" maxlength="4" [disabled]="!isExecutable(i)" [readOnly]="this.answers[i]" [value]="getAnswer(i, iNZVC)" #NZVC/>
+    <td class="data-col" [attr.data-check]="isValid(i, iNZVC)">
+      <input (keydown)="changeFocus($event)" type="text" title="NZVC" maxlength="4" [readOnly]="answers[i]" [value]="getAnswer(i, iNZVC)" #NZVC/>
     </td>
-    <td *ngIf="learningMode"><button (click)="checkLine(i, IP, CR, AR, DR, SP, BR, AC, NZVC)" [disabled]="!isExecutable(i) || this.answers[i]">Проверить</button></td>
-    <td *ngIf="learningMode"><button (click)="showAnswer(i)" [disabled]="!isExecutable(i) || this.answers[i]">Показать</button></td>
+    <td *ngIf="learningMode"><button (click)="checkLine(i, [IP, CR, AR, DR, SP, BR, AC, NZVC])" [disabled]="answers[i]">Проверить</button></td>
+    <td *ngIf="learningMode"><button (click)="showAnswer(i)" [disabled]="answers[i]">Показать</button></td>
   </tr>
   </tbody>
 </table>
 </div>
 <br>
 <div>
-  <button (click)="checkAll(linesContainer.children)">Проверить всё</button>
+  <button (click)="checkAll()">Проверить всё</button>
 </div>
 <br>
 <div>
   <label for="completion">Выполнено правильно: </label>
-  <span id="completion">{{doneRight}} / {{countAll}} ({{(doneRight/countAll || 0) | percent:".2"}})</span>
+  <span id="completion">{{getDoneRight()}} / {{getTotal()}} ({{(getDoneRight()/getTotal() || 0) | percent:".2"}})</span>
 </div>
 <br>
 <div>
@@ -84,5 +84,5 @@
 <br>
 <div>
   <label for="timer">Время: </label>
-  <span id="timer">{{formattedTime}}</span>
+  <span id="timer">{{getFormattedTime()}}</span>
 </div>

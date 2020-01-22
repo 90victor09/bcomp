@@ -1,9 +1,10 @@
-import { AfterViewChecked, Component, ElementRef, ViewChild } from '@angular/core';
-import bcomp, { BCompAngular, reg, state } from "../../../../src/bcomp";
-import { hex, setBit, toHex, values } from "../../../../src/common";
+import { AfterViewChecked, Component } from '@angular/core';
+import bcomp, { reg } from "../../../../src/bcomp";
+import { hex, values } from "../../../../src/common";
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../environments/environment";
 import { Observable } from "rxjs";
+import { BCompTracer } from "./bcomp-tracer.class";
 
 
 interface Task {
@@ -17,8 +18,8 @@ interface Task {
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements AfterViewChecked {
-  reg = reg;
+export class AppComponent extends BCompTracer implements AfterViewChecked {
+  // reg = reg;
   taskVariant : {variant: number, startWith: string, cmds: string[][], executableLines: number} = {
     variant: 0,
     startWith: "001",
@@ -27,26 +28,20 @@ export class AppComponent implements AfterViewChecked {
     ],
     executableLines: 0
   };
-  learningMode : boolean = true;
-  tryCount : number = 0;
-  timer : number;
-  time : number = 0;
-
-  errorMessage : string = null;
-
-  iNZVC = reg.PS;
-
-  checks = {};
-  answers = {};
-
-  private shouldUpdateInputs: boolean = false;
-
-  private readonly bcomp : BCompAngular;
   constructor(private http: HttpClient) {
-    this.bcomp = bcomp.startAngular(() => {});
-    this.timer = setInterval(() => this.time++, 1000);
+    super();
   }
 
+  getExecutionStartLine(): number {
+    for(let i = 0; i < this.taskVariant.cmds.length; i++){
+      if(this.taskVariant.cmds[i][0] == this.taskVariant.startWith)
+        return i;
+    }
+  }
+
+  getTotalLines(): number {
+    return this.taskVariant.cmds.length;
+  }
 
   setupBComp() : void {
     for(let r of values(bcomp.regs))
@@ -56,20 +51,6 @@ export class AppComponent implements AfterViewChecked {
       this.bcomp.setMemoryValue(hex(this.taskVariant.cmds[i][0]), hex(this.taskVariant.cmds[i][2]));
 
     this.bcomp.setRegValue(reg.IP, hex(this.taskVariant.startWith));
-  }
-  gotoLine(lineNo: number) : void {
-    this.setupBComp();
-
-    let startWithIdx = -1;
-    for(let i = 0; i < this.taskVariant.cmds.length; i++){
-      if(this.taskVariant.cmds[i][0] == this.taskVariant.startWith){
-        startWithIdx = i;
-        break;
-      }
-    }
-
-    for(let i = 0; i < lineNo- startWithIdx + 1; i++)
-      this.bcomp.executeContinue(() => {});
   }
 
   fetchTask(variantStr: string | number){
@@ -123,47 +104,22 @@ export class AppComponent implements AfterViewChecked {
   }
 
 
-  checkLine(lineNo : number, IP, CR, AR, DR, SP, BR, AC, NZVC) : void {
+  checkLine(lineNo : number, inputs: HTMLInputElement[]) : void {
+    //IP, CR, AR, DR, SP, BR, AC, NZVC
     this.gotoLine(lineNo);
 
     this.checks[lineNo] = this.checks[lineNo] || 0;
-    this.checkReg(lineNo, reg.IP, IP.value);
-    this.checkReg(lineNo, reg.CR, CR.value);
-    this.checkReg(lineNo, reg.AR, AR.value);
-    this.checkReg(lineNo, reg.DR, DR.value);
-    this.checkReg(lineNo, reg.SP, SP.value);
-    this.checkReg(lineNo, reg.BR, BR.value);
-    this.checkReg(lineNo, reg.AC, AC.value);
+    this.checkReg(lineNo, reg.IP, inputs[0].value);
+    this.checkReg(lineNo, reg.CR, inputs[1].value);
+    this.checkReg(lineNo, reg.AR, inputs[2].value);
+    this.checkReg(lineNo, reg.DR, inputs[3].value);
+    this.checkReg(lineNo, reg.SP, inputs[4].value);
+    this.checkReg(lineNo, reg.BR, inputs[5].value);
+    this.checkReg(lineNo, reg.AC, inputs[6].value);
 
-    this.formNZVC((val) => this.checks[lineNo] = setBit(this.checks[lineNo], this.iNZVC, val == NZVC.value));
+    this.checkNZVC(lineNo, inputs[7].value);
     this.tryCount += 1/this.taskVariant.executableLines;
   }
-  checkReg(lineNo: number, r: bcomp.regs, val: string) : void {
-    this.getRegHexValue(r, (hexVal) => {
-      this.checks[lineNo] = setBit(this.checks[lineNo], r, hexVal == Number("0x" + val));
-    });
-  }
-  checkAll(lines: HTMLCollection) : void {
-    for(let i = 0; i < lines.length; i++){
-      if(!this.isExecutable(i))
-        continue;
-
-      function byTitle(name: string) : HTMLInputElement { //LOL
-        return <HTMLInputElement>lines[i].querySelector("input[title='" + name + "']");
-      }
-      this.checkLine(i,
-        byTitle("IP"),
-        byTitle("CR"),
-        byTitle("AR"),
-        byTitle("DR"),
-        byTitle("SP"),
-        byTitle("BR"),
-        byTitle("AC"),
-        byTitle("NZVC"));
-    }
-    this.tryCount = Math.floor(this.tryCount);
-  }
-
 
   showAnswer(lineNo: number) : void {
     this.gotoLine(lineNo);
@@ -179,141 +135,6 @@ export class AppComponent implements AfterViewChecked {
     this.showRegAnswer(lineNo, reg.AC);
 
     this.formNZVC((val) => this.answers[lineNo][this.iNZVC] = val);
-  }
-  showRegAnswer(lineNo: number, r: bcomp.regs) : void {
-    this.getRegHexValue(r, (hexVal) => {
-      let width = 4;
-      if(r == reg.IP || r == reg.AR || r == reg.SP)
-        width = 3;
-      this.answers[lineNo][r] = toHex(hexVal, width);
-    });
-  }
-
-
-  getRegHexValue(r: bcomp.regs, cb: (hexVal) => void) : void {
-    this.bcomp.getRegValue(r, (regVal) => cb(regVal)); //toHex(regVal, width)));
-  }
-
-  getProgramState(psval: number, state: bcomp.states) : boolean {
-    return ((psval >> state) & 1) > 0;
-  }
-
-  formNZVC(cb: (val: string) => void) : void {
-    this.bcomp.getRegValue(reg.PS, (value) => {
-      cb((this.getProgramState(value, state.N) ? "1" : "0")
-        + (this.getProgramState(value, state.Z) ? "1" : "0")
-        + (this.getProgramState(value, state.V) ? "1" : "0")
-        + (this.getProgramState(value, state.C) ? "1" : "0"));
-    });
-  }
-
-
-  get countAll() : number {
-    if(!this.taskVariant)
-      return 0;
-
-    let c = 0;
-    for(let i = 0; i < this.taskVariant.cmds.length; i++){
-      if(!this.isExecutable(i) || this.answers[i])
-        continue;
-      c += 8;
-    }
-    return c;
-  }
-  get doneRight() : number {
-    if(!this.taskVariant)
-      return 0;
-
-    let c = 0;
-    for(let i = 0; i < this.taskVariant.cmds.length; i++){
-      if(!this.isExecutable(i) || this.answers[i] || !this.checks[i])
-        continue;
-
-      let j = 0;
-      while((this.checks[i] >> j) > 0){
-        c += ((this.checks[i] >> j) & 1);
-        j++;
-      }
-    }
-    return c;
-  }
-
-  get formattedTime() : string {
-    let hours = Math.floor(this.time / 3600);
-    let minutes = Math.floor((this.time - hours*3600) / 60);
-    let seconds = this.time  - hours*3600 - minutes*60;
-    return hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
-  }
-
-
-  isExecutable(i: number) : boolean {
-    return hex(this.taskVariant.startWith) <= hex(this.taskVariant.cmds[i][0]);
-  }
-  isValid(lineNo: number, regIdx: number) : boolean {
-    return (!this.checks[lineNo] ? false : ((this.checks[lineNo] >> regIdx) & 1) > 0);
-  }
-
-  genRegClass(lineNo: number, regIdx: number) : string {
-    if(this.checks[lineNo] == undefined || this.answers[lineNo] != undefined)
-      return "";
-
-    return this.isValid(lineNo, regIdx) ? "valid" : "invalid";
-  }
-
-  getAnswer(i: number, regIdx: number){
-    return this.answers[i] && this.answers[i][regIdx] || '';
-  }
-
-  @ViewChild("linesContainer", {static: true}) linesContainerRef: ElementRef;
-  private inputs: HTMLInputElement[] = [];
-  ngAfterViewChecked(): void {
-    if(!this.shouldUpdateInputs)
-      return;
-    this.shouldUpdateInputs = false;
-
-    this.inputs = Array.from<HTMLInputElement>(this.linesContainerRef.nativeElement.querySelectorAll("input:not([readOnly]):not([disabled])"));
-  }
-
-  changeFocus(e: KeyboardEvent){
-    let input = <HTMLInputElement>e.target;
-    if(input.selectionStart != input.selectionEnd || e.altKey || e.ctrlKey || e.shiftKey || e.metaKey)
-      return;
-
-    let idx = this.inputs.indexOf(input);
-
-    // *Char*, Enter, ArrowRight
-    if(e.key.length == 1 || e.key == "Enter" || e.key == "ArrowRight" || e.key == "Right"){
-      // At the end of input && has next input
-      if(input.selectionEnd != (e.key.length != 1 ? input.value.length : input.maxLength) || ++idx == this.inputs.length)
-        return;
-    }else
-    if(e.key == "Backspace" || e.key == "ArrowLeft" || e.key == "Left"){
-      // At the start && has previous input
-      if(input.selectionStart != 0 || --idx == -1)
-        return;
-    }else
-    if(e.key == "ArrowUp" || e.key == "Up") {
-      idx -= 8;
-
-      if(idx < 0)
-        return;
-    }else
-    if(e.key == "ArrowDown" || e.key == "Down"){
-      idx += 8;
-
-      if(idx >= this.inputs.length)
-        return;
-    }else // None
-      return;
-
-    let pos = input.selectionEnd;
-    this.inputs[idx].focus();
-
-    if(e.key == "ArrowUp" || e.key == "ArrowDown" || e.key == "Up" || e.key == "Down")
-      this.inputs[idx].selectionEnd = this.inputs[idx].selectionStart = Math.min(pos, this.inputs[idx].maxLength);
-
-    // Prevent arrows (and enter) after focus
-    if(e.key.length != 1 && e.key != "Backspace")
-      e.preventDefault();
+    this.shouldUpdateInputs = true;
   }
 }

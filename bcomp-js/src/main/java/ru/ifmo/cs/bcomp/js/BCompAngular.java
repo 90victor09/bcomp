@@ -65,4 +65,11 @@ public class BCompAngular {
 	public String[] decodeMC(long addr){
 		return MCDecoder.decodeMC(cpu, addr);
 	}
+
+	public boolean getClockState(){
+		return cpu.getClockState();
+	}
+	public void setClockState(boolean clock){
+		cpu.setClockState(clock);
+	}
 }

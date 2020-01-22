@@ -143,16 +143,20 @@ export interface BCompAngular {
   getRegValue(reg: bcomp.regs, cb: (value: RegValue) => void) : void;
   getRegWidth(reg: bcomp.regs, cb: (width: number) => void) : void;
 
+  setMemoryValue(addr: MemoryAddress, value: MemoryValue) : void;
+  getMemoryValue(addr: MemoryAddress, cb: (value: MemoryValue) => void) : void;
+  getLastAccessedMemoryAddress(cb: (value: MemoryAddress) => void) : void;
+
   getRunningCycle(cb: (cycle: bcomp.runningCycles) => void) : void;
+  executeContinue(cb: () => void) : void;
+  decodeMC(addr: MemoryAddress, cb: (value: string[]) => void) : void;
+
+  getClockState(cb: (clock: boolean) => void) : void;
+  setClockState(clock: boolean) : void;
 
   addSignalListener(signal: bcomp.controlSignals, cb: (value: number) => void) : void;
   setTickStartListener(cb: () => void) : void;
   setTickFinishListener(cb: () => void) : void;
 
-  executeContinue(cb: () => void) : void;
 
-  setMemoryValue(addr: MemoryAddress, value: MemoryValue) : void;
-  getMemoryValue(addr: MemoryAddress, cb: (value: MemoryValue) => void) : void;
-  getLastAccessedMemoryAddress(cb: (value: MemoryAddress) => void) : void;
-  decodeMC(addr: MemoryAddress, cb: (value: string[]) => void) : void;
 }

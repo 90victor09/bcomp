@@ -7,12 +7,16 @@ import { AppRoutingModule } from "./app-routing.module";
 import { environment } from "../environments/environment";
 import { HttpClientModule } from "@angular/common/http";
 
+let coreModule: any = BrowserModule;
+if(environment.child)
+  coreModule = CommonModule;
+
 @NgModule({
   declarations: [
     AppComponent
   ],
   imports: [
-    (!environment.child ? BrowserModule : CommonModule),
+    coreModule,
     HttpClientModule,
     AppRoutingModule
   ],

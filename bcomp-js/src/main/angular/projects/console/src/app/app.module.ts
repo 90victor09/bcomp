@@ -6,12 +6,16 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { environment } from "../environments/environment";
 
+let coreModule: any = BrowserModule;
+if(environment.child)
+  coreModule = CommonModule;
+
 @NgModule({
   declarations: [
     AppComponent
   ],
   imports: [
-    (!environment.child ? BrowserModule : CommonModule),
+    coreModule,
     AppRoutingModule
   ],
   providers: [],

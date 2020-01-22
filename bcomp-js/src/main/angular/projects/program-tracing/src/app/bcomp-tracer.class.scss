@@ -1,0 +1,111 @@
+@import "../../../../src/common";
+
+input, button {
+  background-color: $value-color-bg;
+  color: $value-color;
+  border-radius: 0;
+  border: $border $value-color;
+  margin: 0;
+  padding: 0 0.2em;
+  height: 1.6rem;
+  line-height: 1.6rem;
+  &:disabled {
+    visibility: hidden;
+  }
+
+}
+
+.error {
+  color: #760000;
+}
+
+input[type='checkbox'] {
+  position: relative;
+  top: 0.2em;
+  height: 1em;
+}
+
+div {
+  font-family: $font;
+  text-align: center;
+  &.trace-table {
+    overflow-x: auto;
+  }
+}
+
+td, th {
+  border: $border $value-color ;
+  background-color: $value-color-bg;
+  font-family: $font;
+  white-space: nowrap;
+}
+
+th {
+  background-color: $title-color-bg;
+}
+
+tr.not-executable {
+  .addr-col, .data-col, .mp-col, .mr-col {
+    background-color: #c8ddf2;
+  }
+  input, button {
+    visibility: hidden;
+  }
+}
+
+td {
+  height: 1.6rem;
+  padding: 0;
+  text-align: center;
+  background-color: #dbf9eb;
+
+  &[data-check=true] {
+    border-color: #00bd00
+  }
+  &[data-check=false] {
+    border-color: #ff0523
+  }
+
+
+  input, button {
+    position: relative;
+    vertical-align: middle;
+    box-sizing: border-box;
+    border: none;
+  }
+  input {
+    text-transform: uppercase;
+    text-align: center;
+    width: 100%;
+  }
+  button {
+    cursor: pointer;
+    width: initial;
+  }
+}
+
+table {
+  padding: 0 3px;
+  text-align: center;
+  margin: auto;
+}
+
+.addr-col {
+  width: 2.5em;
+  min-width: 2.5em;
+}
+
+.data-col {
+  width: 3.5em;
+  min-width: 3.5em;
+}
+
+.mp-col {
+  width: 2em;
+  min-width: 2em;
+}
+
+.mr-col {
+  width: 6em;
+  min-width: 6em;
+}
