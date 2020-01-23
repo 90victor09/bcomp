@@ -1,4 +1,20 @@
-<router-outlet></router-outlet>
+<div class="menu">
+<nav>
+  <ul>
+    <img src="../assets/company_logo.png" width="120"/>
+    <h3>Меню</h3>
+    <li><a routerLink="bcomp-app">Эмулятор</a></li>
+    <li><a routerLink="console">Консоль</a></li>
+    <li><a routerLink="microprogram-listing">Микропрограмма</a></li>
+    <li><a routerLink="program-tracing">Рубеж №1</a></li>
+    <li><a routerLink="microprogram-tracing">Рубеж №2</a></li>
+  </ul>
+</nav>
+</div>
+<div id="content">
+  <router-outlet></router-outlet>
+</div>
+
 <div class="loading" [style.display]="loading ? 'block' : 'none'">
   <div class="spinner"></div>
 </div>
