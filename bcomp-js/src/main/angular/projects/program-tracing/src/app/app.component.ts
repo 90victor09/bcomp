@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component } from '@angular/core';
+import { AfterViewChecked, ChangeDetectorRef, Component } from '@angular/core';
 import bcomp, { reg } from "../../../../src/bcomp";
 import { hex, values } from "../../../../src/common";
 import { HttpClient } from "@angular/common/http";
@@ -28,8 +28,8 @@ export class AppComponent extends BCompTracer implements AfterViewChecked {
     ],
     executableLines: 0
   };
-  constructor(private http: HttpClient) {
-    super();
+  constructor(private http: HttpClient, cdRef: ChangeDetectorRef) {
+    super(cdRef);
   }
 
   getExecutionStartLine(): number {
@@ -84,7 +84,6 @@ export class AppComponent extends BCompTracer implements AfterViewChecked {
         });
       }
     }).subscribe((response: Task) => {
-      this.shouldUpdateInputs = true;
       this.taskVariant = {
         variant: variant,
         startWith: response.startWith,
@@ -95,6 +94,7 @@ export class AppComponent extends BCompTracer implements AfterViewChecked {
       for(let i = 0; i < this.taskVariant.cmds.length; i++)
         if(this.isExecutable(i))
           this.taskVariant.executableLines += 1;
+      this.shouldUpdateInputs = true;
 
       this.checks = {};
       this.answers = {};
@@ -119,6 +119,7 @@ export class AppComponent extends BCompTracer implements AfterViewChecked {
 
     this.checkNZVC(lineNo, inputs[7].value);
     this.tryCount += 1/this.taskVariant.executableLines;
+    this.bcomp.sync(() => this.updateAnswerCounters());
   }
 
   showAnswer(lineNo: number) : void {

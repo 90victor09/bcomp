@@ -1,3 +1,5 @@
+@import "../../../../src/common";
+
 $even-color: #EEE;
 $hover-color: #DDD;
 
@@ -7,12 +9,14 @@ table {
   thead th {
     border-bottom: 3px solid #CCC;
   }
-
-  tr:nth-child(2n){
-    background-color: $even-color;
+  tr {
+    font-family: Roboto, sans-serif;
   }
+  //tr.darker{
+  //  background-color: $even-color;
+  //}
   tbody tr:hover {
-    background-color: $hover-color;
+    background-color: $hover-color !important;
   }
 }
 

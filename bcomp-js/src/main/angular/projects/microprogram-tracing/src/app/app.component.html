@@ -38,7 +38,7 @@
   <tbody #linesContainer>
   <tr>
     <td class="mp-col"><input type="text" title="MP" readonly/></td>
-    <td class="data-col"><input type="text" title="MEM" [value]="taskVariant.mem[1]"/></td>
+    <td class="data-col"><input type="text" title="MEM" [value]="taskVariant.mem[1]" readonly/></td>
     <td class="mr-col"><input type="text" title="MR" [value]="taskVariant?.regs[0]" readonly/></td>
     <td class="addr-col"><input type="text" title="IP" [value]="taskVariant?.regs[1]" readonly/></td>
     <td class="data-col"><input type="text" title="CR" [value]="taskVariant?.regs[2]" readonly/></td>
@@ -48,7 +48,7 @@
     <td class="data-col"><input type="text" title="BR" [value]="taskVariant?.regs[6]" readonly/></td>
     <td class="data-col"><input type="text" title="AC" [value]="taskVariant?.regs[7]" readonly/></td>
     <td class="data-col"><input type="text" title="NZVC" [value]="taskVariant?.regs[8]" readonly/></td>
-    <td class="mp-col"><input type="text" title="MP" readonly/></td>
+    <td class="mp-col"><input type="text" title="MP" value="01" readonly/></td>
     <td *ngIf="learningMode"><button disabled>Проверить</button></td>
     <td *ngIf="learningMode"><button disabled>Показать</button></td>
   </tr>
@@ -89,8 +89,8 @@
     <td class="mp-col" [attr.data-check]="isValid(i, reg.MP)">
       <input (keydown)="changeFocus($event)" type="text" title="MP" maxlength="2" [readOnly]="this.answers[i]" [value]="getAnswer(i, reg.MP)" #MPafter/>
     </td>
-    <td *ngIf="learningMode"><button (click)="checkLine(i, [MPbefore, MEM, MR, IP, CR, AR, DR, SP, BR, AC, NZVC, MPafter])" [disabled]="!isExecutable(i)">Проверить</button></td>
-    <td *ngIf="learningMode"><button (click)="showAnswer(i)" [disabled]="!isExecutable(i)">Показать</button></td>
+    <td *ngIf="learningMode"><button (click)="checkLine(i, [MPbefore, MEM, MR, IP, CR, AR, DR, SP, BR, AC, NZVC, MPafter])" [disabled]="answers[i]">Проверить</button></td>
+    <td *ngIf="learningMode"><button (click)="showAnswer(i)" [disabled]="answers[i]">Показать</button></td>
   </tr>
   </tbody>
 </table>
@@ -102,7 +102,7 @@
 <br>
 <div>
   <label for="completion">Выполнено правильно: </label>
-  <span id="completion">{{getDoneRight()}} / {{getTotal()}} ({{(getDoneRight()/getTotal() || 0) | percent:".2"}})</span>
+  <span id="completion">{{doneRight}} / {{total}} ({{(doneRight/total || 0) | percent:".2"}})</span>
 </div>
 <br>
 <div>

@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import bcomp, { reg } from "../../../../src/bcomp";
-import { setBit, toHex } from "../../../../src/common";
+import { bitwiseAND, setBit, toHex } from "../../../../src/common";
 import { BCompTracer } from "../../../program-tracing/src/app/bcomp-tracer.class";
 import { Observable } from "rxjs";
 import { environment } from "../../../program-tracing/src/environments/environment";
@@ -12,6 +12,9 @@ interface Task {
   mem: string[],
   regs: string[]
 }
+
+declare var window;
+window.bitwiseAND = bitwiseAND;
 
 @Component({
   selector: 'app-root',
@@ -45,8 +48,8 @@ export class AppComponent extends BCompTracer {
 
   iterableArray = new Array(0);
 
-  constructor(private http: HttpClient) {
-    super();
+  constructor(private http: HttpClient, cdRef: ChangeDetectorRef) {
+    super(cdRef);
   }
 
   getExecutionStartLine(): number {
@@ -71,11 +74,12 @@ export class AppComponent extends BCompTracer {
 
     this.bcomp.setRegValue(reg.PS, Number("0b" + this.taskVariant.regs[8]));
 
+    this.bcomp.setMemoryValue(Number("0x" + this.taskVariant.cmd[0]), Number("0x" + this.taskVariant.cmd[2]));
     this.bcomp.setMemoryValue(Number("0x" + this.taskVariant.mem[0]), Number("0x" + this.taskVariant.mem[1]));
 
     this.bcomp.setRegValue(reg.MP, 1);
 
-    this.bcomp.setClockState(true);
+    this.bcomp.setClockState(false);
   }
 
 
@@ -89,23 +93,20 @@ export class AppComponent extends BCompTracer {
 
     new Observable<Task>((observer) => {
       if(!environment.production) {
-        observer.next({ //TODO
+        observer.next({
           variant: 0,
           cmd: ["00E", "ADD (000)", "4800"],
           mem: ["000", "F00E"],
           regs: [
-            // "", //MPbefore
-            // "", //MEM
-            "", //MR
-            "", //IP
-            "", //CR
-            "", //AR
-            "", //DR
-            "", //SP
-            "", //BR
-            "", //AC
-            "", //NZVC
-            // "", //MPafter
+            "0000000000", //MR
+            "00E", //IP
+            "0000", //CR
+            "000", //AR
+            "0000", //DR
+            "000", //SP
+            "0000", //BR
+            "0000", //AC
+            "0000", //NZVC
           ]
         });
         observer.complete();
@@ -119,7 +120,6 @@ export class AppComponent extends BCompTracer {
         });
       }
     }).subscribe((response: Task) => {
-      this.shouldUpdateInputs = true;
       this.taskVariant = {
         variant: variant,
         cmd: response.cmd,
@@ -131,16 +131,20 @@ export class AppComponent extends BCompTracer {
       this.setupBComp();
       //BUG: fetching execution lines count before finishing
       let lines = 0;
+      const type = (2**bcomp.controlSignals.TYPE); // Int 32 overflow :(
+      const halt = (2**bcomp.controlSignals.HALT);
       const continueUntilHalt = () => {
-        lines++;
         this.bcomp.executeContinue(() => {
           this.bcomp.getRegValue(reg.MR, (cmd: number) => {
-            if ((cmd & (1 << bcomp.controlSignals.TYPE)) == 0 && (cmd & (1 << bcomp.controlSignals.HALT)) != 0){
+            if(bitwiseAND(cmd, type) == 0 && bitwiseAND(cmd, halt) != 0){
               this.taskVariant.executableLines = lines;
               this.iterableArray = new Array(lines);
-            }else
-              continueUntilHalt();
-          })
+              this.shouldUpdateInputs = true;
+              return;
+            }
+            lines++;
+            continueUntilHalt();
+          });
         });
       };
 
@@ -158,10 +162,9 @@ export class AppComponent extends BCompTracer {
   checkLine(lineNo : number, inputs: HTMLInputElement[]) : void {
     //MPbefore, MEM, MR, IP, CR, AR, DR, SP, BR, AC, NZVC, MPafter
     this.checks[lineNo] = this.checks[lineNo] || 0;
-    if(lineNo != 0) {
-      this.gotoLine(lineNo - 1);
-      this.checkReg(lineNo, this.iMPbefore, inputs[0].value);
-    }
+
+    this.gotoLine(lineNo - 1);
+    this.checkReg(lineNo, reg.MP, inputs[0].value, this.iMPbefore);
 
     this.gotoLine(lineNo);
 
@@ -181,16 +184,17 @@ export class AppComponent extends BCompTracer {
     this.checkNZVC(lineNo, inputs[10].value);
     this.checkReg(lineNo, reg.MP, inputs[11].value);
     this.tryCount += 1/this.taskVariant.executableLines;
+    this.bcomp.sync(() => this.updateAnswerCounters());
   }
 
 
   // Override
   showAnswer(lineNo: number) : void {
     this.answers[lineNo] = this.answers[lineNo] || [];
-    if(lineNo != 0){
-      this.gotoLine(lineNo - 1);
-      this.showRegAnswer(lineNo, reg.MP, this.iMPbefore);
-    }
+
+    this.gotoLine(lineNo - 1);
+    this.showRegAnswer(lineNo, reg.MP, this.iMPbefore);
+
     this.gotoLine(lineNo);
 
     this.bcomp.getMemoryValue(Number("0x" + this.taskVariant.mem[0]), (value: number) => {
@@ -208,5 +212,6 @@ export class AppComponent extends BCompTracer {
 
     this.formNZVC((val) => this.answers[lineNo][this.iNZVC] = val);
     this.showRegAnswer(lineNo, reg.MP);
+    this.shouldUpdateInputs = true;
   }
 }

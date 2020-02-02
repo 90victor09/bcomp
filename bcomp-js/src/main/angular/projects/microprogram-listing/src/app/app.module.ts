@@ -9,21 +9,21 @@ import { BCompModule } from "../../../../src/app/bcomp.module";
 import { InteractiveOpComponent } from './interactive-op/interactive-op.component';
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 
-let coreModule: any = BrowserModule;
-if(environment.child)
-  coreModule = CommonModule;
-
+let imports : any[] = [
+  CommonModule,
+  AppRoutingModule,
+  BCompModule
+];
+if(!environment.child) {
+  imports.splice(0,1);
+  imports.unshift(BrowserModule, BrowserAnimationsModule);
+}
 @NgModule({
   declarations: [
     AppComponent,
     InteractiveOpComponent
   ],
-  imports: [
-    coreModule,
-    BrowserAnimationsModule,
-    AppRoutingModule,
-    BCompModule
-  ],
+  imports: imports,
   providers: [],
   bootstrap: [AppComponent]
 })

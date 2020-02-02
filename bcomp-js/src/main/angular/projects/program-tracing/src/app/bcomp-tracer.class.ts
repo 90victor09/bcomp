@@ -1,6 +1,6 @@
-import { AfterViewChecked, ElementRef, ViewChild } from "@angular/core";
+import { AfterViewChecked, ChangeDetectorRef, ElementRef, ViewChild } from "@angular/core";
 import bcomp, { BCompAngular, state, reg } from "../../../../src/bcomp";
-import { hex, setBit, toHex, values } from "../../../../src/common";
+import { setBit, toHex } from "../../../../src/common";
 
 export abstract class BCompTracer implements AfterViewChecked {
   reg = reg;
@@ -12,6 +12,8 @@ export abstract class BCompTracer implements AfterViewChecked {
   answers = {};
 
   learningMode : boolean = true;
+  total : number = 0;
+  doneRight : number = 0;
   tryCount : number = 0;
   timer : number;
   time : number = 0;
@@ -19,7 +21,7 @@ export abstract class BCompTracer implements AfterViewChecked {
   errorMessage : string = null;
 
   protected readonly bcomp : BCompAngular;
-  protected constructor() {
+  protected constructor(protected cdRef: ChangeDetectorRef) {
     this.bcomp = bcomp.startAngular(() => {});
     this.timer = setInterval(() => this.time++, 1000);
   }
@@ -31,12 +33,47 @@ export abstract class BCompTracer implements AfterViewChecked {
   @ViewChild("linesContainer", {static: true}) linesContainerRef: ElementRef;
   protected shouldUpdateInputs: boolean = false;
   protected inputs: HTMLInputElement[] = [];
+  protected fieldsPerLine: number = 0;
   ngAfterViewChecked(): void {
     if(!this.shouldUpdateInputs)
       return;
     this.shouldUpdateInputs = false;
 
-    this.inputs = Array.from<HTMLInputElement>(this.linesContainerRef.nativeElement.querySelectorAll("tr:not(.not-executable) input:not([readOnly])"));
+    this.inputs = Array.from<HTMLInputElement>(this.linesContainerRef.nativeElement.querySelectorAll("tr:not(.not-executable) input:not([readonly])"));
+
+    this.updateNumberOfLineFields();
+    this.updateAnswerCounters();
+  }
+
+  updateNumberOfLineFields() : void {
+    let executableTotal = 0;
+    for(let i = 0; i < this.getTotalLines(); i++) {
+      if(!this.isExecutable(i) || this.answers[i])
+        continue;
+      executableTotal++;
+    }
+
+    this.fieldsPerLine = this.inputs.length/executableTotal;
+  }
+
+  updateAnswerCounters() : void {
+    this.total = 0;
+    this.doneRight = 0;
+    for(let i = 0; i < this.getTotalLines(); i++){
+      if(!this.isExecutable(i) || this.answers[i])
+        continue;
+
+      this.total += this.fieldsPerLine;
+      if(!this.checks[i])
+        continue;
+
+      let j = 0;
+      while((this.checks[i] >> j) > 0){
+        this.doneRight += ((this.checks[i] >> j) & 1);
+        j++;
+      }
+    }
+    this.cdRef.detectChanges();
   }
 
   /*
@@ -72,10 +109,10 @@ export abstract class BCompTracer implements AfterViewChecked {
   /*
     Checks
    */
-  abstract checkLine(lineNo: number, inputs: HTMLInputElement[]);
-  checkReg(lineNo: number, r: bcomp.regs, val: string) : void {
+  abstract checkLine(lineNo: number, inputs: HTMLInputElement[]) : void;
+  checkReg(lineNo: number, r: bcomp.regs, val: string, ind?: number) : void {
     this.bcomp.getRegValue(r, (regVal: number) => {
-      this.checks[lineNo] = setBit(this.checks[lineNo], r, regVal == Number("0x" + val));
+      this.checks[lineNo] = setBit(this.checks[lineNo], (ind != null ? ind : r), regVal == Number("0x" + val));
     });
   }
   checkNZVC(lineNo: number, val: string) : void {
@@ -91,13 +128,11 @@ export abstract class BCompTracer implements AfterViewChecked {
       executableTotal++;
     }
 
-    let nFields = this.inputs.length/executableTotal;
     let j = 0;
-
     for(let i = 0; i < this.getTotalLines(); i++){
       if(!this.isExecutable(i) || this.answers[i])
         continue;
-      this.checkLine(i, this.inputs.slice(j*nFields, j*nFields + nFields));
+      this.checkLine(i, this.inputs.slice(j*this.fieldsPerLine, j*this.fieldsPerLine + this.fieldsPerLine));
       j++;
     }
     this.tryCount = Math.floor(this.tryCount);
@@ -110,10 +145,19 @@ export abstract class BCompTracer implements AfterViewChecked {
   showRegAnswer(lineNo: number, r: bcomp.regs, ind?: number) : void {
     this.bcomp.getRegValue(r, (regVal: number) => {
       let width = 4;
-      if(r == reg.IP || r == reg.AR || r == reg.SP)
-        width = 3;
-      if(r == reg.MP)
-        width = 2;
+      switch(r){
+        case reg.IP:
+        case reg.AR:
+        case reg.SP:
+          width = 3;
+          break;
+        case reg.MP:
+          width = 2;
+          break;
+        case reg.MR:
+          width = 10;
+          break;
+      }
       this.answers[lineNo][ind != null ? ind : r] = toHex(regVal, width);
     });
   }
@@ -141,38 +185,15 @@ export abstract class BCompTracer implements AfterViewChecked {
     let seconds = this.time  - hours*3600 - minutes*60;
     return hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
   }
-  getAnswer(i: number, regIdx: number){
+  getAnswer(i: number, regIdx: number) : string {
     return this.answers[i] && this.answers[i][regIdx] || '';
-  }
-  getTotal() : number {
-    let c = 0;
-    for(let i = 0; i < this.getTotalLines(); i++){
-      if(!this.isExecutable(i) || this.answers[i])
-        continue;
-      c += 8;
-    }
-    return c;
-  }
-  getDoneRight() : number {
-    let c = 0;
-    for(let i = 0; i < this.getTotalLines(); i++){
-      if(!this.isExecutable(i) || this.answers[i] || !this.checks[i])
-        continue;
-
-      let j = 0;
-      while((this.checks[i] >> j) > 0){
-        c += ((this.checks[i] >> j) & 1);
-        j++;
-      }
-    }
-    return c;
   }
 
 
   /*
     Focus manager
    */
-  changeFocus(e: KeyboardEvent){
+  changeFocus(e: KeyboardEvent) : void {
     let input = <HTMLInputElement>e.target;
     if(input.selectionStart != input.selectionEnd || e.altKey || e.ctrlKey || e.shiftKey || e.metaKey)
       return;
@@ -191,13 +212,13 @@ export abstract class BCompTracer implements AfterViewChecked {
         return;
     }else
     if(e.key == "ArrowUp" || e.key == "Up") {
-      idx -= 8;
+      idx -= this.fieldsPerLine;
 
       if(idx < 0)
         return;
     }else
     if(e.key == "ArrowDown" || e.key == "Down"){
-      idx += 8;
+      idx += this.fieldsPerLine;
 
       if(idx >= this.inputs.length)
         return;

@@ -15,17 +15,29 @@ export function hex(hex: string) : number {
 }
 
 export function toHex(num: number, width?: number) : string {
-  if(width == undefined){
-    width = 1;
-    while((num >> width*4) > 0)
-      width++;
-  }
-  let str : string = "";
-  for(let i = 0; i < width*4; i += 4)
-    str = digits[((num >> i) & 0xF)] + str;
-  return str;
+  let hex = Number(num).toString(16).toUpperCase();
+  if(width < hex.length)
+    hex = hex.substring(0, width);
+  else if(width > hex.length)
+    hex = "0".repeat(width - hex.length) + hex;
+  return hex;
 }
 
 export function setBit(value: number, shift: number, bit: boolean) : number {
   return (bit ? (value | (1 << shift)) : (value & ~(1 << shift)));
+}
+
+
+export function bitwiseAND(a: number, b: number) : number {
+  const as = Number(a).toString(2);
+  const bs = Number(b).toString(2);
+  const len = Math.max(as.length, bs.length);
+
+  let result = "0".repeat(len);
+  for(let i = 1; i <= len; i++){
+    if(as[as.length - i] == "1" && bs[bs.length - i] == "1")
+      result = result.substring(0, len - i) + "1" + result.substring(len - i + 1);
+  }
+
+  return Number(result);
 }
