@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, OnInit } from '@angular/core';
+import { AfterViewChecked, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import bcomp, { BCompAngular } from "../../../../src/bcomp";
 import { animate, AnimationBuilder, style } from "@angular/animations";
 import { toHex } from "../../../../src/common";
@@ -62,7 +62,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
 
   public decodedMCs: string[][] = [];
 
-  constructor(public animationBuilder: AnimationBuilder){ }
+  constructor(public animationBuilder: AnimationBuilder, private cdRef: ChangeDetectorRef){ }
 
   private shouldProcessJump = false;
   ngOnInit(): void {
@@ -73,8 +73,10 @@ export class AppComponent implements OnInit, AfterViewChecked {
           this.bcomp.decodeMC(i, (value: string[]) => {
             this.decodedMCs[i] = value;
             received++;
-            if(requested == received)
+            if(requested == received){
               this.shouldProcessJump = true;
+              this.cdRef.detectChanges();
+            }
           });
         }
       });
