@@ -4,7 +4,7 @@ $even-color: #EEE;
 $hover-color: #DDD;
 
 table {
-  width: 100%;
+  margin: auto;
 
   thead th {
     border-bottom: 3px solid #CCC;
@@ -37,4 +37,5 @@ table {
 }
 .operation-col {
   padding-left: 4rem;
+  text-align: left;
 }
