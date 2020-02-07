@@ -10,7 +10,6 @@
 }
 
 .app-container{
-  overflow-y: auto;
   background-color: $menu-color;
   min-height: 100%;
   height: 100%;
@@ -24,6 +23,7 @@
 }
 
  .content{
+   overflow-y: auto;
    margin-left: 225px;
    height: 100%;
    min-height: 100%;
@@ -46,8 +46,20 @@
     display: none;
   }
   .content{
-    margin-left: auto;
+    margin-left: auto !important;
   }
+   button{
+     display: none;
+   }
+ }
+
+ button{
+  position: absolute;
+  border-radius: 30px;
+  height: 60px;
+  width: 60px;
+  background-color: $title-color-bg;
+  border: 1px solid $value-color;
  }
 
  .menu{

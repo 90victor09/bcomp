@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router } from "@angular/router";
+import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -8,6 +8,7 @@ import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Rout
 })
 export class AppComponent {
   public loading: boolean = false;
+  public menuHidden: boolean = false;
 
   constructor(private router: Router) {
     this.router.events.subscribe((event) => {
@@ -28,5 +29,8 @@ export class AppComponent {
         }
       }
     });
+  }
+  show() {
+    this.menuHidden = !this.menuHidden;
   }
 }

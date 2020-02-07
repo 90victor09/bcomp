@@ -1,5 +1,5 @@
 <div class="app-container">
-  <div class="menu">
+  <div class="menu" *ngIf="!menuHidden">
    <nav>
     <ul>
       <img src="../assets/company_logo.png" width="120"/>
@@ -12,10 +12,12 @@
     </ul>
    </nav>
   </div>
-  <div class="content">
+  <button (click)="show()" [style.margin-left]="menuHidden?'unset':'230px'">{{menuHidden?"Меню":"Скрыть"}}</button>
+  <div class="content" [style.margin-left]="menuHidden?'unset':'225px'">
     <router-outlet></router-outlet>
+    <div class="loading" [style.display]="loading ? 'block' : 'none'">
+    <div class="spinner"></div>
+    </div>
   </div>
 </div>
-<div class="loading" [style.display]="loading ? 'block' : 'none'">
-  <div class="spinner"></div>
-</div>
+
