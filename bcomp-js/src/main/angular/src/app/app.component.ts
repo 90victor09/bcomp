@@ -39,12 +39,13 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
       state('show', style({
         width: 0,
         height: 0,
-        borderRight: '40px solid rgba(6, 6, 6, 0.7)',
+        borderRight: '30px solid rgba(6, 6, 6, 0.7)',
+        borderLeft: 'none'
       })),
       state('hide', style({
         width: 0,
         height: 0,
-        borderLeft: '40px solid rgba(6, 6, 6, 0.7)',
+        borderLeft: '30px solid rgba(6, 6, 6, 0.7)',
         borderRight: 'none'
       })),
       transition('show => hide', [
