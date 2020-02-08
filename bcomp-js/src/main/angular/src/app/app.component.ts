@@ -15,10 +15,10 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
         left: '-230px'
       })),
       transition('show => hide', [
-        animate('0.4s')
+        animate('0.1s')
       ]),
       transition('hide => show', [
-        animate('0.4s')
+        animate('0.1s')
       ]),
     ]),
     trigger('showHideContent', [
@@ -29,10 +29,10 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
         marginLeft: 'unset',
       })),
       transition('show => hide', [
-        animate('0.4s')
+        animate('0.1s')
       ]),
       transition('hide => show', [
-        animate('0.4s')
+        animate('0.1s')
       ]),
     ]),
     trigger('showHideButton', [
@@ -49,17 +49,17 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
         borderRight: 'none'
       })),
       transition('show => hide', [
-        animate('0.4s')
+        animate('0.1s')
       ]),
       transition('hide => show', [
-        animate('0.4s')
+        animate('0.1s')
       ]),
     ])
   ]
 })
 export class AppComponent {
   public loading: boolean = false;
-  public menuHidden: boolean = false;
+  public menuHidden: boolean = this.isMobile();
 
   constructor(private router: Router) {
     this.router.events.subscribe((event) => {
@@ -83,5 +83,8 @@ export class AppComponent {
   }
   show() {
     this.menuHidden = !this.menuHidden;
+  }
+  isMobile() {
+    return document.body.clientWidth <= 576;
   }
 }
