@@ -16,6 +16,7 @@
 }
 
  .menu{
+   text-align: center;
    top:0;
    position: absolute;
    width: 200px;
@@ -27,7 +28,8 @@
    margin-left: 225px;
    height: 100%;
    min-height: 100%;
-   background-color: $color-bg
+   background-color: $color-bg;
+   position: relative;
  }
 
  ul{
@@ -40,31 +42,20 @@
   box-sizing: border-box;
   height: 100%;
 }
-
- @media (max-width: 1100px) {
-  .menu{
-    display: none;
-  }
-  .content{
-    margin-left: auto !important;
-  }
-   button{
-     display: none;
-   }
- }
-
  button{
-  position: absolute;
-  border-radius: 30px;
-  height: 60px;
-  width: 60px;
-  background-color: $title-color-bg;
-  border: 1px solid $value-color;
- }
-
- .menu{
-  text-align: center;
-  width: 200px;
+   position: absolute;
+   background-color: $color-bg;
+   z-index: 1000;
+   margin-left: 132px;
+   text-align: center;
+   transition-duration: 0.4s;
+   text-decoration: none;
+   overflow: hidden;
+   width: 40px;
+   height: 40px;
+   cursor: pointer;
+   border-top: 20px solid transparent;
+   border-bottom: 20px solid transparent;
  }
 
 
