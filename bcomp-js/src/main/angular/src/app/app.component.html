@@ -1,4 +1,5 @@
 <div class="app-container">
+  <button (click)="show()"></button>
   <div class="menu" [@showHideMenu]="menuHidden?'hide':'show'">
    <nav>
     <ul>
@@ -11,9 +12,7 @@
       <li><a routerLink="microprogram-tracing">Рубеж №2</a></li>
     </ul>
    </nav>
-    <button (click)="show()" [@showHideButton]="menuHidden?'hide':'show'"></button>
   </div>
-
   <div class="content" [@showHideContent]="menuHidden?'hide':'show'">
     <router-outlet></router-outlet>
     <div class="loading" [style.display]="loading ? 'block' : 'none'">

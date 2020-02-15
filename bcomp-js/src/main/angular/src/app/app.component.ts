@@ -26,27 +26,7 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
         marginLeft: '230px',
       })),
       state('hide', style({
-        marginLeft: 'unset',
-      })),
-      transition('show => hide', [
-        animate('0.1s')
-      ]),
-      transition('hide => show', [
-        animate('0.1s')
-      ]),
-    ]),
-    trigger('showHideButton', [
-      state('show', style({
-        width: 0,
-        height: 0,
-        borderRight: '30px solid rgba(6, 6, 6, 0.7)',
-        borderLeft: 'none'
-      })),
-      state('hide', style({
-        width: 0,
-        height: 0,
-        borderLeft: '30px solid rgba(6, 6, 6, 0.7)',
-        borderRight: 'none'
+        marginLeft: '35px',
       })),
       transition('show => hide', [
         animate('0.1s')
