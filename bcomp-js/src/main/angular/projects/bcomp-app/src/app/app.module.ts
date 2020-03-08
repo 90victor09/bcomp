@@ -6,7 +6,7 @@ import { environment } from "../../../console/src/environments/environment";
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BCompReg } from "./bcomp-reg/bcomp.reg";
-import { BCompRunningCycle } from "./bcomp-running-cycle/bcomp.running-cycle";
+import { BcompControlUnit } from "./bcomp-control-unit/bcomp.control-unit";
 import { BCompMemoryView } from "./bcomp-memory-view/bcomp.memory-view";
 import { BCompALUComponent } from './bcomp-alu/bcomp-alu.component';
 import { BCompCommutatorComponent } from './bcomp-commutator/bcomp-commutator.component';
@@ -24,7 +24,7 @@ if(environment.child)
     BCompReg,
     BCompALUComponent,
     BCompCommutatorComponent,
-    BCompRunningCycle,
+    BcompControlUnit,
     BCompMemoryView
   ],
   imports: [

@@ -1,8 +1,6 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { BCompCanvas } from "../bcomp-canvas";
-
-const ALU_WIDTH = 181;
-const ALU_HEIGHT = 80;
+import { aluHeight, aluWidth, canvasHeight, canvasWidth } from "../gui-constraints";
 
 @Component({
   selector: 'bcomp-alu',
@@ -13,13 +11,18 @@ export class BCompALUComponent implements AfterViewInit {
 
   @ViewChild("canvas", {static: true}) canvasRef : ElementRef;
   canvas : BCompCanvas;
+  width: number;
+  height: number;
 
   constructor() { }
 
   ngAfterViewInit(): void {
+    this.canvasRef.nativeElement.width = aluWidth*canvasWidth;
+    this.canvasRef.nativeElement.height = aluHeight*canvasHeight;
+
     this.canvas = new BCompCanvas(this.canvasRef.nativeElement);
 
-    this.canvas.drawALU(0,0, 181, 80);
+    this.canvas.drawALU();
   }
 
 }

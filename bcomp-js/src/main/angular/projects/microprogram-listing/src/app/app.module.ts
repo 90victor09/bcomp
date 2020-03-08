@@ -23,7 +23,7 @@ if(environment.child)
     CommonModule,
     AppRoutingModule,
     BCompModule
-  ][!environment.child ? "append" : "reverse"](BrowserAnimationsModule), //A little hack
+  ][!environment.child ? "concat" : "reverse"]([BrowserAnimationsModule]), //A little hack
   providers: [],
   bootstrap: [AppComponent]
 })

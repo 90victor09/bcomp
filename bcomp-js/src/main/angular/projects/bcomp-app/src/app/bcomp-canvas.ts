@@ -1,3 +1,4 @@
+import { busWidth } from "./gui-constraints";
 
 type Vec = { [n: number]: number }; //[number. number];
 
@@ -9,11 +10,10 @@ const ALU_BORDER_STYLE = "rgb(0,0,0)";
 const ALU_BORDER_WIDTH = 1;
 
 
-const BUS_WIDTH = 10;
 const BUS_STYLE = "rgb(128, 128, 128)";
 const BUS_STYLE_ACTIVE = "#F00";
 
-const ARROW_WIDTH = 15;
+const ARROW_WIDTH = 25;
 
 export class BCompCanvas {
   private readonly ctx: CanvasRenderingContext2D;
@@ -28,8 +28,10 @@ export class BCompCanvas {
     return this.ctx.canvas.height;
   }
 
-  drawALU(x, y, width, height) : void {
-    this.ctx.translate(x, y);
+  drawALU() : void {
+    let width = this.getWidth();
+    let height = this.getHeight();
+
     let half = width / 2;
     let offset = height / 3;
     let soffset = offset / 3;
@@ -51,10 +53,10 @@ export class BCompCanvas {
     this.ctx.stroke();
 
     this.ctx.fillStyle = "black";
-    this.ctx.font = '45px serif';
-    this.ctx.fillText('ALU', width/2 - this.ctx.measureText("ALU").width/2, height-5);
-
-    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+    this.ctx.font = Math.round(height - offset) + 'px serif';
+    this.ctx.textAlign = "center";
+    this.ctx.textBaseline = "middle";
+    this.ctx.fillText('ALU', width/2, offset + (height - offset)/2);
   }
 
 
@@ -63,40 +65,43 @@ export class BCompCanvas {
     if(pnts.length < 2)
       throw "Not enough points";
 
-    this.ctx.lineWidth = BUS_WIDTH;
+    this.ctx.lineWidth = busWidth;
     this.ctx.strokeStyle = this.ctx.fillStyle = (active ? BUS_STYLE_ACTIVE : BUS_STYLE);
 
     this.ctx.beginPath();
     for(let i = 0; i < pnts.length-1; i++)
-      this.ctx[i == 0 ? 'moveTo' : 'lineTo'](pnts[i][X], pnts[i][Y]);
+      this.ctx[i == 0 ? 'moveTo' : 'lineTo'](pnts[i][X]*this.getWidth(), pnts[i][Y]*this.getHeight());
 
-    const p0 = pnts[pnts.length-1];
+    let p0 = pnts[pnts.length-1];
     const p1 = pnts[pnts.length-2];
-    const p2 = (pnts.length-3 < 0 ? [1, 0] : pnts[pnts.length-3]);
 
-    function cosAng(a: Vec, b: Vec) : number {
-      return (a[X] * b[X] + a[Y] * b[Y]) / (Math.hypot(a[X], a[Y]) * Math.hypot(b[X], b[Y]));
-    }
-    const cos = cosAng(
-      [p1[X] - p2[X], p1[Y] - p2[Y]],
-      [p0[X] - p1[X], p0[Y] - p1[Y]]
-    );
-    const sin = Math.sqrt(1 - cos*cos);
-
-    const cw = cos*ARROW_WIDTH;
-    const sw = sin*ARROW_WIDTH;
-    const chw = cw/2, shw = sw/2;
-
-    this.ctx.lineTo(p0[X] = p0[X] - sw, p0[Y] = p0[Y] + cw);
+    let ang = Math.atan2(p1[Y] - p0[Y], p1[X] - p0[X]);
+    p0 = this.rot(p0, ang, ARROW_WIDTH/2, 0);
+    this.ctx.lineTo(p0[X], p0[Y]);
     this.ctx.stroke();
 
+    p0[X] /= this.getWidth();
+    p0[Y] /= this.getHeight();
 
-
+    this.ctx.strokeStyle = "red";
+    this.ctx.lineWidth = 4;
     this.ctx.beginPath();
-    this.ctx.moveTo(p0[X] - chw,p0[Y] - shw);
-    this.ctx.lineTo(p0[X] + sw, p0[Y] - cw);
-    this.ctx.lineTo(p0[X] + chw,p0[Y] + shw);
+
+    let r;
+    this.ctx.moveTo((r = this.rot(p0, ang, 0, -ARROW_WIDTH/2))[X], r[Y]);
+    this.ctx.lineTo((r = this.rot(p0, ang, -ARROW_WIDTH/2, 0))[X], r[Y]);
+    this.ctx.lineTo((r = this.rot(p0, ang, 0, ARROW_WIDTH/2))[X], r[Y]);
     this.ctx.closePath();
     this.ctx.fill();
+    // this.ctx.stroke();
+  }
+
+  private rot(origin, ang, x, y){
+    let cos = Math.cos(ang);
+    let sin = Math.sin(ang);
+    let rotX = x*cos - y*sin;
+    let rotY = x*sin + y*cos;
+
+    return [ origin[X]*this.getWidth() + rotX, origin[Y]*this.getHeight() + rotY ];
   }
 }

@@ -4,11 +4,11 @@ import bcomp, { cycle, state } from "../../../../../src/bcomp";
 import { values } from "../../../../../src/common";
 
 @Component({
-  selector: 'bcomp-running-cycle',
-  templateUrl: './bcomp.running-cycle.html',
-  styleUrls: ['./bcomp.running-cycle.scss']
+  selector: 'bcomp-control-unit',
+  templateUrl: './bcomp.control-unit.html',
+  styleUrls: ['./bcomp.control-unit.scss']
 })
-export class BCompRunningCycle {
+export class BcompControlUnit {
   cycle = cycle;
 
   constructor(private bcompService: BCompService){}

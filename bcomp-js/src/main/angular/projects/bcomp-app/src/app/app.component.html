@@ -1,25 +1,25 @@
 <div class="graphics">
-  <canvas width="1000" height="500" #busesCanvas></canvas>
+  <canvas width="800" height="600" #busesCanvas></canvas>
   <div class="elements">
-    <bcomp-reg [name]="reg[reg.AC]" [value]="getValue(reg.AC)" [left]="false" style="left:2.5%; top:12.5%"></bcomp-reg>
-    <bcomp-reg [name]="reg[reg.BR]" [value]="getValue(reg.BR)" [left]="false" style="left:2.5%; top:20%"></bcomp-reg>
-    <bcomp-reg [name]="reg[reg.PS]" [value]="getValue(reg.PS)" [left]="false" style="left:2.5%; top:27.5%"></bcomp-reg>
-    <bcomp-reg [name]="reg[reg.IR]" [value]="getValue(reg.IR)" [left]="false" style="left:2.5%; top:35%"></bcomp-reg>
+    <bcomp-reg [name]="reg[reg.AC]" [value]="getValue(reg.AC)" [left]="false" style="top:12.5%" #AC></bcomp-reg>
+    <bcomp-reg [name]="reg[reg.BR]" [value]="getValue(reg.BR)" [left]="false" style="top:20%" #BR></bcomp-reg>
+    <bcomp-reg [name]="reg[reg.PS]" [value]="getValue(reg.PS)" [left]="false" style="top:27.5%" #PS></bcomp-reg>
+    <bcomp-reg [name]="reg[reg.IR]" [value]="getValue(reg.IR)" [left]="false" style="top:35%" #IR></bcomp-reg>
 
-    <bcomp-reg [name]="reg[reg.DR]" [value]="getValue(reg.DR)" style="left:52.5%; top:12.5%"></bcomp-reg>
-    <bcomp-reg [name]="reg[reg.CR]" [value]="getValue(reg.CR)" style="left:52.5%; top:20%"></bcomp-reg>
-    <bcomp-reg [name]="reg[reg.IP]" [value]="getValue(reg.IP)" width="11" style="left:52.5%; top:27.5%"></bcomp-reg>
-    <bcomp-reg [name]="reg[reg.SP]" [value]="getValue(reg.SP)" width="11" style="left:52.5%; top:35%"></bcomp-reg>
+    <bcomp-reg [name]="reg[reg.DR]" [value]="getValue(reg.DR)" style="top:12.5%" #DR></bcomp-reg>
+    <bcomp-reg [name]="reg[reg.CR]" [value]="getValue(reg.CR)" style="top:20%" #CR></bcomp-reg>
+    <bcomp-reg [name]="reg[reg.IP]" [value]="getValue(reg.IP)" width="11" style="top:27.5%" #IP></bcomp-reg>
+    <bcomp-reg [name]="reg[reg.SP]" [value]="getValue(reg.SP)" width="11" style="top:35%" #SP></bcomp-reg>
 
 
-    <bcomp-alu style="left:30%; top:47.5%"></bcomp-alu>
-    <bcomp-bcomp-commutator  style="left:31%; top:70%"></bcomp-bcomp-commutator>
+    <bcomp-alu style="top:47.5%" #ALU></bcomp-alu>
+    <bcomp-bcomp-commutator  style="top:70%" #COMM></bcomp-bcomp-commutator>
 
-    <bcomp-running-cycle style="left:57.5%; top:47.5%"></bcomp-running-cycle>
+    <bcomp-control-unit style="top:47.5%" #CU></bcomp-control-unit>
 
-    <bcomp-memory-view style="left:85%; top:0"></bcomp-memory-view>
+    <bcomp-memory-view #MEM></bcomp-memory-view>
 
-    <bcomp-reg [name]="reg[reg.IR]" [value]="getValue(reg.IR)" [left]="false" style="left:50%; top:95%"></bcomp-reg>
-    <bcomp-reg [name]="reg[reg.AR]" [value]="getValue(reg.AR)" width="11" style="left:77.5%; top:87.5%"></bcomp-reg>
+    <bcomp-reg [name]="reg[reg.IR]" [value]="getValue(reg.IR)" [left]="false" style="left:50%; top:95%" #input></bcomp-reg>
+    <bcomp-reg [name]="reg[reg.AR]" [value]="getValue(reg.AR)" width="11" style="right:0%; top:87.5%" #AR></bcomp-reg>
   </div>
 </div>
