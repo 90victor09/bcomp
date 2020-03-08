@@ -1,0 +1,23 @@
+<div class="app-container">
+  <button (click)="show()"></button>
+  <div class="menu" [@showHideMenu]="menuHidden?'hide':'show'">
+   <nav>
+    <ul>
+      <img src="../assets/company_logo.png" width="120"/>
+      <h3>Меню</h3>
+      <li><a routerLink="bcomp-app">Эмулятор</a></li>
+      <li><a routerLink="console">Консоль</a></li>
+      <li><a routerLink="microprogram-listing">Микропрограмма</a></li>
+      <li><a routerLink="program-tracing">Рубеж №1</a></li>
+      <li><a routerLink="microprogram-tracing">Рубеж №2</a></li>
+    </ul>
+   </nav>
+  </div>
+  <div class="content" [@showHideContent]="menuHidden?'hide':'show'">
+    <router-outlet></router-outlet>
+    <div class="loading" [style.display]="loading ? 'block' : 'none'">
+    <div class="spinner"></div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,45 @@
+@import "../../../../../src/common";
+
+.bcomp-memory-view {
+  $height: 1.8rem;
+  $padding: 0.2rem;
+
+  .header {
+    background-color: $title-color-bg;
+    color: $title-color;
+    padding: $padding;
+    text-align: center;
+    border-bottom: $border;
+  }
+
+  .body{
+    background-color: $value-color-bg;
+
+    label, span {
+      display: block;
+      height: $height;
+      padding: $padding;
+      box-sizing: border-box;
+      line-height: $height - 2*$padding;
+    }
+
+    .body-addr, .body-val {
+      display: inline-block;
+    }
+  }
+  .body-addr {
+    background-color: $title-color-bg;
+    label {
+      color: $title-color;
+      width: $height*1.5;
+      text-align: center;
+    }
+  }
+  .body-val span {
+    color: $value-color;
+  }
+
+  display: inline-block;
+  border: $border;
+  font-family: $font;
+}

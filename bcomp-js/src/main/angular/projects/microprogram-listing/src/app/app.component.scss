@@ -1,0 +1,41 @@
+@import "../../../../src/common";
+
+$even-color: #EEE;
+$hover-color: #DDD;
+
+table {
+  margin: auto;
+
+  thead th {
+    border-bottom: 3px solid #CCC;
+  }
+  tr {
+    font-family: Roboto, sans-serif;
+  }
+  //tr.darker{
+  //  background-color: $even-color;
+  //}
+  tbody tr:hover {
+    background-color: $hover-color !important;
+  }
+}
+
+
+.addr-col, .mc-col {
+  text-align: center;
+}
+
+.addr-col {
+  width: 3em;
+}
+.label-col {
+  text-align: right;
+  width: 7em;
+}
+.mc-col {
+  width: 7em;
+}
+.operation-col {
+  padding-left: 4rem;
+  text-align: left;
+}

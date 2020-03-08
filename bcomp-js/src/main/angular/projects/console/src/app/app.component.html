@@ -1,0 +1,5 @@
+<pre (click)="input.focus()" #console></pre>
+<form (submit)="enterLine($event)">
+  <input type="text" title="Команда" placeholder="Введите команду" (keydown)="keyPress($event)" #input>
+  <input type="submit">
+</form>

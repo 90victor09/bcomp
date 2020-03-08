@@ -1,0 +1,2 @@
+<span *ngIf="!isGOTO">{{op == null ? "No operations" : op}}</span>
+<span *ngIf="isGOTO">{{opBegining}}<span *ngIf="label"><a [href]="'#L-' + label" (click)="jumpToLabel(label)">{{label}}</a> @ </span><a [href]="'#A-' + addr" (click)="jumpToAddr(Number('0x' + addr))">{{addr}}</a></span>

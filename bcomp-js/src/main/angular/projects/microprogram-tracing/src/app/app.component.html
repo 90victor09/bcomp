@@ -1,0 +1,116 @@
+<div>
+  <label>Режим обучения: <input type="checkbox" [checked]="learningMode" (change)="learningMode = learningSwitch.checked" #learningSwitch/></label>
+</div>
+<br>
+<div>
+  <label>Вариант: <input type="text" (change)="fetchTask(variantInput.value)" (keypress.enter)="fetchTask(variantInput.value)" #variantInput/></label>
+</div>
+<br>
+<div>
+  <label for="task-variant">Текущий вариант: </label>
+  <span id="task-variant">{{taskVariant?.variant || 0}}</span>
+</div>
+<br>
+<br>
+<div class="trace-table">
+<table>
+  <thead>
+  <tr>
+    <th colspan="14">Исходные данные: команда {{taskVariant?.cmd[0]}} {{taskVariant?.cmd[1]}}, код команды: {{taskVariant?.cmd[2]}}</th>
+  </tr>
+  <tr>
+    <th class="mp-col">MP<sub>до</sub></th>
+    <th class="data-col" title="Значение ячейки {{taskVariant?.cmd[0]}}">MEM</th>
+    <th class="mr-col">MR</th>
+    <th class="addr-col">IP</th>
+    <th class="data-col">CR</th>
+    <th class="addr-col">AR</th>
+    <th class="data-col">DR</th>
+    <th class="addr-col">SP</th>
+    <th class="data-col">BR</th>
+    <th class="data-col">AC</th>
+    <th class="data-col">NZVC</th>
+    <th class="mp-col">MP</th>
+    <th *ngIf="learningMode"></th>
+    <th *ngIf="learningMode"></th>
+  </tr>
+  </thead>
+  <tbody #linesContainer>
+  <tr>
+    <td class="mp-col"><input type="text" title="MP" readonly/></td>
+    <td class="data-col"><input type="text" title="MEM" [value]="taskVariant.mem[1]" readonly/></td>
+    <td class="mr-col"><input type="text" title="MR" [value]="taskVariant?.regs[0]" readonly/></td>
+    <td class="addr-col"><input type="text" title="IP" [value]="taskVariant?.regs[1]" readonly/></td>
+    <td class="data-col"><input type="text" title="CR" [value]="taskVariant?.regs[2]" readonly/></td>
+    <td class="addr-col"><input type="text" title="AR" [value]="taskVariant?.regs[3]" readonly/></td>
+    <td class="data-col"><input type="text" title="DR" [value]="taskVariant?.regs[4]" readonly/></td>
+    <td class="addr-col"><input type="text" title="SP" [value]="taskVariant?.regs[5]" readonly/></td>
+    <td class="data-col"><input type="text" title="BR" [value]="taskVariant?.regs[6]" readonly/></td>
+    <td class="data-col"><input type="text" title="AC" [value]="taskVariant?.regs[7]" readonly/></td>
+    <td class="data-col"><input type="text" title="NZVC" [value]="taskVariant?.regs[8]" readonly/></td>
+    <td class="mp-col"><input type="text" title="MP" value="01" readonly/></td>
+    <td *ngIf="learningMode"><button disabled>Проверить</button></td>
+    <td *ngIf="learningMode"><button disabled>Показать</button></td>
+  </tr>
+  <tr *ngFor="let line of iterableArray; let i = index" [class.not-executable]="!isExecutable(i)">
+    <td class="mp-col" [attr.data-check]="isValid(i, iMPbefore)">
+      <input (keydown)="changeFocus($event)" type="text" title="MP" maxlength="2" [readOnly]="this.answers[i]" [value]="getAnswer(i, iMPbefore)" #MPbefore/>
+    </td>
+    <td class="data-col" [attr.data-check]="isValid(i, iMEM)">
+      <input (keydown)="changeFocus($event)" type="text" title="MEM" maxlength="4" [readOnly]="this.answers[i]" [value]="getAnswer(i, iMEM)" #MEM/>
+    </td>
+    <td class="mr-col" [attr.data-check]="isValid(i, reg.MR)">
+      <input (keydown)="changeFocus($event)" type="text" title="MR" maxlength="10" [readOnly]="this.answers[i]" [value]="getAnswer(i, reg.MR)" #MR/>
+    </td>
+    <td class="addr-col" [attr.data-check]="isValid(i, reg.IP)">
+      <input (keydown)="changeFocus($event)" type="text" title="IP" maxlength="3" [readOnly]="this.answers[i]" [value]="getAnswer(i, reg.IP)" #IP/>
+    </td>
+    <td class="data-col" [attr.data-check]="isValid(i, reg.CR)">
+      <input (keydown)="changeFocus($event)" type="text" title="CR" maxlength="4" [readOnly]="this.answers[i]" [value]="getAnswer(i, reg.CR)" #CR/>
+    </td>
+    <td class="addr-col" [attr.data-check]="isValid(i, reg.AR)">
+      <input (keydown)="changeFocus($event)" type="text" title="AR" maxlength="3" [readOnly]="this.answers[i]" [value]="getAnswer(i, reg.AR)" #AR/>
+    </td>
+    <td class="data-col" [attr.data-check]="isValid(i, reg.DR)">
+      <input (keydown)="changeFocus($event)" type="text" title="DR" maxlength="4" [readOnly]="this.answers[i]" [value]="getAnswer(i, reg.DR)" #DR/>
+    </td>
+    <td class="addr-col" [attr.data-check]="isValid(i, reg.SP)">
+      <input (keydown)="changeFocus($event)" type="text" title="SP" maxlength="3" [readOnly]="this.answers[i]" [value]="getAnswer(i, reg.SP)" #SP/>
+    </td>
+    <td class="data-col" [attr.data-check]="isValid(i, reg.BR)">
+      <input (keydown)="changeFocus($event)" type="text" title="BR" maxlength="4" [readOnly]="this.answers[i]" [value]="getAnswer(i, reg.BR)" #BR/>
+    </td>
+    <td class="data-col" [attr.data-check]="isValid(i, reg.AC)">
+      <input (keydown)="changeFocus($event)" type="text" title="AC" maxlength="4" [readOnly]="this.answers[i]" [value]="getAnswer(i, reg.AC)" #AC/>
+    </td>
+    <td class="data-col" [attr.data-check]="isValid(i, iNZVC)">
+      <input (keydown)="changeFocus($event)" type="text" title="NZVC" maxlength="4" [readOnly]="this.answers[i]" [value]="getAnswer(i, iNZVC)" #NZVC/>
+    </td>
+    <td class="mp-col" [attr.data-check]="isValid(i, reg.MP)">
+      <input (keydown)="changeFocus($event)" type="text" title="MP" maxlength="2" [readOnly]="this.answers[i]" [value]="getAnswer(i, reg.MP)" #MPafter/>
+    </td>
+    <td *ngIf="learningMode"><button (click)="checkLine(i, [MPbefore, MEM, MR, IP, CR, AR, DR, SP, BR, AC, NZVC, MPafter])" [disabled]="answers[i]">Проверить</button></td>
+    <td *ngIf="learningMode"><button (click)="showAnswer(i)" [disabled]="answers[i]">Показать</button></td>
+  </tr>
+  </tbody>
+</table>
+</div>
+<br>
+<div>
+  <button (click)="checkAll()">Проверить всё</button>
+</div>
+<br>
+<div>
+  <label for="completion">Выполнено правильно: </label>
+  <span id="completion">{{doneRight}} / {{total}} ({{(doneRight/total || 0) | percent:".2"}})</span>
+</div>
+<br>
+<div>
+  <label for="tryCount">Попытка: </label>
+  <span id="tryCount">{{tryCount | number:'.0-3'}}</span>
+</div>
+<br>
+<div>
+  <label for="timer">Время: </label>
+  <span id="timer">{{getFormattedTime()}}</span>
+</div>

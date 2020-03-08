@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<title>BasicComputer - Console emulator</title>
+
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<script type="text/javascript" charset="utf-8" src="../bcomp.js"></script>
+	<style>
+		html, body {
+			height: 100%;
+			margin: 0;
+		}
+		#console {
+			min-height: calc(100% - 1.5rem);
+			width: 100%;
+			margin: 0;
+			padding: 0.4rem 0.4rem 0;
+			box-sizing: border-box;
+		}
+		#console-input {
+			height: 1.5rem;
+			width: 100%;
+			padding: 0.1rem;
+			box-sizing: border-box;
+			border: none;
+			border-top: 1px solid #EEE;
+		}
+	</style>
+</head>
+<body>
+	<pre id="console"></pre>
+	<input id="console-input" type="text" placeholder="Введите команду" autofocus>
+
+	<script type="text/javascript">
+		var output = document.getElementById("console");
+		var input = document.getElementById("console-input");
+		output.innerHTML = input.value = "";
+
+		main();
+
+		var CLI = bcomp.startCLI(output);
+		input.onkeydown = function(e){
+			if(e.keyCode !== 13)
+				return;
+			CLI.enterLine(this.value);
+			this.value = "";
+		}
+	</script>
+</body>
+</html>

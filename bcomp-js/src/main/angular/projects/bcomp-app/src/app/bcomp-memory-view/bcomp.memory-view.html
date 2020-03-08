@@ -1,0 +1,11 @@
+<div class="bcomp-memory-view">
+  <div class="header">RAM</div>
+  <div class="body">
+    <div class="body-addr">
+      <label *ngFor="let value of bcompService.memoryView; let i = index" [for]="'val-'+i">{{bcompService.memoryViewOffset + i | hexadecimal:3}}</label>
+    </div>
+    <div class="body-val">
+      <span *ngFor="let value of bcompService.memoryView; let i = index" [id]="'val-'+i">{{value | hexadecimal:4}}</span>
+    </div>
+  </div>
+</div>

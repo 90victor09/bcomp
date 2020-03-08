@@ -1,0 +1,12 @@
+<div class="bcomp-running-cycle">
+  <div class="header">Control Unit</div>
+  <ul class="body">
+    <li class="{{isActive(cycle.INFETCH) ? 'active' : ''}}">Instruction fetch</li>
+    <li class="{{isActive(cycle.ADFETCH) ? 'active' : ''}}">Address fetch</li>
+    <li class="{{isActive(cycle.OPFETCH) ? 'active' : ''}}">Operand fetch</li>
+    <li class="{{isActive(cycle.EXEC) ? 'active' : ''}}">Execution</li>
+    <li class="{{isActive(cycle.INT) ? 'active' : ''}}">Interrupt</li>
+    <li class="{{isActive([cycle.START, cycle.READ, cycle.WRITE, cycle.SETIP]) ? 'active' : ''}}">Operator panel</li>
+    <li class="{{isProgramActive() ? 'active' : ''}}">Program</li>
+  </ul>
+</div>
