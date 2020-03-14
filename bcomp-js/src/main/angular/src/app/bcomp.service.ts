@@ -13,6 +13,11 @@ export class BCompService {
   public memoryView : number[] = [];
   public memoryViewOffset : number = 0;
 
+  private tickStartListeners = [];
+  private tickFinishListeners = [];
+
+  private clockState = false;
+
   constructor(private ngZone: NgZone){
     for(let reg of values(bcomp.regs))
       this.regsValues[reg] = 0;
@@ -39,26 +44,45 @@ export class BCompService {
 
     this.bcompAngular.setTickStartListener(() => {
       this.updateRunningCycle();
+      for(let key in this.tickStartListeners)
+        this.tickStartListeners[key]();
     });
     this.bcompAngular.setTickFinishListener(() => {
       this.bcompAngular.getRegValue(reg.IR, (val) => this.regsValues[reg.IR] = Number("0x" + val));
       bcomp.sleep(0); // Context switching injection
+      for(let key in this.tickFinishListeners)
+        this.tickFinishListeners[key]();
     });
   }
 
   public sync(cb: () => void) : void {
     this.bcompAngular.sync(cb);
   }
+
+
+  public startContinue() : void {
+    this.bcompAngular.startContinue();
+  }
+  public startSetAddr() : void {
+    this.bcompAngular.startSetAddr();
+  }
+  public startWrite() : void {
+    this.bcompAngular.startWrite();
+  }
+  public startRead() : void {
+    this.bcompAngular.startRead();
+  }
+  public startStart() : void {
+    this.bcompAngular.startStart();
+  }
+
+
   public executeContinue(cb?: () => void) : void {
     if(!cb)
       cb = () => {};
     this.bcompAngular.executeContinue(cb);
   }
 
-
-  public getProgramState(state: bcomp.states) : boolean {
-    return ((this.regsValues[reg.PS] >> state) & 1) > 0;
-  }
 
   public setMemoryValue(addr: number, value: number) : void {
     this.bcompAngular.setMemoryValue(addr, value);
@@ -68,8 +92,12 @@ export class BCompService {
   }
   public getRegValue(reg: bcomp.regs, cb: (val: number) => void) : void {
     this.bcompAngular.getRegValue(reg, (value: number) => {
-      cb(Number("0x" + value));
+      cb(value);
     });
+  }
+
+  public getProgramState(state: bcomp.states) : boolean {
+    return ((this.regsValues[reg.PS] >> state) & 1) > 0;
   }
 
 
@@ -78,9 +106,33 @@ export class BCompService {
       this.bcompAngular.addSignalListener(sig, () => this.updateReg(reg));
   }
 
-  private addSignalsListener(sigs: bcomp.controlSignals[], cb: (val) => void) : void {
+  public addSignalsListener(sigs: bcomp.controlSignals[], cb: (val) => void) : void {
     for(let sig of sigs)
       this.bcompAngular.addSignalListener(sig, cb);
+  }
+
+  public addTickStartListener(cb: () => any){
+    this.tickStartListeners.push(cb);
+  }
+  public addTickFinishListener(cb: () => any){
+    this.tickFinishListeners.push(cb);
+  }
+
+  public invertClockState() : boolean {
+    this.bcompAngular.setClockState(this.clockState);
+    return this.clockState = !this.clockState;
+  }
+  public invertRunState() : boolean {
+    const bit = (1 << bcomp.states.RUN);
+    // console.log(bit.toString(2), (~bit).toString(2));
+    let state = !(((this.regsValues[reg.PS] >> bcomp.states.RUN) & 1) > 0);
+    if(state){
+      this.setRegValue(reg.PS, (this.regsValues[reg.PS] + bit));
+    }else{
+      this.setRegValue(reg.PS, (this.regsValues[reg.PS] - bit));
+    }
+    this.updateReg(reg.PS);
+    return state;
   }
 
 
@@ -89,14 +141,14 @@ export class BCompService {
     for(let reg of values(bcomp.regs))
       this.updateReg(Number(reg));
   }
-  public updateReg(name: bcomp.regs) : void {
-    this.getRegValue(name, (val) => {
-      if(val != 0)
-        console.log(name," ", val,"(upd)");
+  public updateReg(regIdx: bcomp.regs) : void {
+    this.getRegValue(regIdx, (val) => {
+      // if(val != 0)
+      //   console.log(reg[regIdx]," ", val,"(upd)");
 
       // Weird change detection mechanism
-      this.regsValues[name] = val;
-      this.ngZone.run(() => this.regsValues[name] = val);
+      this.regsValues[regIdx] = val;
+      this.ngZone.run(() => this.regsValues[regIdx] = val);
     });
   }
 

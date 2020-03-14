@@ -19,6 +19,9 @@ export const memWidth = 88/800;
 export const memHeight = 490/600;
 
 export const busWidth = 10; //px
+export const busActiveWidth = 9; //px
+export const arrowWidth = 25; //px
+export const arrowActiveWidth = 20; //px
 export const leftRegsBusX = 0.01;
 export const rightRegsBusX = 0.785;
 export const bottomBusY = 0.90;

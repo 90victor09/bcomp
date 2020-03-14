@@ -1,10 +1,10 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import bcomp, { reg } from '../../../../src/bcomp';
+import bcomp, { cs, reg } from '../../../../src/bcomp';
 import { BCompService } from "../../../../src/app/bcomp.service";
 
 import { BCompCanvas } from "./bcomp-canvas";
 import { GUIObjectManager } from "./object-manager";
-import { buses } from "./bcomp-buses";
+import { Buses, buses } from "./bcomp-buses";
 import {
   aluHeight,
   aluWidth, canvasHeight,
@@ -45,6 +45,8 @@ export class AppComponent implements AfterViewInit {
 
   @ViewChild("busesCanvas", {static: true}) canvasRef : ElementRef;
   canvas : BCompCanvas;
+  private objectManager: GUIObjectManager;
+  private activeBuses: Buses[] = [];
 
   constructor(private bcompService: BCompService){ }
 
@@ -80,27 +82,85 @@ export class AppComponent implements AfterViewInit {
 
     this.canvas = new BCompCanvas(this.canvasRef.nativeElement);
 
-    let objectManager = new GUIObjectManager(this.canvasRef);
-    objectManager.add("AC", this.regACRef);
-    objectManager.add("BR", this.regBRRef);
-    objectManager.add("PS", this.regPSRef);
-    objectManager.add("IR", this.regIRRef);
+    this.objectManager = new GUIObjectManager(this.canvasRef);
+    this.objectManager.add("AC", this.regACRef);
+    this.objectManager.add("BR", this.regBRRef);
+    this.objectManager.add("PS", this.regPSRef);
+    this.objectManager.add("IR", this.regIRRef);
 
-    objectManager.add("DR", this.regDRRef);
-    objectManager.add("CR", this.regCRRef);
-    objectManager.add("IP", this.regIPRef);
-    objectManager.add("SP", this.regSPRef);
+    this.objectManager.add("DR", this.regDRRef);
+    this.objectManager.add("CR", this.regCRRef);
+    this.objectManager.add("IP", this.regIPRef);
+    this.objectManager.add("SP", this.regSPRef);
 
-    objectManager.add("input", this.regInputRef);
-    objectManager.add("AR", this.regARRef);
+    this.objectManager.add("input", this.regInputRef);
+    this.objectManager.add("AR", this.regARRef);
 
-    objectManager.add("ALU", this.ALURef);
-    objectManager.add("COMM", this.COMMRef);
-    objectManager.add("CU", this.CURef);
-    objectManager.add("MEM", this.MEMRef);
+    this.objectManager.add("ALU", this.ALURef);
+    this.objectManager.add("COMM", this.COMMRef);
+    this.objectManager.add("CU", this.CURef);
+    this.objectManager.add("MEM", this.MEMRef);
 
     for(let key in buses)
-      this.canvas.drawBus(buses[key](objectManager), false);
+      this.canvas.drawBus(buses[key](this.objectManager), false);
+
+    this.bcompService.addSignalsListener([cs.RDBR], () => this.activateBus(Buses.BR_ALU));
+    this.bcompService.addSignalsListener([cs.WRBR], () => this.activateBus(Buses.COMM_BR));
+    this.bcompService.addSignalsListener([cs.RDPS], () => this.activateBus(Buses.PS_ALU));
+    this.bcompService.addSignalsListener([cs.WRPS], () => this.activateBus(Buses.COMM_PS));
+    this.bcompService.addSignalsListener([cs.WRBR, cs.WRAC, cs.WRIP, cs.WRCR, cs.WRDR, cs.WRAR, cs.WRPS, cs.WRSP, cs.TYPE], () => this.activateBus(Buses.COMM_ALL));
+    this.bcompService.addSignalsListener([cs.WRBR, cs.WRAC, cs.WRIP, cs.WRCR, cs.WRDR, cs.WRAR, cs.WRPS, cs.WRSP, cs.TYPE], () => this.activateBus(Buses.ALU_COMM));
+    this.bcompService.addSignalsListener([cs.RDDR], () => this.activateBus(Buses.DR_ALU));
+    this.bcompService.addSignalsListener([cs.RDCR], () => this.activateBus(Buses.CR_ALU));
+    this.bcompService.addSignalsListener([cs.RDIP], () => this.activateBus(Buses.IP_ALU));
+    this.bcompService.addSignalsListener([cs.RDSP], () => this.activateBus(Buses.SP_ALU));
+    this.bcompService.addSignalsListener([cs.RDAC], () => this.activateBus(Buses.AC_ALU));
+    this.bcompService.addSignalsListener([cs.RDIR], () => this.activateBus(Buses.IR_ALU));
+    this.bcompService.addSignalsListener([cs.WRAR], () => this.activateBus(Buses.COMM_AR));
+    this.bcompService.addSignalsListener([cs.WRDR], () => this.activateBus(Buses.COMM_DR));
+    this.bcompService.addSignalsListener([cs.WRCR], () => this.activateBus(Buses.COMM_CR));
+    this.bcompService.addSignalsListener([cs.WRIP], () => this.activateBus(Buses.COMM_IP));
+    this.bcompService.addSignalsListener([cs.WRSP], () => this.activateBus(Buses.COMM_SP));
+    this.bcompService.addSignalsListener([cs.WRAC], () => this.activateBus(Buses.COMM_AC));
+    this.bcompService.addSignalsListener([cs.LOAD, cs.STOR], () => this.activateBus(Buses.MEM_IO));
+    this.bcompService.addSignalsListener([cs.LOAD], () => this.activateBus(Buses.MEM_R));
+    this.bcompService.addSignalsListener([cs.STOR], () => this.activateBus(Buses.MEM_W));
+    this.bcompService.addSignalsListener([cs.TYPE], () => this.activateBus(Buses.CU));
+
+    this.bcompService.addSignalsListener([], () => this)
+
+    this.bcompService.addTickStartListener(() => {
+      let b;
+      while((b = this.activeBuses.pop()) != undefined)
+        this.canvas.drawBus(buses[b](this.objectManager), false);
+    });
+  }
+
+  cmdEnterAddr(){
+    this.bcompService.startSetAddr();
+  }
+  cmdWrite(){
+    this.bcompService.startWrite();
+  }
+  cmdRead(){
+    this.bcompService.startRead();
+  }
+  cmdInvertRunState(e){
+    e.target.checked = this.bcompService.invertRunState();
+  }
+  cmdInvertClockState(e){
+    console.log(e.target.checked = this.bcompService.invertClockState());
+  }
+  cmdStart(){
+    this.bcompService.startStart();
+  }
+  cmdContinue(){
+    this.bcompService.startContinue();
+  }
+
+  private activateBus(bus: Buses){
+    this.canvas.drawBus(buses[bus](this.objectManager), true);
+    this.activeBuses.push(bus);
   }
 
   private constraint(name: string, val: any, elRef: ElementRef){

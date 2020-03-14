@@ -147,8 +147,15 @@ export interface BCompAngular {
   getMemoryValue(addr: MemoryAddress, cb: (value: MemoryValue) => void) : void;
   getLastAccessedMemoryAddress(cb: (value: MemoryAddress) => void) : void;
 
-  getRunningCycle(cb: (cycle: bcomp.runningCycles) => void) : void;
+  startContinue();
+  startSetAddr();
+  startWrite();
+  startRead();
+  startStart();
+
   executeContinue(cb: () => void) : void;
+
+  getRunningCycle(cb: (cycle: bcomp.runningCycles) => void) : void;
   decodeMC(addr: MemoryAddress, cb: (value: string[]) => void) : void;
 
   getClockState(cb: (clock: boolean) => void) : void;

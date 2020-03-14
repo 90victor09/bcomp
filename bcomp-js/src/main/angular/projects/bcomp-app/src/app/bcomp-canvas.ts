@@ -1,4 +1,4 @@
-import { busWidth } from "./gui-constraints";
+import { arrowActiveWidth, arrowWidth, busActiveWidth, busWidth } from "./gui-constraints";
 
 type Vec = { [n: number]: number }; //[number. number];
 
@@ -13,7 +13,6 @@ const ALU_BORDER_WIDTH = 1;
 const BUS_STYLE = "rgb(128, 128, 128)";
 const BUS_STYLE_ACTIVE = "#F00";
 
-const ARROW_WIDTH = 25;
 
 export class BCompCanvas {
   private readonly ctx: CanvasRenderingContext2D;
@@ -65,7 +64,7 @@ export class BCompCanvas {
     if(pnts.length < 2)
       throw "Not enough points";
 
-    this.ctx.lineWidth = busWidth;
+    this.ctx.lineWidth = active ? busActiveWidth : busWidth;
     this.ctx.strokeStyle = this.ctx.fillStyle = (active ? BUS_STYLE_ACTIVE : BUS_STYLE);
 
     this.ctx.beginPath();
@@ -75,11 +74,13 @@ export class BCompCanvas {
     let p0 = pnts[pnts.length-1];
     const p1 = pnts[pnts.length-2];
 
+    const ARROW_WIDTH = (active ? arrowActiveWidth : arrowWidth);
     let ang = Math.atan2(p1[Y] - p0[Y], p1[X] - p0[X]);
-    p0 = this.rot(p0, ang, ARROW_WIDTH/2, 0);
-    this.ctx.lineTo(p0[X], p0[Y]);
+    let end = this.rot(p0, ang, ARROW_WIDTH/2 - 1, 0);
+    this.ctx.lineTo(end[X], end[Y]);
     this.ctx.stroke();
 
+    p0 = this.rot(p0, ang, ARROW_WIDTH/2 + (active? (arrowWidth - arrowActiveWidth)/4 : 0), 0);
     p0[X] /= this.getWidth();
     p0[Y] /= this.getHeight();
 

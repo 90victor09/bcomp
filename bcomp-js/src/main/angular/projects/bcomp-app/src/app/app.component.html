@@ -19,7 +19,25 @@
 
     <bcomp-memory-view #MEM></bcomp-memory-view>
 
-    <bcomp-reg [name]="reg[reg.IR]" [value]="getValue(reg.IR)" [left]="false" style="left:50%; top:95%" #input></bcomp-reg>
     <bcomp-reg [name]="reg[reg.AR]" [value]="getValue(reg.AR)" width="11" style="right:0%; top:87.5%" #AR></bcomp-reg>
+  </div>
+  <div class="control-panel">
+    <button (click)="cmdEnterAddr()">Ввод адреса</button>
+    <button (click)="cmdWrite()">Запись</button>
+    <button (click)="cmdRead()">Чтение</button>
+
+    <bcomp-reg [name]="reg[reg.IR]" [value]="getValue(reg.IR)" [left]="false" style="left:50%; top:50%; transform: translate(-50%, -50%);" #input></bcomp-reg>
+
+    <div>
+      <input id="runState" type="checkbox" (change)="cmdInvertRunState($event)"/>
+      <label for="runState">Работа</label>
+    </div>
+    <div>
+      <input id="clock" type="checkbox" (change)="cmdInvertClockState($event)"/>
+      <label for="clock">Такт</label>
+    </div>
+    <button (click)="cmdStart()">Пуск</button>
+    <button (click)="cmdContinue()">Продолжение</button>
+
   </div>
 </div>

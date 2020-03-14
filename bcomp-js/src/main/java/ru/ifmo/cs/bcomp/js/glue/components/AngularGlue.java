@@ -31,9 +31,18 @@ public class AngularGlue {
 		GET_MEMORY_VALUE,
 		GET_LAST_ACCESSED_MEMORY_ADDRESS,
 
+		// Starts
+		START_CONTINUE,
+		START_SET_ADDR,
+		START_WRITE,
+		START_READ,
+		START_START,
+
+		// Executes
+		EXECUTE_CONTINUE,
+
 		// etc
 		GET_RUNNING_CYCLE,
-		EXECUTE_CONTINUE,
 		DECODE_MC,
 
 		GET_CLOCK_STATE,
@@ -58,8 +67,15 @@ public class AngularGlue {
 			+ "a.getMemoryValue = function(addr, cb){ " + rjmg + "('" + angularGlue + ".getMemoryValue(DL" + listenersPackage + "GlueDoubleResultListener;)V').invoke(addr, cb); };"
 			+ "a.getLastAccessedMemoryAddress = function(cb){ " + rjmg + "('" + angularGlue + ".getLastAccessedMemoryAddress(L" + listenersPackage + "GlueDoubleResultListener;)V').invoke(cb); };"
 
-			+ "a.getRunningCycle = function(cb){ " + rjmg + "('" + angularGlue + ".getRunningCycle(L" + listenersPackage + "GlueIntegerResultListener;)V').invoke(cb); };"
+			+ "a.startContinue = function(){ " + rjmg + "('" + angularGlue + ".startContinue()V').invoke(); };"
+			+ "a.startSetAddr = function(){ " + rjmg + "('" + angularGlue + ".startContinue()V').invoke(); };"
+			+ "a.startWrite = function(){ " + rjmg + "('" + angularGlue + ".startContinue()V').invoke(); };"
+			+ "a.startRead = function(){ " + rjmg + "('" + angularGlue + ".startContinue()V').invoke(); };"
+			+ "a.startStart = function(){ " + rjmg + "('" + angularGlue + ".startContinue()V').invoke(); };"
+
 			+ "a.executeContinue = function(cb){ " + rjmg + "('" + angularGlue + ".executeContinue(L" + listenersPackage + "GlueVoidResultListener;)V').invoke(cb); };"
+
+			+ "a.getRunningCycle = function(cb){ " + rjmg + "('" + angularGlue + ".getRunningCycle(L" + listenersPackage + "GlueIntegerResultListener;)V').invoke(cb); };"
 			+ "a.decodeMC = function(addr, cb){ " + rjmg + "('" + angularGlue + ".decodeMC(DL" + listenersPackage + "GlueStringArrayResultListener;)V').invoke(addr, cb); };"
 
 			+ "a.getClockState = function(cb){ " + rjmg + "('" + angularGlue + ".getClockState(L" + listenersPackage + "GlueBooleanResultListener;)V').invoke(cb); };"
@@ -107,11 +123,30 @@ public class AngularGlue {
 	}
 
 
-	public static void getRunningCycle(GlueIntegerResultListener listener){
-		glue.sendCmd(CMD.GET_RUNNING_CYCLE, result -> listener.process((Integer) result));
+	public static void startContinue() {
+		glue.sendCmd(CMD.START_CONTINUE, null);
 	}
+	public static void startSetAddr() {
+		glue.sendCmd(CMD.START_SET_ADDR, null);
+	}
+	public static void startWrite() {
+		glue.sendCmd(CMD.START_WRITE, null);
+	}
+	public static void startRead() {
+		glue.sendCmd(CMD.START_READ, null);
+	}
+	public static void startStart() {
+		glue.sendCmd(CMD.START_START, null);
+	}
+
+
 	public static void executeContinue(GlueVoidResultListener listener){
 		glue.sendCmd(CMD.EXECUTE_CONTINUE, result -> listener.process());
+	}
+
+
+	public static void getRunningCycle(GlueIntegerResultListener listener){
+		glue.sendCmd(CMD.GET_RUNNING_CYCLE, result -> listener.process((Integer) result));
 	}
 	public static void decodeMC(double addr, GlueStringArrayResultListener listener){
 		glue.sendCmd(CMD.DECODE_MC, result -> listener.process((String[]) result), addr);
@@ -162,12 +197,31 @@ public class AngularGlue {
 			case GET_LAST_ACCESSED_MEMORY_ADDRESS:
 				return (double) bcomp.getLastAccessedMemoryAddress();
 
-			// etc
-			case GET_RUNNING_CYCLE:
-				return bcomp.getRunningCycle();
+			// Starts
+			case START_CONTINUE:
+				bcomp.startContinue();
+				break;
+			case START_SET_ADDR:
+				bcomp.startSetAddr();
+				break;
+			case START_WRITE:
+				bcomp.startWrite();
+				break;
+			case START_READ:
+				bcomp.startRead();
+				break;
+			case START_START:
+				bcomp.startStart();
+				break;
+
+			// Executes
 			case EXECUTE_CONTINUE:
 				bcomp.executeContinue();
 				break;
+
+			// etc
+			case GET_RUNNING_CYCLE:
+				return bcomp.getRunningCycle();
 			case DECODE_MC:
 				return bcomp.decodeMC((long)(double) args[0]);
 

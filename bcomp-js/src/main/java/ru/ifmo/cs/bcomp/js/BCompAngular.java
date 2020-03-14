@@ -30,6 +30,22 @@ public class BCompAngular {
 		return (int) cpu.getRegWidth(reg);
 	}
 
+	public void startContinue(){
+		cpu.startContinue();
+	}
+	public void startSetAddr(){
+		cpu.startSetAddr();
+	}
+	public void startWrite(){
+		cpu.startWrite();
+	}
+	public void startRead(){
+		cpu.startRead();
+	}
+	public void startStart(){
+		cpu.startStart();
+	}
+
 	public int getRunningCycle(){
 		return cpu.getRunningCycle().ordinal();
 	}

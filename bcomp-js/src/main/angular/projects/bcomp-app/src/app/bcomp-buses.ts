@@ -105,8 +105,8 @@ b[Buses.ALU_COMM] = function(om: GUIObjectManager){
 b[Buses.COMM_ALL] = function(om: GUIObjectManager){
   const COMM = om.get("COMM");
   return [
-    [ COMM.hCenter, COMM.bottom                          ],
-    [ COMM.hCenter, bottomBusY - busWidth/canvasHeight/2 ],
+    [ COMM.hCenter, COMM.bottom                            ],
+    [ COMM.hCenter, bottomBusY - busWidth/(canvasHeight*6) ],
   ]
 };
 
